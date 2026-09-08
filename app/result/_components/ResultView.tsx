@@ -120,6 +120,29 @@ const CheckIcon = ({ size = 16 }: { size?: number }) => (
   </svg>
 )
 
+// Derive a short "owner-repo" prefix from a GitHub URL so downloaded files are
+// easy to tell apart (e.g. psf-requests-AGENTS.md).
+const repoPrefix = (url?: string): string => {
+  if (!url) return "repo"
+  // 完整 URL: https://github.com/owner/repo
+  // 简写: owner/repo（首页示例 "psf/requests" 即这种格式）
+  const fm = url.match(/github\.com[/:]([^/]+)\/([^/#?]+)/i)
+  const parts = !fm ? url.trim().split("/") : null
+  const ownerRaw = fm ? fm[1] : parts && parts.length >= 2 ? parts[0] : ""
+  const repoRaw = fm ? fm[2] : parts && parts.length >= 2 ? parts[1] : ""
+  const owner = ownerRaw.replace(/[^a-zA-Z0-9_-]/g, "")
+  const repo = repoRaw.replace(/[^a-zA-Z0-9_-]/g, "")
+  if (!owner || !repo) return "repo"
+  return `${owner}-${repo}`.toLowerCase()
+}
+
+// Rewrite a canonical filename (e.g. ".cursorrules", ".github/copilot-instructions.md")
+// into a user-friendly file name prefixed with the repo (e.g. psf-requests-cursorrules).
+const formatFileName = (prefix: string, filename: string): string => {
+  const clean = filename.replace(/^\.github\//, "").replace(/^\./, "")
+  return `${prefix}-${clean}`
+}
+
 const FORMATS: Array<{
   key: FormatKey
   label: string
@@ -182,7 +205,7 @@ export default function ResultView({ initialData, repoUrl }: ResultViewProps) {
     const url = URL.createObjectURL(blob)
     const a = document.createElement("a")
     a.href = url
-    a.download = currentFormat.filename
+    a.download = formatFileName(repoPrefix(repoUrl), currentFormat.filename)
     a.click()
     URL.revokeObjectURL(url)
   }
@@ -218,6 +241,7 @@ export default function ResultView({ initialData, repoUrl }: ResultViewProps) {
 
   const handleDownloadAll = () => {
     if (!data) return
+    const prefix = repoPrefix(repoUrl)
     // 简化：分别触发 4 个下载
     FORMATS.forEach((fmt) => {
       const content = data.formats?.[fmt.key]
@@ -226,7 +250,7 @@ export default function ResultView({ initialData, repoUrl }: ResultViewProps) {
       const url = URL.createObjectURL(blob)
       const a = document.createElement("a")
       a.href = url
-      a.download = fmt.filename
+      a.download = formatFileName(prefix, fmt.filename)
       document.body.appendChild(a)
       a.click()
       document.body.removeChild(a)
@@ -970,8 +994,11 @@ export default function ResultView({ initialData, repoUrl }: ResultViewProps) {
           alignItems: "center",
         }}>
           <span>
-            <strong style={{ color: "var(--ink-2)" }}>{currentFormat.label}.</strong>{" "}
-            {currentFormat.description}.
+            <strong style={{ color: "var(--ink-2)" }}>{currentFormat.label}</strong>{" "}
+            {currentFormat.description}.<br />
+            <span style={{ fontFamily: "'IBM Plex Mono', monospace", color: "var(--blue-60)", fontSize: "11px" }}>
+              ↓ {formatFileName(repoPrefix(repoUrl), currentFormat.filename)}
+            </span>
           </span>
           <a
             href={currentFormat.href}

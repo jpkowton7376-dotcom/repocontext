@@ -22,80 +22,59 @@ export default function RefundPage() {
         <h1 className="text-3xl font-bold mb-2">Refund Policy</h1>
         <p className="text-muted mb-8">Last updated: September 2026</p>
 
-        <h2 className="text-xl font-bold mt-8 mb-3">
-          14-Day Money-Back Guarantee
-        </h2>
+        <h2 className="text-xl font-bold mt-8 mb-3">All Sales Are Final</h2>
         <p>
-          We want you to be happy with RepoContext. If you&apos;re not
-          satisfied with our Service for any reason, we offer a full refund
-          within 14 days of your initial purchase. No questions asked.
+          All purchases of RepoContext Pro and Team plans are final. We do not
+          offer refunds or exchanges for change of mind, unused usage, or
+          dissatisfaction with the service after purchase. By completing your
+          purchase, you acknowledge and agree that you are buying a digital
+          service and that no right of withdrawal or refund applies.
         </p>
 
-        <h2 className="text-xl font-bold mt-8 mb-3">How to Request a Refund</h2>
+        <h2 className="text-xl font-bold mt-8 mb-3">Agreement at Checkout</h2>
         <p>
-          To request a refund, email us at{" "}
-          <a href="mailto:refund@repocontext.com" className="text-accent2 hover:underline">
-            refund@repocontext.com
-          </a>{" "}
-          with:
-        </p>
-        <ul className="list-disc pl-6 space-y-2 mt-2">
-          <li>Your account email address</li>
-          <li>The subscription plan you purchased</li>
-          <li>A brief reason for the refund (optional, but helps us improve)</li>
-        </ul>
-        <p className="mt-3">
-          We will process your refund within 5-7 business days. The refund
-          will be credited to your original payment method.
+          Before any payment is processed, you must check a box confirming that
+          you understand and accept this no-refund policy. If you do not agree,
+          do not complete the purchase.
         </p>
 
-        <h2 className="text-xl font-bold mt-8 mb-3">What About Free Trials?</h2>
+        <h2 className="text-xl font-bold mt-8 mb-3">Free Trial</h2>
         <p>
-          If you signed up for a free trial and did not cancel before the
-          trial ended, you can still request a refund within 14 days of being
-          charged.
+          Pro and Team plans include free trial uses before any billing occurs.
+          Please use the trial to evaluate whether RepoContext meets your needs.
+          Once you upgrade to a paid plan, the purchase is final.
+        </p>
+
+        <h2 className="text-xl font-bold mt-8 mb-3">Exception: Non-Delivery</h2>
+        <p>
+          The only exception is a material failure to deliver the service you
+          paid for (for example, a confirmed technical issue on our side that
+          prevents access for an extended period). In such cases, contact us
+          within 14 days of the issue and we will review your request.
         </p>
 
         <h2 className="text-xl font-bold mt-8 mb-3">Cancellation</h2>
         <p>
-          You can cancel your subscription at any time from your account
-          settings or by emailing us. When you cancel:
+          For subscription plans, you may cancel at any time from your account
+          settings. Cancellation stops future billing only; no refund will be
+          issued for the current billing period.
         </p>
-        <ul className="list-disc pl-6 space-y-2 mt-2">
-          <li>Your access continues until the end of the billing period</li>
-          <li>You will not be charged for the next billing cycle</li>
-          <li>No partial refunds are provided for the current billing period</li>
-        </ul>
-
-        <h2 className="text-xl font-bold mt-8 mb-3">Annual Plans</h2>
-        <p>
-          For annual plans, you may request a full refund within 30 days of
-          purchase. After 30 days, we offer a prorated refund for the unused
-          portion of your subscription.
-        </p>
-
-        <h2 className="text-xl font-bold mt-8 mb-3">Exceptions</h2>
-        <p>We may refuse refunds in cases of:</p>
-        <ul className="list-disc pl-6 space-y-2 mt-2">
-          <li>Fraud or abuse of the Service</li>
-          <li>Violation of our Terms of Service</li>
-          <li>Multiple refund requests from the same user</li>
-        </ul>
 
         <h2 className="text-xl font-bold mt-8 mb-3">Contact</h2>
         <p>
-          Have questions about refunds? Email us at{" "}
-          <a href="mailto:refund@repocontext.com" className="text-accent2 hover:underline">
-            refund@repocontext.com
+          Questions about this policy? Email us at{" "}
+          <a href="mailto:support@repocontext.com" className="text-accent2 hover:underline">
+            support@repocontext.com
           </a>
-          . We typically respond within 24 hours.
+          .
         </p>
 
         <div className="mt-12 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
           <p className="text-sm text-yellow-200">
-            <strong>⚠️ Disclaimer:</strong> This refund policy is a template
-            and should be reviewed by a qualified lawyer before use. Laws vary
-            by jurisdiction.
+            <strong>⚠️ Disclaimer:</strong> This refund policy is provided as a
+            template and should be reviewed by a qualified lawyer before use.
+            Consumer protection laws vary by country and by U.S. state, and a
+            “no refund" clause may not be enforceable in every jurisdiction.
           </p>
         </div>
       </article>

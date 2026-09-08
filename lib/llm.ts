@@ -6,17 +6,32 @@ import type { RepoFacts } from "./scanner"
 // 输出：更自然、更专业、更简洁的版本
 export async function enhanceWithLLM(
   templateMd: string,
-  facts: RepoFacts
+  facts: RepoFacts,
+  opts?: { paid?: boolean }
 ): Promise<string> {
-  const apiKey = process.env.OPENAI_API_KEY
-  const model = process.env.OPENAI_MODEL || "gpt-4o-mini"
+  // Strip invisible characters (BOM / zero-width) — they break HTTP header
+  // encoding and cause "Cannot convert argument to a ByteString" errors.
+  const clean = (v?: string) => (v || "").replace(/[^ -~]/g, "")
+  const apiKey = clean(process.env.OPENAI_API_KEY)
+  const baseURL = clean(process.env.OPENAI_BASE_URL) || undefined
+
+  // Paid users get a stronger model; free / anonymous users use the cheaper one.
+  const fallbackModel = clean(process.env.OPENAI_MODEL) || "qwen3.7-plus"
+  const freeModel = clean(process.env.OPENAI_MODEL_FREE) || "qwen3.7-plus"
+  const paidModel = clean(process.env.OPENAI_MODEL_PAID) || "Qwen3.8-Max"
+  const model = opts?.paid ? paidModel : freeModel
 
   if (!apiKey) {
     // 没有 API Key 就直接返回模板版
     return templateMd
   }
 
-  const openai = new OpenAI({ apiKey })
+  // baseURL lets you point at any OpenAI-compatible provider:
+  // OpenAI (default), DeepSeek, Qwen/DashScope (Singapore), etc.
+  const openai = new OpenAI({
+    apiKey,
+    baseURL,
+  })
 
   const factsSummary = JSON.stringify(
     {

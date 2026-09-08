@@ -5,9 +5,12 @@ import { supabase, isSupabaseConfigured } from "@/lib/supabase"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
+import type { AuthChangeEvent, Session } from "@supabase/supabase-js"
 
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null)
+  const [plan, setPlan] = useState<string>("free")
+  const [activating, setActivating] = useState(false)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
 
@@ -146,23 +149,68 @@ SUPABASE_SERVICE_ROLE_KEY=...`}
   }
 
   useEffect(() => {
+    const fetchPlan = async (userId: string) => {
+      const { data: profile } = await supabase!
+        .from("profiles")
+        .select("plan")
+        .eq("id", userId)
+        .maybeSingle()
+      return (profile?.plan as string) || "free"
+    }
+
     const checkUser = async () => {
+      // 1. 先从 cookie 里读 session（不发起网络请求，最稳定）。
+      //    之前的实现用 getUser() 会在 token 过期/网络抖动时返回 null，
+      //    把已经登录的用户踢回 /login。
       const {
-        data: { user },
-      } = await supabase!.auth.getUser()
-      if (!user) {
+        data: { session },
+      } = await supabase!.auth.getSession()
+      if (!session?.user) {
         router.push("/login")
-      } else {
-        setUser(user)
+        setLoading(false)
+        return
       }
+      setUser(session.user)
+
+      let currentPlan = await fetchPlan(session.user.id)
+      setPlan(currentPlan)
       setLoading(false)
+
+      // 2. 后台静默校验 token；只有完全无法刷新时才强制退出。
+      const { data: { user: validated } } = await supabase!.auth.getUser()
+      if (validated) setUser(validated)
+
+      // After checkout the Creem webhook can take a few seconds to arrive.
+      // Poll briefly so the user sees Pro without reloading the page.
+      const justPaid =
+        typeof window !== "undefined" &&
+        window.location.search.includes("success=true")
+
+      if (justPaid && currentPlan === "free") {
+        setActivating(true)
+        for (let i = 0; i < 10; i++) {
+          await new Promise((resolve) => setTimeout(resolve, 3000))
+          currentPlan = await fetchPlan(session.user.id)
+          if (currentPlan !== "free") {
+            setPlan(currentPlan)
+            break
+          }
+        }
+        setActivating(false)
+      }
     }
     checkUser()
 
     const { data: authListener } = supabase!.auth.onAuthStateChange(
-      (_event, session) => {
+      (_event: AuthChangeEvent, session: Session | null) => {
+        // 仅在显式登出时跳转 /login。
+        // 不要在 INITIAL_SESSION / TOKEN_REFRESHED 出现 null session 时跳转，
+        // 那样会把已经登录的用户踢出去。
         if (!session?.user) {
-          router.push("/login")
+          setUser(null)
+          if (_event === "SIGNED_OUT") {
+            router.push("/login")
+          }
         } else {
           setUser(session.user)
         }
@@ -201,13 +249,17 @@ SUPABASE_SERVICE_ROLE_KEY=...`}
     )
   }
 
+  // The one-time product was previously labeled "Team"; treat it as Pro.
+  const planLabel =
+    plan === "pro" || plan === "team" ? "Pro" : "Free"
+
   const stats = [
     {
       label: "Plan",
-      value: "Free",
-      sub: "3 analyses / day",
-      link: "/pricing",
-      linkText: "Upgrade →",
+      value: planLabel,
+      sub: plan === "free" ? "3 analyses / day" : "Unlimited analyses",
+      link: plan === "free" ? "/pricing" : null,
+      linkText: plan === "free" ? "Upgrade →" : null,
     },
     {
       label: "Analyses today",
@@ -308,7 +360,7 @@ SUPABASE_SERVICE_ROLE_KEY=...`}
                 fontSize: "11px",
                 color: "var(--muted)",
               }}>
-                Free plan
+                {planLabel} plan
               </span>
             </div>
           </div>
@@ -386,6 +438,20 @@ SUPABASE_SERVICE_ROLE_KEY=...`}
         padding: "48px",
         width: "100%",
       }}>
+        {activating && (
+          <div style={{
+            background: "var(--blue-10, #EEF2FF)",
+            border: "1px solid var(--blue-30, #93A5FF)",
+            padding: "16px 20px",
+            marginBottom: "24px",
+            fontSize: "14px",
+            color: "var(--blue-60, #2B3BE0)",
+            fontFamily: "'IBM Plex Mono', monospace",
+            letterSpacing: "0.02em",
+          }}>
+            Payment received — activating your Pro plan…
+          </div>
+        )}
         <div style={{
           display: "grid",
           gridTemplateColumns: "repeat(3, 1fr)",

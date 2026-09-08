@@ -1,6 +1,7 @@
-import { NextResponse } from "next/server"
-import { parseGithubUrl, getRepoInfo, getRepoStats } from "@/lib/github"
-import { scanRepository } from "@/lib/scanner"
+import { NextResponse } from 'next/server'
+import { createClient } from '@supabase/supabase-js'
+import { parseGithubUrl, getRepoInfo, getRepoStats } from '@/lib/github'
+import { scanRepository } from '@/lib/scanner'
 import {
   generateAgentsMdTemplate,
   generateClaudeMd,
@@ -9,10 +10,18 @@ import {
   calculateQualityScore,
   auditAgentsMd,
   buildEvidence,
-} from "@/lib/generator"
-import { enhanceWithLLM } from "@/lib/llm"
+} from '@/lib/generator'
+import { enhanceWithLLM } from '@/lib/llm'
+import { createAdminClient } from '@/lib/supabase'
+import {
+  consumeTrial,
+  trialCookieValue,
+  TRIAL_COOKIE_OPTIONS,
+  FREE_TRIAL_LIMIT,
+  PRO_TRIAL_LIMIT,
+} from '@/lib/trial'
 
-export const runtime = "nodejs"
+export const runtime = 'nodejs'
 export const maxDuration = 60
 
 export async function POST(request: Request) {
@@ -20,16 +29,58 @@ export async function POST(request: Request) {
     const body = await request.json().catch(() => ({}))
     const repoUrl: string | undefined = body?.repoUrl
     const userToken: string | null | undefined = body?.userToken
+    const plan: string | undefined = body?.plan
 
     if (!repoUrl) {
       return NextResponse.json(
-        { error: "Repository URL is required" },
+        { error: 'Repository URL is required' },
         { status: 400 }
       )
     }
 
-    // 1. 解析 GitHub URL
+    // ---- 订阅 / 试用 门控 ----
+    // 1) 若携带登录 token，校验是否已是付费用户（Pro / Team）
+    let isPaid = false
+    const sbUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const sbAnon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    if (userToken && sbUrl && sbAnon) {
+      try {
+        const sb = createClient(sbUrl, sbAnon)
+        const { data: authData } = await sb.auth.getUser(userToken)
+        if (authData.user) {
+          const admin = createAdminClient()
+          if (admin) {
+            const { data: profile } = await admin
+              .from('profiles')
+              .select('plan')
+              .eq('id', authData.user.id)
+              .maybeSingle()
+            isPaid = profile?.plan === 'pro' || profile?.plan === 'team'
+          }
+        }
+      } catch {
+        // 校验失败则按匿名试用处理
+      }
+    }
+
+    // 1. 解析 GitHub URL（先校验格式，避免无效输入消耗试用额度）
     const { owner, repo } = parseGithubUrl(repoUrl)
+
+    // 2) 匿名 / 未付费用户的 cookie 试用计数（每月 5 次免费 + 2 次 Pro 试用）
+    //    扣减额度并决定使用的模型；额度用尽则直接拦截。
+    const consumeDecision = consumeTrial(request, isPaid)
+    if (!consumeDecision.ok) {
+      return NextResponse.json(
+        {
+          error:
+            'Your free analyses this month are used up. Subscribe to Pro to keep using the premium model.',
+          code: 'TRIAL_EXHAUSTED',
+        },
+        { status: 402 },
+      )
+    }
+    const usePaidModel = consumeDecision.usePaidModel
+    const nextTrial = consumeDecision.state
 
     // 2. 获取仓库基本信息（优先使用调用方传入的 OAuth token，可访问私有仓库）
     const repoInfo = await getRepoInfo(owner, repo, userToken ?? null)
@@ -50,7 +101,8 @@ export async function POST(request: Request) {
     let agentsMd = baseAgentsMd
     const usedLLM = !!process.env.OPENAI_API_KEY
     if (usedLLM) {
-      agentsMd = await enhanceWithLLM(baseAgentsMd, facts)
+      // 试用期内或已付费用户使用更强的模型；用尽后降级为基础模型
+      agentsMd = await enhanceWithLLM(baseAgentsMd, facts, { paid: usePaidModel })
     }
 
     // 6. 计算质量分 + 审计现有 AGENTS.md + 构建证据列表（带 GitHub 跳转链接）
@@ -58,7 +110,9 @@ export async function POST(request: Request) {
     const audit = auditAgentsMd(facts)
     const evidence = buildEvidence(facts, repoInfo.html_url)
 
-    return NextResponse.json({
+    // 试用计数已在请求入口处扣减（付费用户不消耗试用额度）
+
+    const res = NextResponse.json({
       repo: {
         owner,
         repo,
@@ -92,28 +146,41 @@ export async function POST(request: Request) {
         closedIssues: repoStats.closedIssues,
         pullRequests: repoStats.pullRequests,
       },
-      // 4 种导出格式
       formats: {
         agentsMd,
         claudeMd,
         cursorRules,
         copilotInstructions,
       },
-      // 向后兼容（保留顶层字段，老调用方不需要改）
       agentsMd,
-      // 质量 + 审计 + 证据
       quality,
       audit,
       evidence,
-      // 现有 AGENTS.md 原文，用于「现有 vs 生成」并排对比
       existingAgentsMd: facts.agentsMdContent,
       usedLLM,
       hasExistingAgentsMd: facts.hasAgentsMd,
+      // 试用 / 订阅状态
+      isPaid,
+      freeTrialLimit: FREE_TRIAL_LIMIT,
+      freeTrialRemaining: nextTrial.freeRemaining,
+      proTrialLimit: PRO_TRIAL_LIMIT,
+      proTrialRemaining: nextTrial.proRemaining,
+      trialExhausted: !isPaid && nextTrial.proExhausted,
     })
+
+    if (!isPaid) {
+      res.cookies.set(
+        'rc_trial',
+        trialCookieValue(nextTrial.freeUsed, nextTrial.proUsed, nextTrial.month),
+        TRIAL_COOKIE_OPTIONS,
+      )
+    }
+
+    return res
   } catch (err: any) {
-    console.error("Analysis error:", err)
+    console.error('Analysis error:', err)
     return NextResponse.json(
-      { error: err.message || "Failed to analyze repository" },
+      { error: err.message || 'Failed to analyze repository' },
       { status: 500 }
     )
   }

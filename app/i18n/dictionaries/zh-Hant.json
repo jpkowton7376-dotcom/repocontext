@@ -1,0 +1,362 @@
+{
+  "nav": {
+    "signIn": "登入",
+    "getStarted": "開始使用",
+    "pricing": "價格",
+    "features": "功能",
+    "docs": "文件",
+    "api": "API",
+    "aiTools": "AI 工具",
+    "home": "首頁",
+    "howItWorks": "運作方式",
+    "dashboard": "儀表板",
+    "signOut": "登出"
+  },
+  "aiTools": {
+    "eyebrow": "Directory",
+    "title": "AI 工具導航",
+    "subtitle": "精選 {count} 個 AI 工具，覆蓋 20 大分類。點擊任一卡片即可直達官方網站。",
+    "search": "依工具名稱、說明或網域搜尋…",
+    "categories": "全部分類",
+    "official": "官方網站",
+    "matched": "個工具",
+    "empty": "沒有符合搜尋條件的工具。",
+    "curatedBy": "由 RepoContext 整理"
+  },
+  "footer": {
+    "tagline": "面向 AI 開發團隊的企業級程式庫分析。將你的程式碼庫轉化為 AI 就緒的上下文。",
+    "productTitle": "產品",
+    "resourcesTitle": "資源",
+    "companyTitle": "公司",
+    "copyright": "© 2026 RepoContext. 保留所有權利。",
+    "github": "GitHub",
+    "twitter": "Twitter",
+    "linkedin": "LinkedIn",
+    "blog": "部落格",
+    "changelog": "更新日誌",
+    "spec": "AGENTS.md 規範",
+    "terms": "服務條款",
+    "privacy": "隱私政策",
+    "refund": "退款政策",
+    "contact": "聯絡我們"
+  },
+  "home": {
+    "title": "將你的程式碼庫",
+    "subtitle": "轉化為 AI 就緒的上下文",
+    "heroEyebrow": "企業級 AI 開發",
+    "description": "RepoContext 分析你的 GitHub 儲存庫，並為 AI 程式編輯代理生成準確、結構化的文件。減少幻覺、提升生產力、更快交付。",
+    "inputPlaceholder": "github.com/owner/repository",
+    "analyze": "分析 →",
+    "analyzing": "分析中...",
+    "loadingHint": "分析通常需要 15-40 秒。請保持此頁面開啟。",
+    "proTrialRemaining": "Pro 試用：本月尚餘 {remaining}/{limit} 次進階額度",
+    "freeRemaining": "免費：本月尚餘 {remaining}/{limit} 次 — 升級 Pro 解鎖進階模型。",
+    "trialExhausted": "你本月的免費分析已用完 — 訂閱 Pro 即可繼續使用進階模型。",
+    "subscribe": "立即訂閱 →",
+    "examplesTry": "試試看",
+    "examples": [
+      "https://github.com/psf/requests",
+      "https://github.com/vercel/next.js",
+      "https://github.com/gin-gonic/gin"
+    ],
+    "linkHint": "如何取得這個連結？ →",
+    "trustedBy": "深受領先企業工程團隊信賴",
+    "statRepos": "已分析儲存庫",
+    "statAccuracy": "指令準確率",
+    "statOnboarding": "更快的 AI 上線速度",
+    "statStacks": "支援技術堆疊",
+    "featuresEyebrow": "功能",
+    "featuresTitle": "讓 AI 與你的程式碼庫協作所需的一切。",
+    "featuresSubtitle": "從偵測到文件，RepoContext 提供企業級的儲存庫分析，並附帶可驗證的證據。",
+    "features": [
+      {
+        "title": "智慧儲存庫掃描",
+        "desc": "深入分析套件管理器、建置工具、CI/CD 流程、測試框架與目錄結構。"
+      },
+      {
+        "title": "多格式匯出",
+        "desc": "單次分析即可生成 AGENTS.md、CLAUDE.md、Cursor Rules 與 Copilot Instructions。"
+      },
+      {
+        "title": "基於證據的輸出",
+        "desc": "每項結論都有可驗證的證據支撐。清楚看到生成每個見解所使用的檔案。"
+      },
+      {
+        "title": "品質評分",
+        "desc": "取得數字化的品質評分，讓你了解生成上下文的可信度。"
+      },
+      {
+        "title": "AGENTS.md 稽核",
+        "desc": "已經有 AGENTS.md？我們會稽核其準確性、完整性與過時資訊。"
+      },
+      {
+        "title": "私人儲存庫支援",
+        "desc": "安全連結你的私人儲存庫。你的程式碼始終由你掌控。"
+      }
+    ],
+    "roadmapEyebrow": "路線圖",
+    "roadmapTitle": "更強大的功能，即將推出。",
+    "roadmapSubtitle": "我們正在打造下一代儲存庫智慧。以下是即將推出的功能。",
+    "roadmap": [
+      {
+        "title": "Monorepo 支援",
+        "desc": "TurboRepo、Nx、Lerna — 深入分析複雜的多套件儲存庫。",
+        "eta": "2026 Q4"
+      },
+      {
+        "title": "自訂 AI 代理",
+        "desc": "建置並訓練針對你特定程式碼模式調整的 AI 代理。",
+        "eta": "2026 Q4"
+      },
+      {
+        "title": "GitLab 與 Bitbucket",
+        "desc": "連結 GitLab、Bitbucket 與自託管平台的儲存庫。",
+        "eta": "2027 Q1"
+      },
+      {
+        "title": "團隊協作",
+        "desc": "共享工作區、留言、審查與團隊審批流程。",
+        "eta": "2027 Q1"
+      }
+    ],
+    "waitlistTitle": "想搶先體驗新功能？",
+    "waitlistSubtitle": "加入等候名單，成為第一個試用新功能的人。",
+    "waitlistCta": "加入等候名單 →",
+    "howEyebrow": "使用方式",
+    "howTitle": "三步驟。零設定。",
+    "howLink": "查看完整指南 →",
+    "steps": [
+      {
+        "title": "貼上儲存庫網址",
+        "desc": "複製任何公開 GitHub 儲存庫連結，貼到上方的分析輸入框。"
+      },
+      {
+        "title": "讓 AI 掃描程式碼",
+        "desc": "RepoContext 會讀取套件管理器、建置工具、測試與目錄結構。"
+      },
+      {
+        "title": "匯出 AI 就緒上下文",
+        "desc": "一鍵下載 AGENTS.md、CLAUDE.md、Cursor Rules 或 Copilot Instructions。"
+      }
+    ],
+    "ctaTitle": "準備好讓 AI 為你的程式碼庫效力了嗎？",
+    "ctaBody": "幾秒內開始分析你的儲存庫。無需信用卡。",
+    "ctaPrimary": "免費試用",
+    "ctaSecondary": "了解更多",
+    "announcement": "新功能：多格式匯出 — AGENTS.md · CLAUDE.md · Cursor Rules · Copilot Instructions",
+    "announcementCta": "查看更新 →",
+    "detectedFramework": "偵測到的框架",
+    "detectedFrameworkValue": "Next.js 14",
+    "confidence": "{pct}% 信心度",
+    "qualityScore": "品質評分",
+    "excellentContext": "↑ 卓越的內容品質"
+  },
+  "pricing": {
+    "eyebrow": "價格",
+    "title": "簡單透明的定價。",
+    "subtitle": "免費開始。需要更多效能時再升級。無隱藏費用。隨時可取消。",
+    "mostPopular": "最受歡迎",
+    "free": {
+      "name": "免費",
+      "price": "$0",
+      "period": "永久免費",
+      "cta": "免費開始",
+      "features": [
+        "公開儲存庫",
+        "每日 3 次分析",
+        "qwen3.7-plus AI 模型",
+        "AGENTS.md 生成",
+        "基礎品質評分",
+        "複製與下載"
+      ],
+      "qualityNote": "標準品質 — 適合日常公開儲存庫。"
+    },
+    "pro": {
+      "name": "Pro",
+      "price": "$19",
+      "period": "/月",
+      "tagline": "適合認真的開發者",
+      "cta": "訂閱 Pro",
+      "trialNote": "每月含 {pro} 次 Pro 試用分析與 {free} 次免費分析。無需信用卡。",
+      "features": [
+        "免費版所有功能",
+        "Qwen3.8-Max AI 模型",
+        "無限公開儲存庫",
+        "私人儲存庫",
+        "CLAUDE.md 匯出",
+        "Cursor Rules 匯出",
+        "Copilot Instructions 匯出",
+        "證據面板",
+        "AGENTS.md 稽核",
+        "分析歷史紀錄",
+        "優先支援"
+      ],
+      "qualityNote": "更高品質 — 更深入的分析與更豐富的匯出。"
+    },
+    "annual": {
+      "name": "Pro",
+      "price": "$149",
+      "period": " /年",
+      "tagline": "年度 Pro 方案",
+      "cta": "立即訂閱",
+      "features": [
+        "Pro 月付版所有功能",
+        "Qwen3.8-Max AI 模型",
+        "比月付省 2 個月",
+        "無限公開儲存庫",
+        "私人儲存庫",
+        "CLAUDE.md 匯出",
+        "Cursor Rules 匯出",
+        "Copilot Instructions 匯出",
+        "證據面板",
+        "AGENTS.md 稽核",
+        "分析歷史紀錄",
+        "優先支援"
+      ],
+      "qualityNote": "更高品質 — 更深入的分析與更豐富的匯出。"
+    },
+    "lifetime": {
+      "name": "Pro",
+      "price": "$299",
+      "period": " 一次性",
+      "tagline": "永久擁有",
+      "cta": "一次買斷",
+      "features": [
+        "Pro 所有功能",
+        "Qwen3.8-Max AI 模型",
+        "終身使用權",
+        "無限公開儲存庫",
+        "私人儲存庫",
+        "CLAUDE.md 匯出",
+        "Cursor Rules 匯出",
+        "Copilot Instructions 匯出",
+        "證據面板",
+        "AGENTS.md 稽核",
+        "分析歷史紀錄",
+        "優先支援",
+        "永久免續費"
+      ],
+      "qualityNote": "最高品質 — 深度分析與全部匯出格式。"
+    },
+    "comparisonTitle": "為什麼升級到 Pro？",
+    "freeModel": "免費 / 匿名",
+    "proModel": "Pro",
+    "freeModelDesc": "適用於日常公開儲存庫的強大基礎模型。",
+    "proModelDesc": "更大的上下文、更強的推理能力，為大型程式碼庫生成更準確的 AGENTS.md。",
+    "comparisonFooter": "付費方案提供更深入、更準確的結果與更豐富的匯出格式 — 不強調模型名稱，只看實際產出。",
+    "tryFree": "免費試用 →",
+    "modalTitle": "完成購買前請確認",
+    "modalBody": "RepoContext 是一項數位服務。繼續即表示你確認此購買為最終且不可退款。付款前請查看我們的退款政策與服務條款。",
+    "agreeLabel": "我了解並同意此購買不可退款。",
+    "cancel": "取消",
+    "proceed": "前往付款"
+  },
+  "getRepoLink": {
+    "back": "← 返回首頁",
+    "eyebrow": "入門指南",
+    "title": "如何取得 GitHub 儲存庫連結。",
+    "intro": "RepoContext 適用於任何格式為",
+    "introUrl": "https://github.com/owner/repository",
+    "introSuffix": " 的連結。以下將一步步說明如何複製連結。",
+    "steps": [
+      {
+        "title": "在 GitHub 開啟儲存庫",
+        "desc": "前往 github.com 並開啟你想分析的儲存庫。可以是自己的或任何公開儲存庫 — 例如首頁顯示的連結：https://github.com/psf/requests。",
+        "tip": "公開儲存庫無需設定即可使用。私人儲存庫請先連結 GitHub 帳號。"
+      },
+      {
+        "title": "複製網址列中的 URL",
+        "desc": "進入儲存庫主頁後，查看瀏覽器網址列。完整的網址就是你的儲存庫連結。它永遠遵循 https://github.com/owner/repository 格式 — 例如 https://github.com/vercel/next.js。",
+        "tip": "只要複製完整網址 — 不需要額外參數或 token。"
+      },
+      {
+        "title": "確認位於儲存庫根目錄",
+        "desc": "連結結尾應只有 owner/repository。如果你點進了檔案或資料夾，網址會包含 /blob/、/tree/ 或 /issues/ 等額外段落。複製前請點擊頁面上方的儲存庫名稱回到根目錄。",
+        "tip": "錯誤範例：https://github.com/psf/requests/blob/main/requests/api.py — 請先回到根目錄。"
+      },
+      {
+        "title": "選擇性：指定分支",
+        "desc": "預設情況下 RepoContext 會分析預設分支。如果你想分析特定分支，請在網址後加上 /tree/branch-name — 例如 https://github.com/owner/repo/tree/develop。",
+        "tip": "除非你需要預設分支以外的分支，否則可略過此步驟。"
+      },
+      {
+        "title": "貼到 RepoContext",
+        "desc": "用 Ctrl+C（Windows）或 Cmd+C（Mac）複製連結，回到 RepoContext 首頁，貼到輸入框並點擊分析。幾秒內你就會取得儲存庫的 AI 就緒上下文。",
+        "tip": "就是這麼簡單 — 公開儲存庫無需設定檔或信用卡。"
+      }
+    ],
+    "examplesTitle": "有效範例",
+    "ctaTitle": "準備好試試看了嗎？",
+    "ctaBody": "貼上儲存庫連結，幾秒內取得 AI 就緒上下文。",
+    "ctaButton": "開始分析 →"
+  },
+  "support": {
+    "title": "客服",
+    "subtitle": "留下訊息，我們會盡快回覆您。",
+    "placeholder": "輸入您的訊息…",
+    "send": "送出",
+    "away": "客服不在",
+    "awayMessage": "客服有事離開一會，馬上回來。",
+    "sendAnother": "再送一則訊息"
+  },
+  "docs": {
+    "eyebrow": "文件",
+    "title": "打造 AI 就緒的程式碼脈絡，所需的一切都在這裡。",
+    "subtitle": "了解如何使用 RepoContext，將你的 GitHub 程式庫轉化為精準、結構化且可被 AI 編碼代理使用的文件。",
+    "onThisPage": "頁內目錄",
+    "toc": {
+      "quickstart": "快速開始",
+      "formats": "支援格式",
+      "evidence": "證據面板",
+      "audit": "AGENTS.md 稽核",
+      "api": "API 參考",
+      "faq": "常見問題"
+    },
+    "quickstart": {
+      "kicker": "60 秒即可上線。",
+      "title": "快速開始",
+      "p1": "將任何公開的 GitHub 程式庫網址貼到首頁，並點擊 <strong>分析</strong>。RepoContext 會在數秒內掃描你的程式庫，並產出可作為 AI 編碼代理可靠脈絡的結構化文件。",
+      "p2": "輸出內容包含框架偵測摘要、相依關係圖、構建／測試設定，以及品質評分，讓你清楚知道可以信任多少。"
+    },
+    "formats": {
+      "kicker": "匯出一次，到處可用。",
+      "title": "支援格式",
+      "intro": "所有方案皆包含標準的 <code>AGENTS.md</code> 匯出；Pro 與 Team 解鎖其餘格式：",
+      "li1": "<strong>AGENTS.md</strong> — 跨工具通用的代理指令標準。",
+      "li2": "<strong>CLAUDE.md</strong> — 為 Claude 優化的提示脈絡。",
+      "li3": "<strong>Cursor Rules</strong> — 給 Cursor IDE 用的 <code>.cursorrules</code>。",
+      "li4": "<strong>Copilot Instructions</strong> — 儲存庫級別的 GitHub Copilot 指引。"
+    },
+    "evidence": {
+      "kicker": "每一條陳述都可追溯。",
+      "title": "證據面板",
+      "body": "對於每一段生成的文件，RepoContext 都會標示其引用的檔案與設定來源。點擊任一陳述即可檢視背後的證據，無需再猜測建議的出處。"
+    },
+    "audit": {
+      "kicker": "已經有檔案了？我們幫你打分數。",
+      "title": "AGENTS.md 稽核",
+      "body": "上傳既有的 <code>AGENTS.md</code>，我們會就其準確性、完整性與時效性進行稽核，並提供品質評分與一組可立即套用的修正清單。"
+    },
+    "api": {
+      "kicker": "為團隊與自動化而生。",
+      "title": "API 參考",
+      "body": "同一個引擎也提供 JSON API。提交一個程式庫網址，即可接收結構化結果，直接接入你的 CI 流程。"
+    },
+    "faq": {
+      "kicker": "常見問題",
+      "title": "常見問題",
+      "q1": "我的程式碼會被上傳到你們的伺服器嗎？",
+      "a1": "RepoContext 僅透過 GitHub API 讀取所需資訊。完整的原始碼樹從不寫入我們的磁碟，你可以隨時從控制台刪除快取的中繼資料。",
+      "q2": "可以分析私人儲存庫嗎？",
+      "a2": "可以——Pro 與 Team 方案透過 OAuth 支援私人儲存庫。程式碼完全留在你的掌控之中；預設情況下我們只讀取中繼資料，不讀取檔案內容。",
+      "q3": "輸出的準確度如何？",
+      "a3": "每次分析都附帶品質評分；信心度較低的檔案會在證據面板中標示，讓你準確知道該從何處再次確認。"
+    },
+    "copy": "複製",
+    "copied": "已複製 ✓",
+    "footerCopyright": "© 2026 RepoContext. 保留所有權利。",
+    "footerHome": "首頁",
+    "footerPricing": "價格",
+    "footerSignIn": "登入"
+  }
+}

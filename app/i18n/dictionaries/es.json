@@ -1,0 +1,362 @@
+{
+  "nav": {
+    "signIn": "Iniciar sesión",
+    "getStarted": "Empezar",
+    "pricing": "Precios",
+    "features": "Funciones",
+    "docs": "Documentación",
+    "api": "API",
+    "aiTools": "Herramientas IA",
+    "home": "Inicio",
+    "howItWorks": "Cómo funciona",
+    "dashboard": "Panel",
+    "signOut": "Cerrar sesión"
+  },
+  "aiTools": {
+    "eyebrow": "Directorio",
+    "title": "Directorio de herramientas IA",
+    "subtitle": "Una selección de {count} herramientas de IA en 20 categorías. Haz clic en cualquier tarjeta para abrir su sitio oficial.",
+    "search": "Buscar por nombre, descripción o dominio…",
+    "categories": "Categorías",
+    "official": "Sitio oficial",
+    "matched": "herramientas",
+    "empty": "Ninguna herramienta coincide con tu búsqueda.",
+    "curatedBy": "Seleccionado por RepoContext"
+  },
+  "footer": {
+    "tagline": "Análisis empresarial de repositorios para equipos de desarrollo de IA. Convierte tu base de código en contexto listo para IA.",
+    "productTitle": "PRODUCTO",
+    "resourcesTitle": "RECURSOS",
+    "companyTitle": "EMPRESA",
+    "copyright": "© 2026 RepoContext. Todos los derechos reservados.",
+    "github": "GitHub",
+    "twitter": "Twitter",
+    "linkedin": "LinkedIn",
+    "blog": "Blog",
+    "changelog": "Registro de cambios",
+    "spec": "Especificación AGENTS.md",
+    "terms": "Términos",
+    "privacy": "Privacidad",
+    "refund": "Política de reembolso",
+    "contact": "Contacto"
+  },
+  "home": {
+    "title": "Convierte tu base de código",
+    "subtitle": "en contexto listo para IA",
+    "heroEyebrow": "Desarrollo de IA Empresarial",
+    "description": "RepoContext analiza tus repositorios de GitHub y genera documentación precisa y estructurada para agentes de codificación con IA. Reduce alucinaciones, aumenta la productividad y entrega más rápido.",
+    "inputPlaceholder": "github.com/owner/repository",
+    "analyze": "Analizar →",
+    "analyzing": "Analizando...",
+    "loadingHint": "El análisis suele tardar entre 15 y 40 segundos. Por favor, mantén esta página abierta.",
+    "proTrialRemaining": "Prueba Pro: quedan {remaining}/{limit} usos premium este mes",
+    "freeRemaining": "Gratis: quedan {remaining}/{limit} análisis — suscríbete a Pro para el modelo premium.",
+    "trialExhausted": "Has usado los análisis gratuitos de este mes — suscríbete a Pro para seguir usando el modelo premium.",
+    "subscribe": "Suscribirse →",
+    "examplesTry": "Pruébalo con",
+    "examples": [
+      "https://github.com/psf/requests",
+      "https://github.com/vercel/next.js",
+      "https://github.com/gin-gonic/gin"
+    ],
+    "linkHint": "¿Cómo obtengo este enlace? →",
+    "trustedBy": "Confiado por equipos de ingeniería de empresas líderes",
+    "statRepos": "Repositorios analizados",
+    "statAccuracy": "Precisión de comandos",
+    "statOnboarding": "Integración de IA más rápida",
+    "statStacks": "Stacks tecnológicos soportados",
+    "featuresEyebrow": "Capacidades",
+    "featuresTitle": "Todo lo que necesitas para que la IA trabaje con tu código.",
+    "featuresSubtitle": "Desde la detección hasta la documentación, RepoContext proporciona análisis de nivel empresarial de tus repositorios con evidencia verificable.",
+    "features": [
+      {
+        "title": "Escaneo inteligente de repositorios",
+        "desc": "Análisis profundo de gestores de paquetes, herramientas de compilación, pipelines CI/CD, frameworks de prueba y estructura de directorios."
+      },
+      {
+        "title": "Exportación multi-formato",
+        "desc": "Genera AGENTS.md, CLAUDE.md, Cursor Rules y Copilot Instructions a partir de un solo análisis."
+      },
+      {
+        "title": "Resultados basados en evidencia",
+        "desc": "Cada afirmación está respaldada por evidencia verificable. Ve exactamente qué archivos se usaron para generar cada idea."
+      },
+      {
+        "title": "Puntuación de calidad",
+        "desc": "Obtén una puntuación numérica de calidad para saber qué tan confiable es el contexto generado."
+      },
+      {
+        "title": "Auditoría AGENTS.md",
+        "desc": "¿Ya tienes un AGENTS.md? Lo auditamos en busca de precisión, integridad e información obsoleta."
+      },
+      {
+        "title": "Soporte para repositorios privados",
+        "desc": "Conecta tus repositorios privados de forma segura. Tu código nunca sale de tu control."
+      }
+    ],
+    "roadmapEyebrow": "En la hoja de ruta",
+    "roadmapTitle": "Más potencia, próximamente.",
+    "roadmapSubtitle": "Estamos construyendo la próxima generación de inteligencia de repositorios. Esto es lo que viene.",
+    "roadmap": [
+      {
+        "title": "Soporte para monorepos",
+        "desc": "TurboRepo, Nx, Lerna — análisis profundo de repositorios multi-paquete complejos.",
+        "eta": "Q4 2026"
+      },
+      {
+        "title": "Agentes de IA personalizados",
+        "desc": "Construye y entrena agentes de IA adaptados a los patrones específicos de tu código.",
+        "eta": "Q4 2026"
+      },
+      {
+        "title": "GitLab y Bitbucket",
+        "desc": "Conecta repositorios de GitLab, Bitbucket y plataformas auto-alojadas.",
+        "eta": "Q1 2027"
+      },
+      {
+        "title": "Colaboración en equipo",
+        "desc": "Espacios de trabajo compartidos, comentarios, revisiones y flujos de aprobación para equipos.",
+        "eta": "Q1 2027"
+      }
+    ],
+    "waitlistTitle": "¿Quieres acceso anticipado a nuevas funciones?",
+    "waitlistSubtitle": "Únete a la lista de espera y sé el primero en probar lo que viene.",
+    "waitlistCta": "Unirme a la lista de espera →",
+    "howEyebrow": "Cómo usar",
+    "howTitle": "Tres pasos. Cero configuración.",
+    "howLink": "Ver guía completa →",
+    "steps": [
+      {
+        "title": "Pega la URL de tu repositorio",
+        "desc": "Copia cualquier enlace público de GitHub y pégalo en el campo de análisis de arriba."
+      },
+      {
+        "title": "Deja que la IA escanee tu código",
+        "desc": "RepoContext lee gestores de paquetes, herramientas de compilación, pruebas y estructura de directorios."
+      },
+      {
+        "title": "Exporta contexto listo para IA",
+        "desc": "Descarga AGENTS.md, CLAUDE.md, Cursor Rules o Copilot Instructions con un clic."
+      }
+    ],
+    "ctaTitle": "¿Listo para que la IA trabaje con tu código?",
+    "ctaBody": "Empieza a analizar tus repositorios en segundos. No se requiere tarjeta de crédito.",
+    "ctaPrimary": "Pruébalo gratis",
+    "ctaSecondary": "Saber más",
+    "announcement": "Nuevo: exportación multi-formato — AGENTS.md · CLAUDE.md · Cursor Rules · Copilot Instructions",
+    "announcementCta": "Ver novedades →",
+    "detectedFramework": "FRAMEWORK DETECTADO",
+    "detectedFrameworkValue": "Next.js 14",
+    "confidence": "{pct}% de confianza",
+    "qualityScore": "PUNTUACIÓN DE CALIDAD",
+    "excellentContext": "↑ Calidad de contexto excelente"
+  },
+  "pricing": {
+    "eyebrow": "Precios",
+    "title": "Precios simples y transparentes.",
+    "subtitle": "Empieza gratis. Actualiza cuando necesites más potencia. Sin cargos ocultos. Cancela cuando quieras.",
+    "mostPopular": "Más popular",
+    "free": {
+      "name": "Gratis",
+      "price": "$0",
+      "period": "Gratis para siempre",
+      "cta": "Empezar gratis",
+      "features": [
+        "Repositorios públicos",
+        "3 análisis por día",
+        "Modelo de IA qwen3.7-plus",
+        "Generación de AGENTS.md",
+        "Puntuación de calidad básica",
+        "Copiar y descargar"
+      ],
+      "qualityNote": "Calidad estándar: perfecta para repos públicos cotidianos."
+    },
+    "pro": {
+      "name": "Pro",
+      "price": "$19",
+      "period": "/mes",
+      "tagline": "Para desarrolladores serios",
+      "cta": "Suscribirse a Pro",
+      "trialNote": "Incluye {pro} análisis de prueba Pro y {free} gratuitos al mes. No se requiere tarjeta de crédito.",
+      "features": [
+        "Todo lo de Gratis",
+        "Modelo de IA Qwen3.8-Max",
+        "Repositorios públicos ilimitados",
+        "Repositorios privados",
+        "Exportación CLAUDE.md",
+        "Exportación Cursor Rules",
+        "Exportación Copilot Instructions",
+        "Panel de evidencia",
+        "Auditoría AGENTS.md",
+        "Historial de análisis",
+        "Soporte prioritario"
+      ],
+      "qualityNote": "Mayor calidad: análisis más profundo y exportaciones más completas."
+    },
+    "annual": {
+      "name": "Pro",
+      "price": "$149",
+      "period": " /año",
+      "tagline": "Acceso Pro anual",
+      "cta": "Suscribirse",
+      "features": [
+        "Todo lo de Pro mensual",
+        "Modelo de IA Qwen3.8-Max",
+        "2 meses gratis frente al mensual",
+        "Repositorios públicos ilimitados",
+        "Repositorios privados",
+        "Exportación CLAUDE.md",
+        "Exportación Cursor Rules",
+        "Exportación Copilot Instructions",
+        "Panel de evidencia",
+        "Auditoría AGENTS.md",
+        "Historial de análisis",
+        "Soporte prioritario"
+      ],
+      "qualityNote": "Mayor calidad: análisis más profundo y exportaciones más completas."
+    },
+    "lifetime": {
+      "name": "Pro",
+      "price": "$299",
+      "period": " de un solo pago",
+      "tagline": "Págarlo una vez, usarlo para siempre",
+      "cta": "Comprar una vez",
+      "features": [
+        "Todo lo de Pro",
+        "Modelo de IA Qwen3.8-Max",
+        "Acceso de por vida",
+        "Repositorios públicos ilimitados",
+        "Repositorios privados",
+        "Exportación CLAUDE.md",
+        "Exportación Cursor Rules",
+        "Exportación Copilot Instructions",
+        "Panel de evidencia",
+        "Auditoría AGENTS.md",
+        "Historial de análisis",
+        "Soporte prioritario",
+        "Sin cuotas recurrentes — nunca"
+      ],
+      "qualityNote": "Máxima calidad: análisis profundo y todos los formatos de exportación."
+    },
+    "comparisonTitle": "¿Por qué actualizar a Pro?",
+    "freeModel": "Gratis / Anónimo",
+    "proModel": "Pro",
+    "freeModelDesc": "Modelo base capaz para repositorios públicos cotidianos.",
+    "proModelDesc": "Contexto más amplio, razonamiento más sólido y AGENTS.md más preciso para bases de código serias.",
+    "comparisonFooter": "Los planes de pago ofrecen resultados más profundos y precisos con exportaciones más completas — sin nombres de modelos, solo mejor resultado.",
+    "tryFree": "Pruébalo gratis →",
+    "modalTitle": "Antes de completar tu compra",
+    "modalBody": "RepoContext es un servicio digital. Al continuar, reconoces que esta compra es final y no reembolsable. Revisa nuestra Política de Reembolso y Términos de Servicio antes de pagar.",
+    "agreeLabel": "Entiendo y acepto que esta compra no es reembolsable.",
+    "cancel": "Cancelar",
+    "proceed": "Proceder al pago"
+  },
+  "getRepoLink": {
+    "back": "← Volver al inicio",
+    "eyebrow": "Primeros pasos",
+    "title": "Cómo obtener el enlace de un repositorio de GitHub.",
+    "intro": "RepoContext funciona con cualquier enlace con el formato",
+    "introUrl": "https://github.com/owner/repository",
+    "introSuffix": ". Aquí te explicamos paso a paso cómo copiarlo en cinco pasos.",
+    "steps": [
+      {
+        "title": "Abre el repositorio en GitHub",
+        "desc": "Ve a github.com y abre el repositorio que quieres analizar. Puede ser tuyo o cualquiera público — por ejemplo el enlace que aparece en la página de inicio: https://github.com/psf/requests.",
+        "tip": "Los repositorios públicos funcionan sin configuración. Para privados, conecta tu cuenta de GitHub primero."
+      },
+      {
+        "title": "Copia la URL de la barra de direcciones",
+        "desc": "Una vez en la página principal del repositorio, mira la barra de direcciones de tu navegador. La URL completa es el enlace del repositorio. Siempre sigue el patrón https://github.com/owner/repository — por ejemplo https://github.com/vercel/next.js.",
+        "tip": "Solo copia la dirección completa — no se necesitan parámetros ni tokens adicionales."
+      },
+      {
+        "title": "Asegúrate de estar en la raíz del repositorio",
+        "desc": "El enlace debe terminar solo en owner/repository. Si entraste a un archivo o carpeta, la URL tendrá segmentos extra como /blob/, /tree/ o /issues/. Haz clic en el nombre del repositorio en la parte superior para volver a la raíz antes de copiar.",
+        "tip": "Ejemplo incorrecto: https://github.com/psf/requests/blob/main/requests/api.py — sube a la raíz primero."
+      },
+      {
+        "title": "Opcional: apunta a una rama específica",
+        "desc": "De forma predeterminada, RepoContext analiza la rama por defecto. Si quieres analizar una rama específica, añade /tree/branch-name a la URL — por ejemplo https://github.com/owner/repo/tree/develop.",
+        "tip": "Omitelo a menos que necesites específicamente una rama que no sea la predeterminada."
+      },
+      {
+        "title": "Pégalo en RepoContext",
+        "desc": "Copia el enlace con Ctrl+C (Windows) o Cmd+C (Mac), vuelve a la página de inicio de RepoContext, pégalo en el campo de entrada y haz clic en Analizar. En pocos segundos obtendrás contexto listo para IA de tu repositorio.",
+        "tip": "Eso es todo — no se requiere archivo de configuración ni tarjeta de crédito para repositorios públicos."
+      }
+    ],
+    "examplesTitle": "Ejemplos válidos",
+    "ctaTitle": "¿Listo para probarlo?",
+    "ctaBody": "Pega el enlace de un repositorio y obtén contexto listo para IA en segundos.",
+    "ctaButton": "Empezar a analizar →"
+  },
+  "support": {
+    "title": "Atención al cliente",
+    "subtitle": "Déjanos un mensaje y te responderemos.",
+    "placeholder": "Escribe tu mensaje…",
+    "send": "Enviar",
+    "away": "No estamos",
+    "awayMessage": "Nuestro equipo de soporte no está disponible en este momento, pero volverá en breve.",
+    "sendAnother": "Enviar otro mensaje"
+  },
+  "docs": {
+    "eyebrow": "Documentación",
+    "title": "Todo lo que necesitas para entregar contexto listo para IA.",
+    "subtitle": "Aprende a usar RepoContext para convertir tus repositorios de GitHub en documentación precisa y estructurada para agentes de código con IA.",
+    "onThisPage": "En esta página",
+    "toc": {
+      "quickstart": "Inicio rápido",
+      "formats": "Formatos compatibles",
+      "evidence": "Panel de evidencia",
+      "audit": "Auditoría de AGENTS.md",
+      "api": "Referencia de la API",
+      "faq": "Preguntas frecuentes"
+    },
+    "quickstart": {
+      "kicker": "Ponte en marcha en 60 segundos.",
+      "title": "Inicio rápido",
+      "p1": "Pega la URL de cualquier repositorio público de GitHub en la página principal y haz clic en <strong>Analizar</strong>. En segundos, RepoContext analiza tu repositorio y genera documentación estructurada que los agentes de código con IA pueden usar como contexto fiable.",
+      "p2": "El resultado incluye un resumen de detección de frameworks, un grafo de dependencias, la configuración de compilación y pruebas, y una puntuación de calidad para que sepas cuánto puedes confiar en él."
+    },
+    "formats": {
+      "kicker": "Exporta una vez, úsalo en todas partes.",
+      "title": "Formatos compatibles",
+      "intro": "Todos los planes incluyen la exportación canónica <code>AGENTS.md</code>. Pro y Team desbloquean el resto:",
+      "li1": "<strong>AGENTS.md</strong> — el estándar multiplataforma para instrucciones de agentes.",
+      "li2": "<strong>CLAUDE.md</strong> — contexto de prompt optimizado para Claude.",
+      "li3": "<strong>Cursor Rules</strong> — <code>.cursorrules</code> para Cursor IDE.",
+      "li4": "<strong>Copilot Instructions</strong> — guía de GitHub Copilot a nivel de repositorio."
+    },
+    "evidence": {
+      "kicker": "Cada afirmación es trazable.",
+      "title": "Panel de evidencia",
+      "body": "Para cada pieza de documentación generada, RepoContext muestra de qué archivos y artefactos de configuración se derivó. Haz clic en cualquier afirmación para inspeccionar la evidencia subyacente: se acabó el adivinar de dónde viene una recomendación."
+    },
+    "audit": {
+      "kicker": "¿Ya tienes un archivo? Lo calificamos.",
+      "title": "Auditoría de AGENTS.md",
+      "body": "Sube un <code>AGENTS.md</code> existente y lo auditaremos en cuanto a precisión, completitud y vigencia. Verás una puntuación de calidad y una lista de correcciones concretas que puedes aplicar."
+    },
+    "api": {
+      "kicker": "Para equipos y automatización.",
+      "title": "Referencia de la API",
+      "body": "El mismo motor impulsa una API JSON. Envía la URL de un repositorio y recibe resultados estructurados que puedes integrar en tu pipeline de CI."
+    },
+    "faq": {
+      "kicker": "Preguntas frecuentes.",
+      "title": "Preguntas frecuentes",
+      "q1": "¿Se sube mi código a vuestros servidores?",
+      "a1": "RepoContext solo lee lo que necesita de la API de GitHub. El árbol de código completo nunca se escribe en disco en nuestro lado, y puedes eliminar los metadatos en caché en cualquier momento desde el panel.",
+      "q2": "¿Puedo analizar repositorios privados?",
+      "a2": "Sí: los planes Pro y Team admiten repos privados a través de OAuth. Tu código nunca sale de tu control; por defecto solo leemos metadatos, no el contenido de los archivos.",
+      "q3": "¿Qué tan preciso es el resultado?",
+      "a3": "Cada análisis se entrega con una puntuación de calidad. Los archivos con baja confianza se marcan en el panel de evidencia para que sepas exactamente dónde verificar."
+    },
+    "copy": "Copiar",
+    "copied": "Copiado ✓",
+    "footerCopyright": "© 2026 RepoContext. Todos los derechos reservados.",
+    "footerHome": "Inicio",
+    "footerPricing": "Precios",
+    "footerSignIn": "Iniciar sesión"
+  }
+}

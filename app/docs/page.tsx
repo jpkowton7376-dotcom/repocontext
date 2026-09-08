@@ -1,10 +1,17 @@
 "use client"
 
 import Link from "next/link"
-import Image from "next/image"
 import { useState } from "react"
+import { useTranslation } from "@/components/LanguageProvider"
+import { SiteNav } from "@/components/SiteNav"
+
+function RichText({ k }: { k: string }) {
+  const { t } = useTranslation()
+  return <span dangerouslySetInnerHTML={{ __html: t(k) }} />
+}
 
 export default function DocsPage() {
+  const { t } = useTranslation()
   const [copied, setCopied] = useState<string | null>(null)
 
   const copy = (text: string, key: string) => {
@@ -16,36 +23,19 @@ export default function DocsPage() {
     }
   }
 
+  const toc: Array<[string, string]> = [
+    ["#quickstart", t("docs.toc.quickstart")],
+    ["#formats", t("docs.toc.formats")],
+    ["#evidence", t("docs.toc.evidence")],
+    ["#audit", t("docs.toc.audit")],
+    ["#api", t("docs.toc.api")],
+    ["#faq", t("docs.toc.faq")],
+  ]
+
   return (
     <main style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "white" }}>
       {/* Nav */}
-      <nav style={{
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "0 48px", height: "64px",
-        borderBottom: "1px solid var(--rule)",
-        background: "white", position: "sticky", top: 0, zIndex: 100,
-      }}>
-        <Link href="/" style={{ display: "flex", alignItems: "center", gap: "12px", textDecoration: "none", color: "inherit" }}>
-          <div style={{ width: "36px", height: "36px", position: "relative" }}>
-            <Image src="/logo-dark.png" alt="RepoContext" fill sizes="36px"
-              style={{ objectFit: "contain", backgroundColor: "transparent" }} priority quality={95} />
-          </div>
-          <span style={{ fontSize: "18px", fontWeight: 600, letterSpacing: "-0.01em" }}>RepoContext</span>
-        </Link>
-        <div style={{ display: "flex", alignItems: "center", gap: "32px", fontSize: "14px" }}>
-          <Link href="/" style={{ color: "var(--muted)", textDecoration: "none" }}>Features</Link>
-          <Link href="/pricing" style={{ color: "var(--muted)", textDecoration: "none" }}>Pricing</Link>
-          <span style={{ color: "var(--ink)", fontWeight: 500, textDecoration: "none" }}>Documentation</span>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-          <Link href="/login" style={{ fontSize: "14px", color: "var(--ink)", textDecoration: "none", fontWeight: 500 }}>Sign in</Link>
-          <Link href="/pricing" style={{
-            fontSize: "14px", padding: "10px 20px",
-            background: "var(--blue-60)", color: "white",
-            textDecoration: "none", fontWeight: 500, letterSpacing: "0.02em",
-          }}>Get started</Link>
-        </div>
-      </nav>
+      <SiteNav variant="light" />
 
       {/* Header */}
       <header style={{
@@ -58,14 +48,14 @@ export default function DocsPage() {
           <p style={{
             fontSize: "12px", fontWeight: 600, letterSpacing: "0.12em",
             textTransform: "uppercase", color: "var(--muted)", marginBottom: "16px",
-          }}>Documentation</p>
+          }}>{t("docs.eyebrow")}</p>
           <h1 style={{
             fontFamily: "'IBM Plex Serif', Georgia, serif",
             fontSize: "52px", fontWeight: 300, letterSpacing: "-0.02em",
             margin: "0 0 20px 0",
-          }}>Everything you need to ship AI-ready context.</h1>
+          }}>{t("docs.title")}</h1>
           <p style={{ fontSize: "18px", color: "var(--ink-2)", lineHeight: 1.6, margin: 0 }}>
-            Learn how to use RepoContext to turn your GitHub repositories into accurate, structured documentation for AI coding agents.
+            {t("docs.subtitle")}
           </p>
         </div>
       </header>
@@ -78,16 +68,9 @@ export default function DocsPage() {
             <p style={{
               fontSize: "11px", fontWeight: 600, letterSpacing: "0.12em",
               textTransform: "uppercase", color: "var(--muted)", marginBottom: "16px",
-            }}>On this page</p>
+            }}>{t("docs.onThisPage")}</p>
             <nav style={{ display: "flex", flexDirection: "column", gap: "10px", fontSize: "14px" }}>
-              {[
-                ["#quickstart", "Quick start"],
-                ["#formats", "Supported formats"],
-                ["#evidence", "Evidence panel"],
-                ["#audit", "AGENTS.md audit"],
-                ["#api", "API reference"],
-                ["#faq", "FAQ"],
-              ].map(([href, label]) => (
+              {toc.map(([href, label]) => (
                 <a key={href} href={href} style={{ color: "var(--ink-2)", textDecoration: "none", borderLeft: "2px solid var(--rule)", paddingLeft: "12px" }}>
                   {label}
                 </a>
@@ -97,54 +80,39 @@ export default function DocsPage() {
 
           {/* Articles */}
           <article style={{ color: "var(--ink-2)", lineHeight: 1.7, fontSize: "16px" }}>
-            <DocSection id="quickstart" title="Quick start" kicker="Get up and running in 60 seconds.">
-              <p>
-                Paste any public GitHub repository URL into the homepage and click <strong>Analyze</strong>.
-                Within seconds, RepoContext scans your repository and produces structured documentation
-                that AI coding agents can use as reliable context.
-              </p>
+            <DocSection id="quickstart" title={t("docs.quickstart.title")} kicker={t("docs.quickstart.kicker")}>
+              <p dangerouslySetInnerHTML={{ __html: t("docs.quickstart.p1") }} />
               <CodeBlock
                 language="text"
                 code="github.com/owner/repository"
                 onCopy={() => copy("github.com/owner/repository", "qs")}
                 copied={copied === "qs"}
+                copyLabel={t("docs.copy")}
+                copiedLabel={t("docs.copied")}
               />
-              <p>
-                The output includes a framework detection summary, dependency graph, build/test setup,
-                and a quality score so you know how much you can trust the result.
-              </p>
+              <p dangerouslySetInnerHTML={{ __html: t("docs.quickstart.p2") }} />
             </DocSection>
 
-            <DocSection id="formats" title="Supported formats" kicker="Export once, use everywhere.">
-              <p>All plans include the canonical <code>AGENTS.md</code> export. Pro and Team unlock the rest:</p>
+            <DocSection id="formats" title={t("docs.formats.title")} kicker={t("docs.formats.kicker")}>
+              <p dangerouslySetInnerHTML={{ __html: t("docs.formats.intro") }} />
               <ul style={{ paddingLeft: "20px", margin: "16px 0" }}>
-                <li><strong>AGENTS.md</strong> — the cross-tool standard for agent instructions.</li>
-                <li><strong>CLAUDE.md</strong> — Claude-optimized prompt context.</li>
-                <li><strong>Cursor Rules</strong> — <code>.cursorrules</code> for Cursor IDE.</li>
-                <li><strong>Copilot Instructions</strong> — repository-level GitHub Copilot guidance.</li>
+                <li><RichText k="docs.formats.li1" /></li>
+                <li><RichText k="docs.formats.li2" /></li>
+                <li><RichText k="docs.formats.li3" /></li>
+                <li><RichText k="docs.formats.li4" /></li>
               </ul>
             </DocSection>
 
-            <DocSection id="evidence" title="Evidence panel" kicker="Every claim is traceable.">
-              <p>
-                For each piece of generated documentation, RepoContext shows which files and config artifacts
-                it was derived from. Click any statement to inspect the underlying evidence — no more
-                guessing where a recommendation came from.
-              </p>
+            <DocSection id="evidence" title={t("docs.evidence.title")} kicker={t("docs.evidence.kicker")}>
+              <p dangerouslySetInnerHTML={{ __html: t("docs.evidence.body") }} />
             </DocSection>
 
-            <DocSection id="audit" title="AGENTS.md audit" kicker="Already have a file? We'll grade it.">
-              <p>
-                Upload an existing <code>AGENTS.md</code> and we'll audit it for accuracy, completeness,
-                and staleness. You'll see a quality score plus a checklist of concrete fixes you can apply.
-              </p>
+            <DocSection id="audit" title={t("docs.audit.title")} kicker={t("docs.audit.kicker")}>
+              <p dangerouslySetInnerHTML={{ __html: t("docs.audit.body") }} />
             </DocSection>
 
-            <DocSection id="api" title="API reference" kicker="For teams & automation.">
-              <p>
-                The same engine powers a JSON API. Send a repository URL and receive structured results
-                you can pipe into your CI pipeline.
-              </p>
+            <DocSection id="api" title={t("docs.api.title")} kicker={t("docs.api.kicker")}>
+              <p dangerouslySetInnerHTML={{ __html: t("docs.api.body") }} />
               <CodeBlock
                 language="http"
                 code={`POST /api/analyze
@@ -153,23 +121,15 @@ Content-Type: application/json
 { "repoUrl": "github.com/owner/repository" }`}
                 onCopy={() => copy(`POST /api/analyze\nContent-Type: application/json\n\n{ "repoUrl": "github.com/owner/repository" }`, "api")}
                 copied={copied === "api"}
+                copyLabel={t("docs.copy")}
+                copiedLabel={t("docs.copied")}
               />
             </DocSection>
 
-            <DocSection id="faq" title="FAQ" kicker="Common questions.">
-              <Faq q="Is my code uploaded to your servers?">
-                RepoContext only reads what it needs from the GitHub API. The full source tree is never
-                written to disk on our side, and you can delete the cached metadata at any time from
-                the dashboard.
-              </Faq>
-              <Faq q="Can I analyze private repositories?">
-                Yes — Pro and Team plans support private repos via OAuth. Your code never leaves
-                your control; we only read metadata, not file contents, by default.
-              </Faq>
-              <Faq q="How accurate is the output?">
-                Every analysis ships with a quality score. Files with low confidence are flagged
-                in the evidence panel so you know exactly where to double-check.
-              </Faq>
+            <DocSection id="faq" title={t("docs.faq.title")} kicker={t("docs.faq.kicker")}>
+              <Faq q={t("docs.faq.q1")}>{t("docs.faq.a1")}</Faq>
+              <Faq q={t("docs.faq.q2")}>{t("docs.faq.a2")}</Faq>
+              <Faq q={t("docs.faq.q3")}>{t("docs.faq.a3")}</Faq>
             </DocSection>
           </article>
         </div>
@@ -178,11 +138,11 @@ Content-Type: application/json
       {/* Footer */}
       <footer style={{ background: "#0a0a0a", color: "white", padding: "48px", marginTop: "auto" }}>
         <div style={{ maxWidth: "1280px", margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "14px" }}>
-          <span style={{ color: "#949494" }}>© 2026 RepoContext. All rights reserved.</span>
+          <span style={{ color: "#949494" }}>{t("docs.footerCopyright")}</span>
           <div style={{ display: "flex", gap: "24px" }}>
-            <Link href="/" style={{ color: "#949494", textDecoration: "none" }}>Home</Link>
-            <Link href="/pricing" style={{ color: "#949494", textDecoration: "none" }}>Pricing</Link>
-            <Link href="/login" style={{ color: "#949494", textDecoration: "none" }}>Sign in</Link>
+            <Link href="/" style={{ color: "#949494", textDecoration: "none" }}>{t("nav.home")}</Link>
+            <Link href="/pricing" style={{ color: "#949494", textDecoration: "none" }}>{t("nav.pricing")}</Link>
+            <Link href="/login" style={{ color: "#949494", textDecoration: "none" }}>{t("nav.signIn")}</Link>
           </div>
         </div>
       </footer>
@@ -212,8 +172,15 @@ function DocSection({
 }
 
 function CodeBlock({
-  language, code, onCopy, copied,
-}: { language: string; code: string; onCopy: () => void; copied: boolean }) {
+  language, code, onCopy, copied, copyLabel, copiedLabel,
+}: {
+  language: string
+  code: string
+  onCopy: () => void
+  copied: boolean
+  copyLabel: string
+  copiedLabel: string
+}) {
   return (
     <div style={{
       position: "relative", margin: "20px 0",
@@ -235,7 +202,7 @@ function CodeBlock({
             fontFamily: "inherit",
           }}
         >
-          {copied ? "Copied ✓" : "Copy"}
+          {copied ? copiedLabel : copyLabel}
         </button>
       </div>
       <pre style={{

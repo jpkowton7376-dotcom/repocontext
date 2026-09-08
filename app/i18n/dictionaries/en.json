@@ -1,0 +1,362 @@
+{
+  "home": {
+    "title": "Turn your codebase",
+    "subtitle": "into AI-ready context",
+    "heroEyebrow": "Enterprise AI Development",
+    "description": "RepoContext analyzes your GitHub repositories and generates accurate, structured documentation for AI coding agents. Reduce hallucinations, increase productivity, and ship faster.",
+    "inputPlaceholder": "github.com/owner/repository",
+    "analyze": "Analyze →",
+    "analyzing": "Analyze...",
+    "loadingHint": "Analysis usually takes 15-40 seconds. Please keep this page open.",
+    "proTrialRemaining": "Pro trial: {remaining}/{limit} premium uses left this month",
+    "freeRemaining": "Free: {remaining}/{limit} analyses left — upgrade to Pro for the premium model.",
+    "trialExhausted": "Your free analyses this month are used up — subscribe to Pro to keep using the premium model.",
+    "subscribe": "Subscribe →",
+    "examplesTry": "Try it with",
+    "examples": [
+      "https://github.com/psf/requests",
+      "https://github.com/vercel/next.js",
+      "https://github.com/gin-gonic/gin"
+    ],
+    "linkHint": "How do I get this link? →",
+    "announcement": "New: Multi-format export — AGENTS.md · CLAUDE.md · Cursor Rules · Copilot Instructions",
+    "announcementCta": "See what's new →",
+    "detectedFramework": "DETECTED FRAMEWORK",
+    "detectedFrameworkValue": "Next.js 14",
+    "confidence": "{pct}% confidence",
+    "qualityScore": "QUALITY SCORE",
+    "excellentContext": "↑ Excellent context quality",
+    "trustedBy": "Trusted by engineering teams at leading companies",
+    "statRepos": "Repositories analyzed",
+    "statAccuracy": "Command accuracy",
+    "statOnboarding": "Faster AI onboarding",
+    "statStacks": "Tech stacks supported",
+    "featuresEyebrow": "Capabilities",
+    "featuresTitle": "Everything you need to make AI work with your codebase.",
+    "featuresSubtitle": "From detection to documentation, RepoContext provides enterprise-grade analysis of your repositories with verifiable evidence.",
+    "features": [
+      {
+        "title": "Intelligent Repository Scanning",
+        "desc": "Deep analysis of package managers, build tools, CI/CD pipelines, test frameworks, and directory structure."
+      },
+      {
+        "title": "Multi-Format Export",
+        "desc": "Generate AGENTS.md, CLAUDE.md, Cursor Rules, and Copilot Instructions from a single analysis."
+      },
+      {
+        "title": "Evidence-Based Output",
+        "desc": "Every claim is backed by verifiable evidence. See exactly which files were used to generate each insight."
+      },
+      {
+        "title": "Quality Score",
+        "desc": "Get a numerical quality score so you know how reliable the generated context actually is."
+      },
+      {
+        "title": "AGENTS.md Audit",
+        "desc": "Already have an AGENTS.md? We audit it for accuracy, completeness, and outdated information."
+      },
+      {
+        "title": "Private Repository Support",
+        "desc": "Securely connect your private repos. Your code never leaves your control."
+      }
+    ],
+    "roadmapEyebrow": "On the roadmap",
+    "roadmapTitle": "More power, coming soon.",
+    "roadmapSubtitle": "We're building the next generation of repository intelligence. Here's what's on the way.",
+    "roadmap": [
+      {
+        "title": "Monorepo Support",
+        "desc": "TurboRepo, Nx, Lerna — deep analysis of complex multi-package repositories.",
+        "eta": "Q4 2026"
+      },
+      {
+        "title": "Custom AI Agents",
+        "desc": "Build and train custom AI agents tuned to your specific codebase patterns.",
+        "eta": "Q4 2026"
+      },
+      {
+        "title": "GitLab & Bitbucket",
+        "desc": "Connect repositories from GitLab, Bitbucket, and self-hosted platforms.",
+        "eta": "Q1 2027"
+      },
+      {
+        "title": "Team Collaboration",
+        "desc": "Shared workspaces, comments, reviews, and approval workflows for teams.",
+        "eta": "Q1 2027"
+      }
+    ],
+    "waitlistTitle": "Want early access to new features?",
+    "waitlistSubtitle": "Join the waitlist and be the first to try what's next.",
+    "waitlistCta": "Join the waitlist →",
+    "howEyebrow": "How to use",
+    "howTitle": "Three steps. Zero configuration.",
+    "howLink": "View full guide →",
+    "steps": [
+      {
+        "title": "Paste your repository URL",
+        "desc": "Copy any public GitHub repo link and paste it into the analyzer input above."
+      },
+      {
+        "title": "Let AI scan your codebase",
+        "desc": "RepoContext reads package managers, build tools, tests, and directory structure."
+      },
+      {
+        "title": "Export AI-ready context",
+        "desc": "Download AGENTS.md, CLAUDE.md, Cursor Rules, or Copilot Instructions in one click."
+      }
+    ],
+    "ctaTitle": "Ready to make AI work for your codebase?",
+    "ctaBody": "Start analyzing your repositories in seconds. No credit card required.",
+    "ctaPrimary": "Try it free",
+    "ctaSecondary": "Learn more"
+  },
+  "nav": {
+    "signIn": "Sign in",
+    "getStarted": "Get started",
+    "pricing": "Pricing",
+    "features": "Features",
+    "docs": "Documentation",
+    "api": "API",
+    "aiTools": "AI Tools",
+    "howItWorks": "How it works",
+    "dashboard": "Dashboard",
+    "home": "Home",
+    "signOut": "Sign out"
+  },
+  "aiTools": {
+    "eyebrow": "Directory",
+    "title": "AI Tools Directory",
+    "subtitle": "A curated collection of {count} AI tools across 20 categories. Click any card to open its official site.",
+    "search": "Search by tool name, description or domain…",
+    "categories": "Categories",
+    "official": "Official site",
+    "matched": "tools",
+    "empty": "No tools match your search.",
+    "curatedBy": "Curated by RepoContext"
+  },
+  "support": {
+    "title": "Customer Service",
+    "subtitle": "Leave us a message and we'll get back to you.",
+    "placeholder": "Type your message…",
+    "send": "Send",
+    "away": "We're away",
+    "awayMessage": "Our support team is away for a moment and will be back shortly.",
+    "sendAnother": "Send another message"
+  },
+  "footer": {
+    "tagline": "Enterprise-grade repository analysis for AI development teams. Turn your codebase into AI-ready context.",
+    "productTitle": "PRODUCT",
+    "resourcesTitle": "RESOURCES",
+    "companyTitle": "COMPANY",
+    "copyright": "© 2026 RepoContext. All rights reserved.",
+    "github": "GitHub",
+    "twitter": "Twitter",
+    "linkedin": "LinkedIn",
+    "blog": "Blog",
+    "changelog": "Changelog",
+    "spec": "AGENTS.md Spec",
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "refund": "Refund policy",
+    "contact": "Contact"
+  },
+  "pricing": {
+    "eyebrow": "Pricing",
+    "title": "Simple, transparent pricing.",
+    "subtitle": "Start free. Upgrade when you need more power. No hidden fees. Cancel anytime.",
+    "mostPopular": "Most Popular",
+    "free": {
+      "name": "Free",
+      "price": "$0",
+      "period": "Forever free",
+      "cta": "Get started free",
+      "features": [
+        "Public repositories",
+        "3 analyses per day",
+        "qwen3.7-plus AI model",
+        "AGENTS.md generation",
+        "Basic quality score",
+        "Copy & download"
+      ],
+      "qualityNote": "Standard quality — perfect for everyday public repos."
+    },
+    "pro": {
+      "name": "Pro",
+      "price": "$19",
+      "period": "/month",
+      "tagline": "For serious developers",
+      "cta": "Subscribe to Pro",
+      "trialNote": "Includes {pro} Pro trial analyses and {free} free per month. No credit card needed.",
+      "features": [
+        "Everything in Free",
+        "Qwen3.8-Max AI model",
+        "Unlimited public repos",
+        "Private repositories",
+        "CLAUDE.md export",
+        "Cursor Rules export",
+        "Copilot Instructions export",
+        "Evidence panel",
+        "AGENTS.md Audit",
+        "Analysis history",
+        "Priority support"
+      ],
+      "qualityNote": "Higher quality — deeper analysis and richer exports."
+    },
+    "annual": {
+      "name": "Pro",
+      "price": "$149",
+      "period": " /year",
+      "tagline": "Annual Pro access",
+      "cta": "Subscribe",
+      "features": [
+        "Everything in Pro monthly",
+        "Qwen3.8-Max AI model",
+        "2 months free vs monthly",
+        "Unlimited public repos",
+        "Private repositories",
+        "CLAUDE.md export",
+        "Cursor Rules export",
+        "Copilot Instructions export",
+        "Evidence panel",
+        "AGENTS.md Audit",
+        "Analysis history",
+        "Priority support"
+      ],
+      "qualityNote": "Higher quality — deeper analysis and richer exports."
+    },
+    "lifetime": {
+      "name": "Pro",
+      "price": "$299",
+      "period": " one-time",
+      "tagline": "Own it forever",
+      "cta": "Buy once",
+      "features": [
+        "Everything in Pro",
+        "Qwen3.8-Max AI model",
+        "Lifetime access",
+        "Unlimited public repos",
+        "Private repositories",
+        "CLAUDE.md export",
+        "Cursor Rules export",
+        "Copilot Instructions export",
+        "Evidence panel",
+        "AGENTS.md Audit",
+        "Analysis history",
+        "Priority support",
+        "No recurring fees — ever"
+      ],
+      "qualityNote": "Highest quality — deep analysis, all export formats."
+    },
+    "comparisonTitle": "Why upgrade to Pro?",
+    "freeModel": "Free / Anonymous",
+    "proModel": "Pro",
+    "freeModelDesc": "Capable baseline model for everyday public repositories.",
+    "proModelDesc": "Larger context, stronger reasoning, and more accurate AGENTS.md for serious codebases.",
+    "comparisonFooter": "Paid plans deliver deeper, more accurate results with richer exports — no model names, just better output.",
+    "tryFree": "Try it free →",
+    "modalTitle": "Before you complete your purchase",
+    "modalBody": "RepoContext is a digital service. By proceeding, you acknowledge that this purchase is final and non-refundable. Please review our Refund Policy and Terms of Service before paying.",
+    "agreeLabel": "I understand and agree that this purchase is non-refundable.",
+    "cancel": "Cancel",
+    "proceed": "Proceed to payment"
+  },
+  "getRepoLink": {
+    "back": "← Back to home",
+    "eyebrow": "Getting started",
+    "title": "How to get a GitHub repository link.",
+    "intro": "RepoContext works with any link in the form",
+    "introUrl": "https://github.com/owner/repository",
+    "introSuffix": ". Here is exactly how to copy one in five steps.",
+    "steps": [
+      {
+        "title": "Open the repository on GitHub",
+        "desc": "Go to github.com and open the repository you want to analyze. It can be your own repo or any public one — for example the link shown on the homepage: https://github.com/psf/requests.",
+        "tip": "Public repos work with no setup. For private repos, connect your GitHub account first."
+      },
+      {
+        "title": "Copy the URL from the address bar",
+        "desc": "Once you are on the repository's main page, look at your browser's address bar. The full URL there is your repository link. It always follows the pattern https://github.com/owner/repository — for instance https://github.com/vercel/next.js.",
+        "tip": "Just copy the whole address — no extra parameters or tokens are needed."
+      },
+      {
+        "title": "Make sure you are at the repo root",
+        "desc": "The link should end with owner/repository only. If you clicked into a file or folder, the URL will contain extra segments such as /blob/, /tree/, or /issues/. Click the repository name at the top of the page to get back to the root before copying.",
+        "tip": "Wrong example: https://github.com/psf/requests/blob/main/requests/api.py — go up to the root first."
+      },
+      {
+        "title": "Optional: point to a specific branch",
+        "desc": "By default RepoContext analyzes the default branch. If you want a specific branch analyzed, add /tree/branch-name to the URL — for example https://github.com/owner/repo/tree/develop.",
+        "tip": "Leave this out unless you specifically need a non-default branch."
+      },
+      {
+        "title": "Paste it into RepoContext",
+        "desc": "Copy the link with Ctrl+C (Windows) or Cmd+C (Mac), return to the RepoContext homepage, paste it into the input field, and click Analyze. Within a few seconds you'll get AI-ready context for your repository.",
+        "tip": "That's it — no configuration file or credit card required for public repositories."
+      }
+    ],
+    "examplesTitle": "Valid examples",
+    "ctaTitle": "Ready to try it?",
+    "ctaBody": "Paste a repository link and get AI-ready context in seconds.",
+    "ctaButton": "Start analyzing →"
+  },
+  "docs": {
+    "eyebrow": "Documentation",
+    "title": "Everything you need to ship AI-ready context.",
+    "subtitle": "Learn how to use RepoContext to turn your GitHub repositories into accurate, structured documentation for AI coding agents.",
+    "onThisPage": "On this page",
+    "toc": {
+      "quickstart": "Quick start",
+      "formats": "Supported formats",
+      "evidence": "Evidence panel",
+      "audit": "AGENTS.md audit",
+      "api": "API reference",
+      "faq": "FAQ"
+    },
+    "quickstart": {
+      "kicker": "Get up and running in 60 seconds.",
+      "title": "Quick start",
+      "p1": "Paste any public GitHub repository URL into the homepage and click <strong>Analyze</strong>. Within seconds, RepoContext scans your repository and produces structured documentation that AI coding agents can use as reliable context.",
+      "p2": "The output includes a framework detection summary, dependency graph, build/test setup, and a quality score so you know how much you can trust the result."
+    },
+    "formats": {
+      "kicker": "Export once, use everywhere.",
+      "title": "Supported formats",
+      "intro": "All plans include the canonical <code>AGENTS.md</code> export. Pro and Team unlock the rest:",
+      "li1": "<strong>AGENTS.md</strong> — the cross-tool standard for agent instructions.",
+      "li2": "<strong>CLAUDE.md</strong> — Claude-optimized prompt context.",
+      "li3": "<strong>Cursor Rules</strong> — <code>.cursorrules</code> for Cursor IDE.",
+      "li4": "<strong>Copilot Instructions</strong> — repository-level GitHub Copilot guidance."
+    },
+    "evidence": {
+      "kicker": "Every claim is traceable.",
+      "title": "Evidence panel",
+      "body": "For each piece of generated documentation, RepoContext shows which files and config artifacts it was derived from. Click any statement to inspect the underlying evidence — no more guessing where a recommendation came from."
+    },
+    "audit": {
+      "kicker": "Already have a file? We'll grade it.",
+      "title": "AGENTS.md audit",
+      "body": "Upload an existing <code>AGENTS.md</code> and we'll audit it for accuracy, completeness, and staleness. You'll see a quality score plus a checklist of concrete fixes you can apply."
+    },
+    "api": {
+      "kicker": "For teams & automation.",
+      "title": "API reference",
+      "body": "The same engine powers a JSON API. Send a repository URL and receive structured results you can pipe into your CI pipeline."
+    },
+    "faq": {
+      "kicker": "Common questions.",
+      "title": "FAQ",
+      "q1": "Is my code uploaded to your servers?",
+      "a1": "RepoContext only reads what it needs from the GitHub API. The full source tree is never written to disk on our side, and you can delete the cached metadata at any time from the dashboard.",
+      "q2": "Can I analyze private repositories?",
+      "a2": "Yes — Pro and Team plans support private repos via OAuth. Your code never leaves your control; we only read metadata, not file contents, by default.",
+      "q3": "How accurate is the output?",
+      "a3": "Every analysis ships with a quality score. Files with low confidence are flagged in the evidence panel so you know exactly where to double-check."
+    },
+    "copy": "Copy",
+    "copied": "Copied ✓",
+    "footerCopyright": "© 2026 RepoContext. All rights reserved.",
+    "footerHome": "Home",
+    "footerPricing": "Pricing",
+    "footerSignIn": "Sign in"
+  }
+}

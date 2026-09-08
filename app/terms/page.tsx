@@ -83,9 +83,9 @@ export default function TermsPage() {
 
         <h2 className="text-xl font-bold mt-8 mb-3">5. Free Trial</h2>
         <p>
-          We offer a 14-day free trial for paid plans. You will not be charged
-          during the trial period. If you do not cancel before the trial ends,
-          your chosen subscription will be charged automatically.
+          Paid plans (Pro and Team) include 5 free uses before billing starts. You will
+          not be charged until you have used all 5 free trial uses. The subscription then
+          begins automatically and renews until canceled.
         </p>
 
         <h2 className="text-xl font-bold mt-8 mb-3">6. AI-Generated Content</h2>

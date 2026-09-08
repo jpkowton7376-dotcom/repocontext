@@ -240,3 +240,263 @@ html, body {
   font-weight: 500;
   letter-spacing: 0.02em;
 }
+
+/* Analyze button loading feedback */
+@keyframes rc-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes rc-progress {
+  0% { left: -55%; }
+  100% { left: 100%; }
+}
+@keyframes rc-shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+@keyframes rc-pulse {
+  0%, 100% { opacity: 0.3; box-shadow: 0 0 0 rgba(47, 107, 255, 0); }
+  50% { opacity: 1; box-shadow: 0 0 12px rgba(47, 107, 255, 0.85); }
+}
+.rc-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: rc-spin 0.7s linear infinite;
+}
+/* Capsule glowing progress bar — brand-blue version */
+.rc-track {
+  position: relative;
+  height: 22px;
+  width: 100%;
+  max-width: 560px;
+  background: rgba(8, 14, 26, 0.72);
+  border: 1px solid rgba(92, 154, 255, 0.22);
+  border-radius: 999px;
+  overflow: hidden;
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, 0.45),
+    0 0 24px rgba(47, 107, 255, 0.12);
+  margin-top: 16px;
+  backdrop-filter: blur(4px);
+}
+.rc-bar {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: -55%;
+  width: 55%;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    rgba(47, 107, 255, 0.85) 0%,
+    #5c9aff 40%,
+    #93c4ff 65%,
+    #5c9aff 100%
+  );
+  box-shadow:
+    0 0 14px rgba(47, 107, 255, 0.85),
+    0 0 32px rgba(47, 107, 255, 0.45),
+    inset 0 1px 1px rgba(255, 255, 255, 0.35);
+  animation: rc-progress 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+/* Shimmer sweep */
+.rc-bar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.35) 50%,
+    transparent 100%
+  );
+  transform: translateX(-100%);
+  animation: rc-shimmer 1.8s ease-in-out infinite;
+}
+/* Plane icon at the leading edge */
+.rc-bar::after {
+  content: "";
+  position: absolute;
+  right: 7px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 13px;
+  height: 13px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 20 3s-3 .5-4.5 2.5L12 9 3.8 7.2c-.5-.1-1 .2-1.2.7l-1 2.8c-.2.6.1 1.2.7 1.4l6.6 2.1 2.1 6.6c.2.6.8.9 1.4.7l2.8-1c.5-.2.8-.7.7-1.2Z'/%3E%3C/svg%3E") center/contain no-repeat;
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.95));
+  opacity: 0.95;
+}
+
+/* Loading capsule that replaces the search input + button */
+.capsule-progress {
+  position: relative;
+  height: 58px;
+  width: 100%;
+  background: rgba(8, 14, 26, 0.85);
+  border: 1px solid rgba(92, 154, 255, 0.22);
+  border-radius: 999px;
+  overflow: hidden;
+  box-shadow:
+    inset 0 2px 8px rgba(0, 0, 0, 0.5),
+    0 0 28px rgba(47, 107, 255, 0.18);
+  backdrop-filter: blur(4px);
+}
+.capsule-progress-bar {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: -55%;
+  width: 55%;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    rgba(47, 107, 255, 0.85) 0%,
+    #5c9aff 40%,
+    #93c4ff 65%,
+    #5c9aff 100%
+  );
+  box-shadow:
+    0 0 16px rgba(47, 107, 255, 0.9),
+    0 0 36px rgba(47, 107, 255, 0.5),
+    inset 0 1px 1px rgba(255, 255, 255, 0.35);
+  animation: rc-progress 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+.capsule-progress-bar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.35) 50%,
+    transparent 100%
+  );
+  transform: translateX(-100%);
+  animation: rc-shimmer 1.8s ease-in-out infinite;
+}
+.capsule-progress-bar::after {
+  content: "";
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 20 3s-3 .5-4.5 2.5L12 9 3.8 7.2c-.5-.1-1 .2-1.2.7l-1 2.8c-.2.6.1 1.2.7 1.4l6.6 2.1 2.1 6.6c.2.6.8.9 1.4.7l2.8-1c.5-.2.8-.7.7-1.2Z'/%3E%3C/svg%3E") center/contain no-repeat;
+  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.95));
+  opacity: 0.95;
+}
+
+.rc-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #5c9aff;
+  animation: rc-pulse 1.4s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+/* Two-column step layout with illustration on the right */
+.step-card {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 40px;
+  align-items: center;
+}
+.step-illu {
+  background: #f4f4f4;
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  padding: 12px;
+}
+@media (max-width: 760px) {
+  .step-card {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+/* Charging animation inside the search input frame */
+.charge-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0%;
+  background: linear-gradient(
+    90deg,
+    rgba(47, 107, 255, 0.15) 0%,
+    rgba(47, 107, 255, 0.5) 70%,
+    rgba(92, 154, 255, 0.7) 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+  animation: charge 2.4s ease-in-out infinite;
+}
+
+.charge-percent {
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 14px;
+  font-weight: 600;
+  color: #5c9aff;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.charge-percent::before {
+  content: "0%";
+  animation: charge-percent 2.4s steps(1) infinite;
+}
+
+.analyze-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: rc-spin 0.8s linear infinite;
+}
+
+@keyframes charge {
+  0% {
+    width: 0%;
+    opacity: 0.6;
+  }
+  50% {
+    width: 100%;
+    opacity: 1;
+  }
+  100% {
+    width: 0%;
+    opacity: 0.6;
+  }
+}
+
+@keyframes charge-percent {
+  0% { content: "0%"; }
+  8% { content: "12%"; }
+  16% { content: "25%"; }
+  24% { content: "38%"; }
+  32% { content: "50%"; }
+  40% { content: "62%"; }
+  48% { content: "75%"; }
+  56% { content: "88%"; }
+  64% { content: "100%"; }
+  72% { content: "100%"; }
+  80% { content: "100%"; }
+  88% { content: "100%"; }
+  100% { content: "0%"; }
+}
+
+

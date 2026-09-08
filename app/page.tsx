@@ -5,29 +5,76 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
 import { MaskedIllustration } from "@/components/MaskedIllustration"
+import { GlowLink } from "@/components/GlowLink"
+import { SiteNav } from "@/components/SiteNav"
 import { supabase, isSupabaseConfigured } from "@/lib/supabase"
+import { useTranslation } from "@/components/LanguageProvider"
+import type { AuthChangeEvent, Session } from "@supabase/supabase-js"
 
 export default function HomePage() {
+  const { t, dict } = useTranslation()
   const [url, setUrl] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const [user, setUser] = useState<any>(null)
+  const [plan, setPlan] = useState<string>("free")
   const [analyzeHover, setAnalyzeHover] = useState(false)
   const [waitlistHover, setWaitlistHover] = useState(false)
+  const [userToken, setUserToken] = useState<string | null>(null)
+  const [trial, setTrial] = useState<{
+    freeRemaining: number
+    freeLimit: number
+    proRemaining: number
+    proLimit: number
+  } | null>(null)
   const router = useRouter()
 
   useEffect(() => {
     if (!isSupabaseConfigured()) return
 
+    const loadPlan = async (userId: string) => {
+      try {
+        const { data: profile } = await supabase!
+          .from("profiles")
+          .select("plan")
+          .eq("id", userId)
+          .maybeSingle()
+        setPlan(profile?.plan || "free")
+      } catch {
+        setPlan("free")
+      }
+    }
+
+    async function loadTrial() {
+      try {
+        const t = await fetch(`/api/trial`).then((r) => r.json()).catch(() => null)
+        if (t) setTrial(t)
+      } catch {
+        // 忽略
+      }
+    }
+
     const checkUser = async () => {
-      const { data: { user } } = await supabase!.auth.getUser()
-      setUser(user || null)
+      const { data: { session } } = await supabase!.auth.getSession()
+      setUser(session?.user || null)
+      setUserToken(session?.access_token || null)
+      loadTrial()
+      if (session?.user) await loadPlan(session.user.id)
     }
     checkUser()
 
     const { data: authListener } = supabase!.auth.onAuthStateChange(
-      (_event, session) => {
-        setUser(session?.user || null)
+      (_event: AuthChangeEvent, session: Session | null) => {
+        // Only treat explicit SIGNED_OUT as a sign-out. A null session in
+        // INITIAL_SESSION / TOKEN_REFRESHED may be transient and must not
+        // clear the user state used by the analyzer form.
+        if (session?.user) {
+          setUser(session.user)
+          loadPlan(session.user.id)
+        } else if (_event === "SIGNED_OUT") {
+          setUser(null)
+          setPlan("free")
+        }
       }
     )
 
@@ -36,9 +83,11 @@ export default function HomePage() {
     }
   }, [])
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!url.trim()) return
+  const handleSubmit = async (e?: React.FormEvent, overrideUrl?: string) => {
+    e?.preventDefault()
+    const target = (overrideUrl || url).trim()
+    if (!target) return
+    setUrl(target)
     setLoading(true)
     setError("")
 
@@ -46,7 +95,7 @@ export default function HomePage() {
       const res = await fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ repoUrl: url.trim() }),
+        body: JSON.stringify({ repoUrl: target, plan, userToken }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || "Analysis failed")
@@ -56,7 +105,7 @@ export default function HomePage() {
       } catch {
         // sessionStorage may be full or unavailable; the result page will redirect home
       }
-      router.push(`/result?repo=${encodeURIComponent(url.trim())}`)
+      router.push(`/result?repo=${encodeURIComponent(target)}`)
     } catch (err: any) {
       setError(err.message || "Something went wrong")
     } finally {
@@ -128,48 +177,18 @@ export default function HomePage() {
     )
   }
 
-  function GlowLink({
-    href,
-    children,
-    style = {},
-  }: {
-    href: string
-    children: React.ReactNode
-    style?: React.CSSProperties
-  }) {
-    const [hovered, setHovered] = useState(false)
-    const glowStyle: React.CSSProperties = {
-      ...style,
-      transition: "text-shadow 0.2s ease, color 0.2s ease",
-      color: hovered ? "#3b82f6" : style.color,
-      textShadow: hovered ? "0 0 12px rgba(59, 130, 246, 0.85)" : "none",
-    }
-    if (href.startsWith("#")) {
-      return (
-        <a
-          href={href}
-          onMouseEnter={() => setHovered(true)}
-          onMouseLeave={() => setHovered(false)}
-          style={glowStyle}
-        >
-          {children}
-        </a>
-      )
-    }
-    return (
-      <Link
-        href={href}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        style={glowStyle}
-      >
-        {children}
-      </Link>
-    )
-  }
-
   return (
     <main style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+      <style>{`
+        @keyframes breathe-glow {
+          0%, 100% {
+            text-shadow: 0 0 8px rgba(254, 127, 15, 0.35), 0 0 18px rgba(254, 127, 15, 0.2);
+          }
+          50% {
+            text-shadow: 0 0 18px rgba(254, 127, 15, 0.7), 0 0 40px rgba(254, 127, 15, 0.45), 0 0 60px rgba(254, 127, 15, 0.25);
+          }
+        }
+      `}</style>
       {/* Top announcement bar */}
       <div style={{
         background: "#001085",
@@ -179,113 +198,14 @@ export default function HomePage() {
         textAlign: "center",
         fontWeight: 500,
       }}>
-        New: Multi-format export — AGENTS.md · CLAUDE.md · Cursor Rules · Copilot Instructions
+        {t("home.announcement")}
         <GlowLink href="/changelog" style={{ marginLeft: "12px", textDecoration: "underline", cursor: "pointer" }}>
-          See what&apos;s new →
+          {t("home.announcementCta")}
         </GlowLink>
       </div>
 
       {/* Navigation */}
-      <nav style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        padding: "0 48px",
-        height: "64px",
-        borderBottom: "1px solid rgba(255,255,255,0.1)",
-        background: "#111111",
-        position: "sticky",
-        top: 0,
-        zIndex: 100,
-        color: "white",
-      }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "48px" }}>
-          <GlowLink href="/" style={{ display: "flex", alignItems: "center", gap: "12px", textDecoration: "none", color: "inherit" }}>
-            <div style={{ width: "36px", height: "36px", position: "relative" }}>
-              <Image
-                src="/logo-dark.png"
-                alt="RepoContext"
-                fill
-                sizes="36px"
-                style={{ objectFit: "contain", backgroundColor: "transparent" }}
-                priority
-                quality={95}
-              />
-            </div>
-            <span style={{ fontSize: "18px", fontWeight: 600, letterSpacing: "-0.01em", color: "white" }}>
-              RepoContext
-            </span>
-          </GlowLink>
-          <div style={{ display: "flex", gap: "32px", fontSize: "14px" }}>
-            <GlowLink href="#features" style={{ color: "rgba(255,255,255,0.8)", textDecoration: "none" }}>Features</GlowLink>
-            <GlowLink href="#how" style={{ color: "rgba(255,255,255,0.8)", textDecoration: "none" }}>How it works</GlowLink>
-            <GlowLink href="/pricing" style={{ color: "rgba(255,255,255,0.8)", textDecoration: "none" }}>Pricing</GlowLink>
-            <GlowLink href="/docs" style={{ color: "rgba(255,255,255,0.8)", textDecoration: "none" }}>Documentation</GlowLink>
-          </div>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-          {user ? (
-            <GlowLink
-              href="/dashboard"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-                textDecoration: "none",
-                color: "white",
-              }}
-            >
-              <span style={{ fontSize: "14px", fontWeight: 500 }}>
-                Dashboard
-              </span>
-              <div style={{
-                width: "32px",
-                height: "32px",
-                borderRadius: "50%",
-                background: "var(--blue-50)",
-                color: "white",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "13px",
-                fontWeight: 600,
-                textTransform: "uppercase",
-                letterSpacing: "0.02em",
-              }}>
-                {user.email?.charAt(0) || "U"}
-              </div>
-            </GlowLink>
-          ) : (
-            <>
-              <GlowLink
-                href="/login"
-                style={{
-                  fontSize: "14px",
-                  color: "rgba(255,255,255,0.9)",
-                  textDecoration: "none",
-                  fontWeight: 500,
-                }}
-              >
-                Sign in
-              </GlowLink>
-              <Link
-                href="/pricing"
-                style={{
-                  fontSize: "14px",
-                  padding: "10px 20px",
-                  background: "white",
-                  color: "#111111",
-                  textDecoration: "none",
-                  fontWeight: 500,
-                  letterSpacing: "0.02em",
-                }}
-              >
-                Try it free
-              </Link>
-            </>
-          )}
-        </div>
-      </nav>
+      <SiteNav variant="dark" />
 
       {/* Hero Section — IBM style */}
       <section style={{
@@ -329,7 +249,7 @@ export default function HomePage() {
               background: "rgba(64, 128, 255, 0.25)",
               border: "1px solid rgba(92, 154, 255, 0.55)",
             }}>
-              Enterprise AI Development
+              {t("home.heroEyebrow")}
             </div>
             <h1 style={{
               fontFamily: "'IBM Plex Serif', Georgia, serif",
@@ -340,9 +260,9 @@ export default function HomePage() {
               color: "#ffffff",
               margin: "0 0 24px 0",
             }}>
-              Turn your codebase
+              {dict.home.subtitle.split(" ").slice(0, -2).join(" ")}
               <br />
-              into <span style={{ color: "#6ea8ff", fontWeight: 500 }}>AI-ready</span> context.
+              <span style={{ color: "#FE7F0F", fontWeight: 500, animation: "breathe-glow 2.6s ease-in-out infinite" }}>AI-ready</span> {dict.home.subtitle.split(" ").slice(-1)[0]}
             </h1>
             <p style={{
               fontSize: "18px",
@@ -351,9 +271,7 @@ export default function HomePage() {
               marginBottom: "36px",
               maxWidth: "520px",
             }}>
-              RepoContext analyzes your GitHub repositories and generates accurate,
-              structured documentation for AI coding agents. Reduce hallucinations,
-              increase productivity, and ship faster.
+              {dict.home.description}
             </p>
 
             {/* Search bar */}
@@ -372,7 +290,8 @@ export default function HomePage() {
                     type="text"
                     value={url}
                     onChange={(e) => setUrl(e.target.value)}
-                    placeholder="github.com/owner/repository"
+                    placeholder={t("home.inputPlaceholder")}
+                    disabled={loading}
                     style={{
                       width: "100%",
                       padding: "18px 20px",
@@ -387,9 +306,15 @@ export default function HomePage() {
                     onFocus={(e) => { e.currentTarget.style.borderColor = "#5c9aff"; e.target.placeholder = "" }}
                     onBlur={(e) => {
                       e.currentTarget.style.borderColor = "rgba(92, 154, 255, 0.35)"
-                      if (!url) e.target.placeholder = "github.com/owner/repository"
+                      if (!url) e.target.placeholder = t("home.inputPlaceholder")
                     }}
                   />
+                  {loading && (
+                    <>
+                      <div className="charge-fill" />
+                      <div className="charge-percent" />
+                    </>
+                  )}
                 </div>
                 <button
                   type="submit"
@@ -403,20 +328,46 @@ export default function HomePage() {
                     border: "none",
                     fontSize: "15px",
                     fontWeight: 600,
-                    cursor: loading ? "not-allowed" : "pointer",
-                    opacity: loading ? 0.7 : 1,
+                    cursor: loading ? "default" : "pointer",
                     letterSpacing: "0.02em",
                     whiteSpace: "nowrap",
-                    boxShadow: analyzeHover
-                      ? "0 0 32px rgba(47, 107, 255, 0.6), 0 8px 24px rgba(47, 107, 255, 0.4)"
-                      : "0 4px 16px rgba(47, 107, 255, 0.25)",
-                    transform: analyzeHover ? "translateY(-2px)" : "translateY(0)",
+                    opacity: loading ? 0.85 : 1,
+                    boxShadow:
+                      analyzeHover && !loading
+                        ? "0 0 32px rgba(47, 107, 255, 0.6), 0 8px 24px rgba(47, 107, 255, 0.4)"
+                        : "0 4px 16px rgba(47, 107, 255, 0.25)",
+                    transform: analyzeHover && !loading ? "translateY(-2px)" : "translateY(0)",
                     transition: "all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
                   }}
                 >
-                  {loading ? "Analyzing..." : "Analyze →"}
+                  {loading ? (
+                    <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <span className="analyze-spinner" />
+                      {t("home.analyzing")}
+                    </span>
+                  ) : t("home.analyze")}
                 </button>
               </div>
+
+              {loading && (
+                <p
+                  style={{
+                    fontSize: "13px",
+                    color: "#8b95a8",
+                    marginTop: "14px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                  }}
+                >
+                  <span className="rc-dot" />
+                  {t("home.loadingHint")}
+                </p>
+              )}
+
               {error && (
                 <p style={{ color: "#ff6b7a", fontSize: "14px", marginTop: "12px" }}>
                   {error}
@@ -424,12 +375,34 @@ export default function HomePage() {
               )}
             </form>
 
+            {trial && plan !== 'pro' && plan !== 'team' && (
+              <p style={{ fontSize: '13px', marginTop: '12px', color: trial.proRemaining > 0 ? '#8b95a8' : (trial.freeRemaining > 0 ? '#8b95a8' : '#ffb454') }}>
+                {trial.proRemaining > 0
+                  ? t("home.proTrialRemaining", { remaining: trial.proRemaining, limit: trial.proLimit })
+                  : trial.freeRemaining > 0
+                    ? t("home.freeRemaining", { remaining: trial.freeRemaining, limit: trial.freeLimit })
+                    : t("home.trialExhausted", { limit: trial.proLimit })}
+                {trial.proRemaining === 0 && (
+                  <a href='/pricing' style={{ color: '#5c9aff', marginLeft: '8px', textDecoration: 'underline' }}>{t("home.subscribe")}</a>
+                )}
+              </p>
+            )}
+
             <p style={{ fontSize: "13px", color: "#8b95a8" }}>
-              Try it with <span style={{ fontFamily: "'IBM Plex Mono', monospace", color: "#6ea8ff", cursor: "pointer" }} onClick={() => setUrl("psf/requests")}>psf/requests</span>
-              {" · "}
-              <span style={{ fontFamily: "'IBM Plex Mono', monospace", color: "#6ea8ff", cursor: "pointer" }} onClick={() => setUrl("vercel/next.js")}>vercel/next.js</span>
-              {" · "}
-              <span style={{ fontFamily: "'IBM Plex Mono', monospace", color: "#6ea8ff", cursor: "pointer" }} onClick={() => setUrl("gin-gonic/gin")}>gin-gonic/gin</span>
+              {t("home.examplesTry")}{" "}
+              {dict.home.examples?.map((ex, i) => (
+                <span key={ex}>
+                  <span style={{ fontFamily: "'IBM Plex Mono', monospace", color: "#8b95a8", fontWeight: 300 }}>
+                    {ex}
+                  </span>
+                  {i < (dict.home.examples?.length ?? 0) - 1 && <span>{" · "}</span>}
+                </span>
+              ))}
+            </p>
+            <p style={{ fontSize: "17px", color: "#8b95a8", marginTop: "8px" }}>
+              <Link href="/get-repo-link" style={{ color: "#FE7F0F", textDecoration: "underline", cursor: "pointer" }}>
+                {t("home.linkHint")}
+              </Link>
             </p>
           </div>
 
@@ -471,16 +444,16 @@ export default function HomePage() {
               fontSize: "12px",
             }}>
               <div style={{ fontSize: "11px", fontWeight: 600, color: "#64707f", marginBottom: "8px", letterSpacing: "0.05em" }}>
-                DETECTED FRAMEWORK
+                {t("home.detectedFramework")}
               </div>
               <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: "14px", fontWeight: 600, color: "#1a2230" }}>
-                Next.js 14
+                {t("home.detectedFrameworkValue")}
               </div>
               <div style={{ marginTop: "8px", height: "4px", width: "100%", background: "#e6eaf0", borderRadius: "2px" }}>
                 <div style={{ height: "100%", width: "95%", background: "#2f6bff", borderRadius: "2px" }} />
               </div>
               <div style={{ fontSize: "11px", color: "#64707f", marginTop: "4px" }}>
-                95% confidence
+                {t("home.confidence", { pct: 95 })}
               </div>
             </div>
 
@@ -497,14 +470,14 @@ export default function HomePage() {
               fontSize: "12px",
             }}>
               <div style={{ fontSize: "11px", fontWeight: 600, color: "#64707f", marginBottom: "8px", letterSpacing: "0.05em" }}>
-                QUALITY SCORE
+                {t("home.qualityScore")}
               </div>
               <div style={{ display: "flex", alignItems: "baseline", gap: "8px" }}>
                 <span style={{ fontFamily: "'IBM Plex Serif', serif", fontSize: "36px", fontWeight: 300, color: "#1f9d55" }}>92</span>
                 <span style={{ color: "#64707f" }}>/ 100</span>
               </div>
               <div style={{ fontSize: "12px", color: "#1f9d55", marginTop: "4px", fontWeight: 500 }}>
-                ↑ Excellent context quality
+                {t("home.excellentContext")}
               </div>
             </div>
           </div>
@@ -527,7 +500,7 @@ export default function HomePage() {
             textAlign: "center",
             marginBottom: "32px",
           }}>
-            Trusted by engineering teams at leading companies
+            {t("home.trustedBy")}
           </p>
           <div style={{
             display: "grid",
@@ -537,19 +510,19 @@ export default function HomePage() {
           }}>
             <div>
               <div style={{ fontFamily: "'IBM Plex Serif', serif", fontSize: "48px", fontWeight: 300, color: "var(--blue-70)", lineHeight: 1 }}>10K+</div>
-              <div style={{ fontSize: "14px", color: "var(--muted)", marginTop: "8px" }}>Repositories analyzed</div>
+              <div style={{ fontSize: "14px", color: "var(--muted)", marginTop: "8px" }}>{t("home.statRepos")}</div>
             </div>
             <div>
               <div style={{ fontFamily: "'IBM Plex Serif', serif", fontSize: "48px", fontWeight: 300, color: "var(--blue-70)", lineHeight: 1 }}>94%</div>
-              <div style={{ fontSize: "14px", color: "var(--muted)", marginTop: "8px" }}>Command accuracy</div>
+              <div style={{ fontSize: "14px", color: "var(--muted)", marginTop: "8px" }}>{t("home.statAccuracy")}</div>
             </div>
             <div>
               <div style={{ fontFamily: "'IBM Plex Serif', serif", fontSize: "48px", fontWeight: 300, color: "var(--blue-70)", lineHeight: 1 }}>2.5x</div>
-              <div style={{ fontSize: "14px", color: "var(--muted)", marginTop: "8px" }}>Faster AI onboarding</div>
+              <div style={{ fontSize: "14px", color: "var(--muted)", marginTop: "8px" }}>{t("home.statOnboarding")}</div>
             </div>
             <div>
               <div style={{ fontFamily: "'IBM Plex Serif', serif", fontSize: "48px", fontWeight: 300, color: "var(--blue-70)", lineHeight: 1 }}>50+</div>
-              <div style={{ fontSize: "14px", color: "var(--muted)", marginTop: "8px" }}>Tech stacks supported</div>
+              <div style={{ fontSize: "14px", color: "var(--muted)", marginTop: "8px" }}>{t("home.statStacks")}</div>
             </div>
           </div>
         </div>
@@ -568,7 +541,7 @@ export default function HomePage() {
               color: "var(--muted)",
               marginBottom: "16px",
             }}>
-              Capabilities
+              {t("home.featuresEyebrow")}
             </p>
             <h2 style={{
               fontFamily: "'IBM Plex Serif', Georgia, serif",
@@ -578,11 +551,10 @@ export default function HomePage() {
               margin: "0 0 16px 0",
               maxWidth: "700px",
             }}>
-              Everything you need to make AI work with your codebase.
+              {t("home.featuresTitle")}
             </h2>
             <p style={{ fontSize: "17px", color: "var(--ink-2)", maxWidth: "600px" }}>
-              From detection to documentation, RepoContext provides enterprise-grade
-              analysis of your repositories with verifiable evidence.
+              {t("home.featuresSubtitle")}
             </p>
           </div>
 
@@ -595,51 +567,51 @@ export default function HomePage() {
           }}>
             {[
               {
-                title: "Intelligent Repository Scanning",
-                desc: "Deep analysis of package managers, build tools, CI/CD pipelines, test frameworks, and directory structure.",
+                title: dict.home.features[0]?.title ?? "",
+                desc: dict.home.features[0]?.desc ?? "",
                 illustration: {
                   src: "/features/01-scanning/01-scanning.png",
-                  alt: "Magnifying glass icon representing intelligent repository scanning",
+                  alt: dict.home.features[0]?.title ?? "",
                 },
               },
               {
-                title: "Multi-Format Export",
-                desc: "Generate AGENTS.md, CLAUDE.md, Cursor Rules, and Copilot Instructions from a single analysis.",
+                title: dict.home.features[1]?.title ?? "",
+                desc: dict.home.features[1]?.desc ?? "",
                 illustration: {
                   src: "/features/02-export/02-export.png",
-                  alt: "Document icon representing multi-format export",
+                  alt: dict.home.features[1]?.title ?? "",
                 },
               },
               {
-                title: "Evidence-Based Output",
-                desc: "Every claim is backed by verifiable evidence. See exactly which files were used to generate each insight.",
+                title: dict.home.features[2]?.title ?? "",
+                desc: dict.home.features[2]?.desc ?? "",
                 illustration: {
                   src: "/features/03-evidence/03-evidence.png",
-                  alt: "Shield icon representing evidence-based output",
+                  alt: dict.home.features[2]?.title ?? "",
                 },
               },
               {
-                title: "Quality Score",
-                desc: "Get a numerical quality score so you know how reliable the generated context actually is.",
+                title: dict.home.features[3]?.title ?? "",
+                desc: dict.home.features[3]?.desc ?? "",
                 illustration: {
                   src: "/features/04-quality/04-quality.png",
-                  alt: "Bar chart icon representing quality score",
+                  alt: dict.home.features[3]?.title ?? "",
                 },
               },
               {
-                title: "AGENTS.md Audit",
-                desc: "Already have an AGENTS.md? We audit it for accuracy, completeness, and outdated information.",
+                title: dict.home.features[4]?.title ?? "",
+                desc: dict.home.features[4]?.desc ?? "",
                 illustration: {
                   src: "/features/05-audit/05-audit.png",
-                  alt: "Document audit icon representing AGENTS.md audit",
+                  alt: dict.home.features[4]?.title ?? "",
                 },
               },
               {
-                title: "Private Repository Support",
-                desc: "Securely connect your private repos. Your code never leaves your control.",
+                title: dict.home.features[5]?.title ?? "",
+                desc: dict.home.features[5]?.desc ?? "",
                 illustration: {
                   src: "/features/06-private/06-private.png",
-                  alt: "Padlock icon representing private repository support",
+                  alt: dict.home.features[5]?.title ?? "",
                 },
               },
             ].map((item) => (
@@ -680,7 +652,7 @@ export default function HomePage() {
               color: "var(--muted)",
               marginBottom: "16px",
             }}>
-              On the roadmap
+              {t("home.roadmapEyebrow")}
             </p>
             <h2 style={{
               fontFamily: "'IBM Plex Serif', Georgia, serif",
@@ -690,10 +662,10 @@ export default function HomePage() {
               margin: "0 0 12px 0",
               maxWidth: "700px",
             }}>
-              More power, coming soon.
+              {t("home.roadmapTitle")}
             </h2>
             <p style={{ fontSize: "16px", color: "var(--ink-2)", maxWidth: "600px", margin: 0 }}>
-              We&apos;re building the next generation of repository intelligence. Here&apos;s what&apos;s on the way.
+              {t("home.roadmapSubtitle")}
             </p>
           </div>
 
@@ -704,24 +676,24 @@ export default function HomePage() {
           }}>
             {[
               {
-                title: "Monorepo Support",
-                desc: "TurboRepo, Nx, Lerna — deep analysis of complex multi-package repositories.",
-                eta: "Q4 2026",
+                title: dict.home.roadmap[0]?.title ?? "",
+                desc: dict.home.roadmap[0]?.desc ?? "",
+                eta: dict.home.roadmap[0]?.eta ?? "",
               },
               {
-                title: "Custom AI Agents",
-                desc: "Build and train custom AI agents tuned to your specific codebase patterns.",
-                eta: "Q4 2026",
+                title: dict.home.roadmap[1]?.title ?? "",
+                desc: dict.home.roadmap[1]?.desc ?? "",
+                eta: dict.home.roadmap[1]?.eta ?? "",
               },
               {
-                title: "GitLab & Bitbucket",
-                desc: "Connect repositories from GitLab, Bitbucket, and self-hosted platforms.",
-                eta: "Q1 2027",
+                title: dict.home.roadmap[2]?.title ?? "",
+                desc: dict.home.roadmap[2]?.desc ?? "",
+                eta: dict.home.roadmap[2]?.eta ?? "",
               },
               {
-                title: "Team Collaboration",
-                desc: "Shared workspaces, comments, reviews, and approval workflows for teams.",
-                eta: "Q1 2027",
+                title: dict.home.roadmap[3]?.title ?? "",
+                desc: dict.home.roadmap[3]?.desc ?? "",
+                eta: dict.home.roadmap[3]?.eta ?? "",
               },
             ].map((item) => (
               <RoadmapCard key={item.title} item={item} />
@@ -745,10 +717,10 @@ export default function HomePage() {
                 margin: "0 0 4px 0",
                 color: "var(--ink)",
               }}>
-                Want early access to new features?
+                {t("home.waitlistTitle")}
               </p>
               <p style={{ fontSize: "13px", color: "var(--muted)", margin: 0 }}>
-                Join the waitlist and be the first to try what&apos;s next.
+                {t("home.waitlistSubtitle")}
               </p>
             </div>
             <button
@@ -770,7 +742,7 @@ export default function HomePage() {
                 transform: waitlistHover ? "translateY(-1px)" : "translateY(0)",
               }}
             >
-              Join the waitlist →
+              {t("home.waitlistCta")}
             </button>
           </div>
         </div>
@@ -790,7 +762,7 @@ export default function HomePage() {
                 color: "var(--muted)",
                 marginBottom: "16px",
               }}>
-                How to use
+                {t("home.howEyebrow")}
               </p>
               <h2 style={{
                 fontFamily: "'IBM Plex Serif', Georgia, serif",
@@ -800,11 +772,11 @@ export default function HomePage() {
                 margin: 0,
                 maxWidth: "700px",
               }}>
-                Three steps. Zero configuration.
+                {t("home.howTitle")}
               </h2>
             </div>
             <GlowLink href="/how-to-use" style={{ fontSize: "15px", color: "var(--blue-60)", textDecoration: "none", fontWeight: 500, whiteSpace: "nowrap" }}>
-              View full guide →
+              {t("home.howLink")}
             </GlowLink>
           </div>
 
@@ -816,36 +788,36 @@ export default function HomePage() {
             {[
               {
                 step: "01",
-                title: "Paste your repository URL",
-                desc: "Copy any public GitHub repo link and paste it into the analyzer input above.",
+                title: dict.home.steps[0]?.title ?? "",
+                desc: dict.home.steps[0]?.desc ?? "",
                 illustration: (
                   <MaskedIllustration
                     src="/illustrations/step1-paste-url.png"
-                    alt="Paste your repository URL"
+                    alt={dict.home.steps[0]?.title ?? ""}
                     size={140}
                   />
                 ),
               },
               {
                 step: "02",
-                title: "Let AI scan your codebase",
-                desc: "RepoContext reads package managers, build tools, tests, and directory structure.",
+                title: dict.home.steps[1]?.title ?? "",
+                desc: dict.home.steps[1]?.desc ?? "",
                 illustration: (
                   <MaskedIllustration
                     src="/illustrations/step2-ai-scan.png"
-                    alt="AI scans your codebase"
+                    alt={dict.home.steps[1]?.title ?? ""}
                     size={140}
                   />
                 ),
               },
               {
                 step: "03",
-                title: "Export AI-ready context",
-                desc: "Download AGENTS.md, CLAUDE.md, Cursor Rules, or Copilot Instructions in one click.",
+                title: dict.home.steps[2]?.title ?? "",
+                desc: dict.home.steps[2]?.desc ?? "",
                 illustration: (
                   <MaskedIllustration
                     src="/illustrations/step3-export.png"
-                    alt="Export AI-ready context"
+                    alt={dict.home.steps[2]?.title ?? ""}
                     size={140}
                   />
                 ),
@@ -911,7 +883,7 @@ export default function HomePage() {
             letterSpacing: "-0.01em",
             margin: "0 0 20px 0",
           }}>
-            Ready to make AI work for your codebase?
+            {t("home.ctaTitle")}
           </h2>
           <p style={{
             fontSize: "18px",
@@ -921,7 +893,7 @@ export default function HomePage() {
             marginLeft: "auto",
             marginRight: "auto",
           }}>
-            Start analyzing your repositories in seconds. No credit card required.
+            {t("home.ctaBody")}
           </p>
           <div style={{ display: "flex", gap: "16px", justifyContent: "center" }}>
             <Link
@@ -936,7 +908,7 @@ export default function HomePage() {
                 letterSpacing: "0.02em",
               }}
             >
-              Start free trial
+              {t("home.ctaPrimary")}
             </Link>
             <a
               href="#features"
@@ -950,7 +922,7 @@ export default function HomePage() {
                 letterSpacing: "0.02em",
               }}
             >
-              Learn more
+              {t("home.ctaSecondary")}
             </a>
           </div>
         </div>
@@ -989,44 +961,42 @@ export default function HomePage() {
                 lineHeight: 1.6,
                 maxWidth: "320px",
               }}>
-                Enterprise-grade repository analysis for AI development teams.
-                Turn your codebase into AI-ready context.
+                {t("footer.tagline")}
               </p>
             </div>
 
             <div>
               <h4 style={{ fontSize: "13px", fontWeight: 600, margin: "0 0 16px 0", letterSpacing: "0.05em" }}>
-                PRODUCT
+                {t("footer.productTitle")}
               </h4>
               <div style={{ display: "flex", flexDirection: "column", gap: "10px", fontSize: "14px" }}>
-                <GlowLink href="/pricing" style={{ color: "#949494", textDecoration: "none" }}>Pricing</GlowLink>
-                <GlowLink href="#features" style={{ color: "#949494", textDecoration: "none" }}>Features</GlowLink>
-                <GlowLink href="/docs" style={{ color: "#949494", textDecoration: "none" }}>Documentation</GlowLink>
-                <GlowLink href="/docs#api" style={{ color: "#949494", textDecoration: "none" }}>API</GlowLink>
+                <GlowLink href="/pricing" style={{ color: "#949494", textDecoration: "none" }}>{t("nav.pricing")}</GlowLink>
+              <GlowLink href="#features" style={{ color: "#949494", textDecoration: "none" }}>{t("nav.features")}</GlowLink>
+              <GlowLink href="/docs" style={{ color: "#949494", textDecoration: "none" }}>{t("nav.docs")}</GlowLink>
+              <GlowLink href="/docs#api" style={{ color: "#949494", textDecoration: "none" }}>{t("nav.api")}</GlowLink>
+            </div>
+          </div>
+
+            <div>
+              <h4 style={{ fontSize: "13px", fontWeight: 600, margin: "0 0 16px 0", letterSpacing: "0.05em" }}>
+                {t("footer.resourcesTitle")}
+              </h4>
+              <div style={{ display: "flex", flexDirection: "column", gap: "10px", fontSize: "14px" }}>
+                <GlowLink href="#" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.blog")}</GlowLink>
+                <GlowLink href="#" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.changelog")}</GlowLink>
+                <GlowLink href="#" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.spec")}</GlowLink>
               </div>
             </div>
 
             <div>
               <h4 style={{ fontSize: "13px", fontWeight: 600, margin: "0 0 16px 0", letterSpacing: "0.05em" }}>
-                RESOURCES
+                {t("footer.companyTitle")}
               </h4>
               <div style={{ display: "flex", flexDirection: "column", gap: "10px", fontSize: "14px" }}>
-                <GlowLink href="#" style={{ color: "#949494", textDecoration: "none" }}>Blog</GlowLink>
-                <GlowLink href="#" style={{ color: "#949494", textDecoration: "none" }}>Changelog</GlowLink>
-                <GlowLink href="#" style={{ color: "#949494", textDecoration: "none" }}>AGENTS.md Spec</GlowLink>
-                <GlowLink href="#" style={{ color: "#949494", textDecoration: "none" }}>Community</GlowLink>
-              </div>
-            </div>
-
-            <div>
-              <h4 style={{ fontSize: "13px", fontWeight: 600, margin: "0 0 16px 0", letterSpacing: "0.05em" }}>
-                COMPANY
-              </h4>
-              <div style={{ display: "flex", flexDirection: "column", gap: "10px", fontSize: "14px" }}>
-                <GlowLink href="/terms" style={{ color: "#949494", textDecoration: "none" }}>Terms</GlowLink>
-                <GlowLink href="/privacy" style={{ color: "#949494", textDecoration: "none" }}>Privacy</GlowLink>
-                <GlowLink href="/refund" style={{ color: "#949494", textDecoration: "none" }}>Refund policy</GlowLink>
-                <GlowLink href="#" style={{ color: "#949494", textDecoration: "none" }}>Contact</GlowLink>
+                <GlowLink href="/terms" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.terms")}</GlowLink>
+                <GlowLink href="/privacy" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.privacy")}</GlowLink>
+                <GlowLink href="/refund" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.refund")}</GlowLink>
+                <GlowLink href="#" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.contact")}</GlowLink>
               </div>
             </div>
           </div>
@@ -1040,11 +1010,11 @@ export default function HomePage() {
             fontSize: "13px",
             color: "#6f6f6f",
           }}>
-            <span>© 2026 RepoContext. All rights reserved.</span>
+            <span>{t("footer.copyright")}</span>
             <div style={{ display: "flex", gap: "24px" }}>
-              <GlowLink href="#" style={{ color: "#6f6f6f", textDecoration: "none" }}>GitHub</GlowLink>
-              <GlowLink href="#" style={{ color: "#6f6f6f", textDecoration: "none" }}>Twitter</GlowLink>
-              <GlowLink href="#" style={{ color: "#6f6f6f", textDecoration: "none" }}>LinkedIn</GlowLink>
+              <GlowLink href="#" style={{ color: "#6f6f6f", textDecoration: "none" }}>{t("footer.github")}</GlowLink>
+              <GlowLink href="#" style={{ color: "#6f6f6f", textDecoration: "none" }}>{t("footer.twitter")}</GlowLink>
+              <GlowLink href="#" style={{ color: "#6f6f6f", textDecoration: "none" }}>{t("footer.linkedin")}</GlowLink>
             </div>
           </div>
         </div>

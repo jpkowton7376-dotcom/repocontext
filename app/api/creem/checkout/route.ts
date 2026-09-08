@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server"
 import { creemConfig, PRODUCTS } from "@/lib/creem"
+import { getCurrentUser } from "@/lib/supabase-server"
 
 export const runtime = "nodejs"
 
 export async function POST(request: Request) {
   const { apiKey, baseUrl } = creemConfig
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
+  const clean = (v?: string | null) => (v || "").replace(/\uFEFF/g, "")
+  const siteUrl = clean(process.env.NEXT_PUBLIC_SITE_URL) || "http://localhost:3000"
 
   // Not configured: in dev, jump straight to the success page so the UI
   // flow can be previewed without a Creem account.
@@ -26,16 +28,34 @@ export async function POST(request: Request) {
     const formData = await request.formData()
     const plan = (formData.get("plan") as string) || "pro"
 
-    const productId =
-      plan === "pro" ? PRODUCTS.pro : plan === "team" ? PRODUCTS.team : null
+    const productId = clean(
+      plan === "pro"
+        ? PRODUCTS.pro
+        : plan === "team"
+        ? PRODUCTS.team
+        : plan === "lifetime"
+        ? PRODUCTS.lifetime
+        : null
+    )
 
     if (!productId || productId.startsWith("prod_xxx")) {
       return NextResponse.json(
         {
           error:
-            "Plan not configured. Set CREEM_PRODUCT_PRO and CREEM_PRODUCT_TEAM in your environment variables.",
+            "Plan not configured. Set CREEM_PRODUCT_PRO, CREEM_PRODUCT_TEAM and CREEM_PRODUCT_LIFETIME in your environment variables.",
         },
         { status: 500 }
+      )
+    }
+
+    // The signed-in user is required so the webhook can upgrade exactly this
+    // account after payment. Without it we would have to guess by email.
+    const user = await getCurrentUser()
+
+    if (!user?.id) {
+      return NextResponse.redirect(
+        `${siteUrl}/login?next=${encodeURIComponent("/pricing")}`,
+        303
       )
     }
 
@@ -45,7 +65,12 @@ export async function POST(request: Request) {
       body: JSON.stringify({
         product_id: productId,
         success_url: `${siteUrl}/dashboard?success=true`,
-        metadata: { plan },
+        // Creem echoes this metadata back on every webhook event.
+        metadata: {
+          plan,
+          user_id: user.id,
+          email: user.email ?? undefined,
+        },
       }),
     })
 

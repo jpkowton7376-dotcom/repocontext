@@ -1,10 +1,12 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { supabase, isSupabaseConfigured } from "@/lib/supabase"
 import Link from "next/link"
 
 export default function SignupPage() {
+  const router = useRouter()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
@@ -71,7 +73,7 @@ SUPABASE_SERVICE_ROLE_KEY=...`}
         throw new Error("Password must be at least 6 characters")
       }
 
-      const { error } = await supabase!.auth.signUp({
+      const { data, error } = await supabase!.auth.signUp({
         email,
         password,
         options: {
@@ -79,6 +81,14 @@ SUPABASE_SERVICE_ROLE_KEY=...`}
         },
       })
       if (error) throw error
+
+      // Email confirmation is disabled in Supabase: a returned session means
+      // the user is already signed in, so skip the "check your email" prompt.
+      if (data && data.session) {
+        router.push("/dashboard")
+        return
+      }
+
       setSuccess(true)
     } catch (err: any) {
       setError(err.message || "Sign up failed")

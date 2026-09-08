@@ -1,0 +1,362 @@
+{
+  "nav": {
+    "signIn": "サインイン",
+    "getStarted": "始める",
+    "pricing": "料金",
+    "features": "機能",
+    "docs": "ドキュメント",
+    "api": "API",
+    "aiTools": "AI ツール",
+    "home": "ホーム",
+    "howItWorks": "使い方",
+    "dashboard": "ダッシュボード",
+    "signOut": "サインアウト"
+  },
+  "aiTools": {
+    "eyebrow": "Directory",
+    "title": "AI ツールナビ",
+    "subtitle": "20 カテゴリ・{count} 個の AI ツールを厳選。カードをクリックすると公式サイトが開きます。",
+    "search": "ツール名・説明・ドメインで検索…",
+    "categories": "カテゴリ",
+    "official": "公式サイト",
+    "matched": "個のツール",
+    "empty": "検索条件に一致するツールがありません。",
+    "curatedBy": "RepoContext による厳選"
+  },
+  "footer": {
+    "tagline": "AI 開発チーム向けのエンタープライズ級リポジトリ分析。コードベースを AI 対応のコンテキストに変換します。",
+    "productTitle": "製品",
+    "resourcesTitle": "リソース",
+    "companyTitle": "会社",
+    "copyright": "© 2026 RepoContext. All rights reserved.",
+    "github": "GitHub",
+    "twitter": "Twitter",
+    "linkedin": "LinkedIn",
+    "blog": "ブログ",
+    "changelog": "変更履歴",
+    "spec": "AGENTS.md 仕様",
+    "terms": "利用規約",
+    "privacy": "プライバシー",
+    "refund": "返金ポリシー",
+    "contact": "お問い合わせ"
+  },
+  "home": {
+    "title": "コードベースを",
+    "subtitle": "AI 対応のコンテキストに変換",
+    "heroEyebrow": "エンタープライズ AI 開発",
+    "description": "RepoContext は GitHub リポジトリを分析し、AI コーディングエージェント向けの正確で構造化されたドキュメントを生成します。幻覚を減らし、生産性を高め、より速くリリースしましょう。",
+    "inputPlaceholder": "github.com/owner/repository",
+    "analyze": "分析 →",
+    "analyzing": "分析中...",
+    "loadingHint": "分析には通常 15〜40 秒かかります。このページを開いたままにしてください。",
+    "proTrialRemaining": "Pro トライアル：今月残り {remaining}/{limit} 回のプレミアム枠",
+    "freeRemaining": "無料：今月残り {remaining}/{limit} 回 — Pro でプレミアムモデルを解放。",
+    "trialExhausted": "今月の無料分析を使い切りました — プレミアムモデルを使い続けるには Pro に登録してください。",
+    "subscribe": "登録する →",
+    "examplesTry": "試してみる",
+    "examples": [
+      "https://github.com/psf/requests",
+      "https://github.com/vercel/next.js",
+      "https://github.com/gin-gonic/gin"
+    ],
+    "linkHint": "このリンクの取得方法 →",
+    "trustedBy": "最先端企業のエンジニアリングチームに信頼されています",
+    "statRepos": "分析されたリポジトリ",
+    "statAccuracy": "コマンド精度",
+    "statOnboarding": "より速い AI オンボーディング",
+    "statStacks": "対応技術スタック",
+    "featuresEyebrow": "機能",
+    "featuresTitle": "AI をコードベースで動かすために必要なすべて。",
+    "featuresSubtitle": "検出からドキュメント化まで、RepoContext は検証可能な証拠を伴うエンタープライズ級のリポジトリ分析を提供します。",
+    "features": [
+      {
+        "title": "インテリジェントなリポジトリスキャン",
+        "desc": "パッケージマネージャー、ビルドツール、CI/CD パイプライン、テストフレームワーク、ディレクトリ構造の深い分析。"
+      },
+      {
+        "title": "マルチフォーマットエクスポート",
+        "desc": "一度の分析から AGENTS.md、CLAUDE.md、Cursor Rules、Copilot Instructions を生成。"
+      },
+      {
+        "title": "証拠に基づく出力",
+        "desc": "すべての主張は検証可能な証拠で裏付けられています。各洞察の生成に使用されたファイルを正確に確認できます。"
+      },
+      {
+        "title": "品質スコア",
+        "desc": "生成されたコンテキストの信頼性がわかる数値スコアを取得。"
+      },
+      {
+        "title": "AGENTS.md 監査",
+        "desc": "すでに AGENTS.md をお持ちですか？正確性、完全性、古い情報の有無を監査します。"
+      },
+      {
+        "title": "プライベートリポジトリ対応",
+        "desc": "プライベートリポジトリを安全に接続。コードはあなたの管理下から出ません。"
+      }
+    ],
+    "roadmapEyebrow": "ロードマップ",
+    "roadmapTitle": "さらなるパワー、近日公開。",
+    "roadmapSubtitle": "次世代のリポジトリインテリジェンスを構築中です。今後の予定はこちら。",
+    "roadmap": [
+      {
+        "title": "Monorepo 対応",
+        "desc": "TurboRepo、Nx、Lerna — 複雑なマルチパッケージリポジトリの深い分析。",
+        "eta": "2026年Q4"
+      },
+      {
+        "title": "カスタム AI エージェント",
+        "desc": "特定のコードベースのパターンに調整されたカスタム AI エージェントを構築・トレーニング。",
+        "eta": "2026年Q4"
+      },
+      {
+        "title": "GitLab & Bitbucket",
+        "desc": "GitLab、Bitbucket、セルフホストプラットフォームのリポジトリを接続。",
+        "eta": "2027年Q1"
+      },
+      {
+        "title": "チームコラボレーション",
+        "desc": "共有ワークスペース、コメント、レビュー、チーム向け承認ワークフロー。",
+        "eta": "2027年Q1"
+      }
+    ],
+    "waitlistTitle": "新機能への早期アクセスを希望ですか？",
+    "waitlistSubtitle": "ウェイトリストに参加して、次の機能を最初に試しましょう。",
+    "waitlistCta": "ウェイトリストに参加 →",
+    "howEyebrow": "使い方",
+    "howTitle": "3 ステップ。設定不要。",
+    "howLink": "完全ガイドを見る →",
+    "steps": [
+      {
+        "title": "リポジトリ URL を貼り付ける",
+        "desc": "任意の公開 GitHub リポジトリリンクをコピーして、上の分析入力欄に貼り付けます。"
+      },
+      {
+        "title": "AI にコードベースをスキャンさせる",
+        "desc": "RepoContext はパッケージマネージャー、ビルドツール、テスト、ディレクトリ構造を読み取ります。"
+      },
+      {
+        "title": "AI 対応コンテキストをエクスポート",
+        "desc": "ワンクリックで AGENTS.md、CLAUDE.md、Cursor Rules、Copilot Instructions をダウンロード。"
+      }
+    ],
+    "ctaTitle": "AI をあなたのコードベースで働かせる準備はできましたか？",
+    "ctaBody": "数秒でリポジトリの分析を開始。クレジットカードは不要です。",
+    "ctaPrimary": "無料で試す",
+    "ctaSecondary": "詳しく見る",
+    "announcement": "新機能：マルチフォーマット書き出し — AGENTS.md · CLAUDE.md · Cursor Rules · Copilot Instructions",
+    "announcementCta": "新機能を見る →",
+    "detectedFramework": "検出されたフレームワーク",
+    "detectedFrameworkValue": "Next.js 14",
+    "confidence": "信頼度 {pct}%",
+    "qualityScore": "品質スコア",
+    "excellentContext": "↑ 優れたコンテキスト品質"
+  },
+  "pricing": {
+    "eyebrow": "料金",
+    "title": "シンプルで透明な料金体系。",
+    "subtitle": "無料から始めましょう。必要な時にアップグレード。追加料金なし。いつでもキャンセル可能。",
+    "mostPopular": "人気No.1",
+    "free": {
+      "name": "無料",
+      "price": "$0",
+      "period": "永久無料",
+      "cta": "無料で始める",
+      "features": [
+        "公開リポジトリ",
+        "1日 3 回の分析",
+        "qwen3.7-plus AI モデル",
+        "AGENTS.md 生成",
+        "基本品質スコア",
+        "コピー & ダウンロード"
+      ],
+      "qualityNote": "標準品質 — 日常の公開リポジトリに最適。"
+    },
+    "pro": {
+      "name": "Pro",
+      "price": "$19",
+      "period": "/月",
+      "tagline": "本気の開発者向け",
+      "cta": "Pro に登録",
+      "trialNote": "月あたり Pro トライアル {pro} 回＋無料 {free} 回を含む。クレジットカード不要。",
+      "features": [
+        "無料版の全機能",
+        "Qwen3.8-Max AI モデル",
+        "無制限の公開リポジトリ",
+        "プライベートリポジトリ",
+        "CLAUDE.md エクスポート",
+        "Cursor Rules エクスポート",
+        "Copilot Instructions エクスポート",
+        "エビデンスパネル",
+        "AGENTS.md 監査",
+        "分析履歴",
+        "優先サポート"
+      ],
+      "qualityNote": "より高い品質 — 深い分析と豊富なエクスポート。"
+    },
+    "annual": {
+      "name": "Pro",
+      "price": "$149",
+      "period": " /年",
+      "tagline": "年間 Pro アクセス",
+      "cta": "登録する",
+      "features": [
+        "Pro 月払いの全機能",
+        "Qwen3.8-Max AI モデル",
+        "月払いより 2 か月お得",
+        "無制限の公開リポジトリ",
+        "プライベートリポジトリ",
+        "CLAUDE.md エクスポート",
+        "Cursor Rules エクスポート",
+        "Copilot Instructions エクスポート",
+        "エビデンスパネル",
+        "AGENTS.md 監査",
+        "分析履歴",
+        "優先サポート"
+      ],
+      "qualityNote": "より高い品質 — 深い分析と豊富なエクスポート。"
+    },
+    "lifetime": {
+      "name": "Pro",
+      "price": "$299",
+      "period": " ワンタイム",
+      "tagline": "永久に所有",
+      "cta": "一度だけ購入",
+      "features": [
+        "Pro の全機能",
+        "Qwen3.8-Max AI モデル",
+        "生涯アクセス",
+        "無制限の公開リポジトリ",
+        "プライベートリポジトリ",
+        "CLAUDE.md エクスポート",
+        "Cursor Rules エクスポート",
+        "Copilot Instructions エクスポート",
+        "エビデンスパネル",
+        "AGENTS.md 監査",
+        "分析履歴",
+        "優先サポート",
+        "追加料金なし — 永久に"
+      ],
+      "qualityNote": "最高品質 — 深い分析とすべてのエクスポート形式。"
+    },
+    "comparisonTitle": "Pro にアップグレードする理由は？",
+    "freeModel": "無料 / 匿名",
+    "proModel": "Pro",
+    "freeModelDesc": "日常の公開リポジトリに対応できるベースラインモデル。",
+    "proModelDesc": "大きなコンテキスト、強力な推論、本気のコードベース向けにより正確な AGENTS.md。",
+    "comparisonFooter": "有料プランはより深く正確な結果と豊富なエクスポートを提供 — モデル名はなく、成果物だけ。",
+    "tryFree": "無料で試す →",
+    "modalTitle": "購入を完了する前に",
+    "modalBody": "RepoContext はデジタルサービスです。続行することで、この購入が最終的かつ返金不可であることを確認したものとみなします。支払い前に返金ポリシーと利用規約をご確認ください。",
+    "agreeLabel": "この購入が返金不可であることを理解し、同意します。",
+    "cancel": "キャンセル",
+    "proceed": "支払いへ進む"
+  },
+  "getRepoLink": {
+    "back": "← ホームに戻る",
+    "eyebrow": "はじめに",
+    "title": "GitHub リポジトリのリンクを取得する方法。",
+    "intro": "RepoContext は次の形式のリンクに対応します：",
+    "introUrl": "https://github.com/owner/repository",
+    "introSuffix": "。5 ステップでリンクをコピーする方法を説明します。",
+    "steps": [
+      {
+        "title": "GitHub でリポジトリを開く",
+        "desc": "github.com にアクセスし、分析したいリポジトリを開きます。自分のリポジトリでも公開リポジトリでも構いません — 例えばホームページに表示されている https://github.com/psf/requests などです。",
+        "tip": "公開リポジトリは設定なしで利用できます。プライベートリポジトリの場合は、先に GitHub アカウントを連携してください。"
+      },
+      {
+        "title": "アドレスバーの URL をコピーする",
+        "desc": "リポジトリのメインページに移動したら、ブラウザのアドレスバーを確認してください。そこにある完全な URL がリポジトリリンクです。常に https://github.com/owner/repository の形式になります — 例えば https://github.com/vercel/next.js です。",
+        "tip": "アドレス全体をコピーするだけで十分です — 追加のパラメーターやトークンは不要です。"
+      },
+      {
+        "title": "リポジトリのルートにいることを確認する",
+        "desc": "リンクは owner/repository で終わる必要があります。ファイルやフォルダを開いている場合、URL に /blob/、/tree/、/issues/ などの追加セグメントが含まれます。コピーする前に、ページ上部のリポジトリ名をクリックしてルートに戻ってください。",
+        "tip": "間違い例：https://github.com/psf/requests/blob/main/requests/api.py — 先にルートに戻ってください。"
+      },
+      {
+        "title": "オプション：特定のブランチを指定する",
+        "desc": "デフォルトでは RepoContext はデフォルトブランチを分析します。特定のブランチを分析したい場合は、URL の末尾に /tree/branch-name を追加してください — 例：https://github.com/owner/repo/tree/develop。",
+        "tip": "デフォルトブランチ以外が必要な場合を除き、指定は不要です。"
+      },
+      {
+        "title": "RepoContext に貼り付ける",
+        "desc": "Ctrl+C（Windows）または Cmd+C（Mac）でリンクをコピーし、RepoContext のホームページに戻って入力欄に貼り付け、[分析] をクリックします。数秒でリポジトリの AI 対応コンテキストが取得できます。",
+        "tip": "これだけです — 公開リポジトリの場合、設定ファイルやクレジットカードは不要です。"
+      }
+    ],
+    "examplesTitle": "有効な例",
+    "ctaTitle": "試してみますか？",
+    "ctaBody": "リポジトリリンクを貼り付けて、数秒で AI 対応のコンテキストを取得しましょう。",
+    "ctaButton": "分析を始める →"
+  },
+  "support": {
+    "title": "カスタマーサポート",
+    "subtitle": "メッセージを残してください。折り返しご連絡します。",
+    "placeholder": "メッセージを入力…",
+    "send": "送信",
+    "away": "ただいま離席中",
+    "awayMessage": "サポートは現在離席しており、まもなく戻ります。",
+    "sendAnother": "もう一度送信"
+  },
+  "docs": {
+    "eyebrow": "ドキュメント",
+    "title": "AI 対応コンテキストを出荷するために必要なすべて。",
+    "subtitle": "RepoContext を使って、GitHub リポジトリを AI コーディングエージェント向けの正確で構造化されたドキュメントに変換する方法を学びましょう。",
+    "onThisPage": "このページ",
+    "toc": {
+      "quickstart": "クイックスタート",
+      "formats": "対応フォーマット",
+      "evidence": "エビデンスパネル",
+      "audit": "AGENTS.md 監査",
+      "api": "API リファレンス",
+      "faq": "よくある質問"
+    },
+    "quickstart": {
+      "kicker": "60 秒で始められます。",
+      "title": "クイックスタート",
+      "p1": "公開されている GitHub リポジトリの URL をホームページに貼り付け、<strong>解析</strong> をクリックしてください。数秒で RepoContext がリポジトリをスキャンし、AI コーディングエージェントが信頼できるコンテキストとして使える構造化ドキュメントを生成します。",
+      "p2": "出力には、フレームワーク検出のサマリー、依存関係グラフ、ビルド／テスト設定、品質スコアが含まれ、信頼度を把握できます。"
+    },
+    "formats": {
+      "kicker": "一度書き出せば、どこでも使える。",
+      "title": "対応フォーマット",
+      "intro": "すべてのプランで標準の <code>AGENTS.md</code> を書き出せます。Pro と Team で残りのフォーマットもご利用いただけます:",
+      "li1": "<strong>AGENTS.md</strong> — エージェント指示のクロスツール標準。",
+      "li2": "<strong>CLAUDE.md</strong> — Claude 向けに最適化されたプロンプトコンテキスト。",
+      "li3": "<strong>Cursor Rules</strong> — Cursor IDE 用の <code>.cursorrules</code>。",
+      "li4": "<strong>Copilot Instructions</strong> — リポジトリレベルの GitHub Copilot ガイダンス。"
+    },
+    "evidence": {
+      "kicker": "すべての記述に根拠があります。",
+      "title": "エビデンスパネル",
+      "body": "生成された各ドキュメントについて、RepoContext はどのファイルや設定アーティファクトから導出されたかを表示します。任意の記述をクリックして裏付けを確認できるため、推奨の出所を推測する必要はありません。"
+    },
+    "audit": {
+      "kicker": "すでにファイルがある？ 採点します。",
+      "title": "AGENTS.md 監査",
+      "body": "既存の <code>AGENTS.md</code> をアップロードすると、正確性・完全性・鮮度について監査し、品質スコアと具体的な修正チェックリストを提供します。"
+    },
+    "api": {
+      "kicker": "チームと自動化のために。",
+      "title": "API リファレンス",
+      "body": "同じエンジンが JSON API も提供します。リポジトリ URL を送ると構造化された結果が返るので、CI パイプラインに直接組み込めます。"
+    },
+    "faq": {
+      "kicker": "よくある質問",
+      "title": "よくある質問",
+      "q1": "コードはあなたのサーバーにアップロードされますか？",
+      "a1": "RepoContext は GitHub API から必要なものだけを読み取ります。完全なソースツリーが当社のディスクに書き込まれることはなく、ダッシュボードからいつでもキャッシュされたメタデータを削除できます。",
+      "q2": "プライベートリポジトリを解析できますか？",
+      "a2": "はい — Pro と Team プランは OAuth 経由でプライベートリポジトリをサポートします。コードがあなたの手を離れることはなく、デフォルトではメタデータのみを読み取り、ファイルの内容は読み取りません。",
+      "q3": "出力の精度はどのくらいですか？",
+      "a3": "すべての解析には品質スコアが付きます。信頼度の低いファイルはエビデンスパネルでフラグ付けされるため、どこを再確認すべきかが明確になります。"
+    },
+    "copy": "コピー",
+    "copied": "コピー済み ✓",
+    "footerCopyright": "© 2026 RepoContext. 全著作権所有。",
+    "footerHome": "ホーム",
+    "footerPricing": "料金",
+    "footerSignIn": "サインイン"
+  }
+}

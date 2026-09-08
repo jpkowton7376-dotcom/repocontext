@@ -1,5 +1,7 @@
 import type { Metadata } from "next"
 import "./globals.css"
+import { LanguageProvider } from "@/components/LanguageProvider"
+import { CustomerServiceWidget } from "@/components/CustomerServiceWidget"
 
 export const metadata: Metadata = {
   title: "RepoContext — Turn your codebase into AI-ready context",
@@ -22,7 +24,12 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        <LanguageProvider>
+          {children}
+          <CustomerServiceWidget />
+        </LanguageProvider>
+      </body>
     </html>
   )
 }

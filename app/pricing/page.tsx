@@ -2,67 +2,44 @@
 
 import Link from "next/link"
 import Image from "next/image"
+import { useState, useRef } from "react"
+import { useTranslation } from "@/components/LanguageProvider"
+import { SiteNav } from "@/components/SiteNav"
+import { FREE_TRIAL_LIMIT, PRO_TRIAL_LIMIT } from "@/lib/trial"
 
 export default function PricingPage() {
+  const { t, dict } = useTranslation()
+  const [modalOpen, setModalOpen] = useState(false)
+  const [selectedPlan, setSelectedPlan] = useState<"pro" | "team" | "lifetime" | null>(null)
+  const [agreed, setAgreed] = useState(false)
+  const proFormRef = useRef<HTMLFormElement>(null)
+  const teamFormRef = useRef<HTMLFormElement>(null)
+  const lifetimeFormRef = useRef<HTMLFormElement>(null)
+
+  const openCheckout = (plan: "pro" | "team" | "lifetime") => {
+    setSelectedPlan(plan)
+    setAgreed(false)
+    setModalOpen(true)
+  }
+
+  const confirmCheckout = () => {
+    if (!agreed) return
+    setModalOpen(false)
+    if (selectedPlan === "pro") {
+      proFormRef.current?.submit()
+    } else if (selectedPlan === "team") {
+      teamFormRef.current?.submit()
+    } else if (selectedPlan === "lifetime") {
+      lifetimeFormRef.current?.submit()
+    }
+  }
+
+  const p = dict.pricing
+
   return (
     <main style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "white" }}>
       {/* Nav */}
-      <nav style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        padding: "0 48px",
-        height: "64px",
-        borderBottom: "1px solid var(--rule)",
-        background: "white",
-        position: "sticky",
-        top: 0,
-        zIndex: 100,
-      }}>
-        <Link href="/" style={{ display: "flex", alignItems: "center", gap: "12px", textDecoration: "none", color: "inherit" }}>
-          <div style={{ width: "36px", height: "36px", position: "relative" }}>
-            <Image
-              src="/logo-dark.png"
-              alt="RepoContext"
-              fill
-              sizes="36px"
-              style={{ objectFit: "contain", backgroundColor: "transparent" }}
-              priority
-              quality={95}
-            />
-          </div>
-          <span style={{ fontSize: "18px", fontWeight: 600, letterSpacing: "-0.01em" }}>
-            RepoContext
-          </span>
-        </Link>
-        <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
-          <Link
-            href="/login"
-            style={{
-              fontSize: "14px",
-              color: "var(--ink)",
-              textDecoration: "none",
-              fontWeight: 500,
-            }}
-          >
-            Sign in
-          </Link>
-          <Link
-            href="/signup"
-            style={{
-              fontSize: "14px",
-              padding: "10px 20px",
-              background: "var(--blue-60)",
-              color: "white",
-              textDecoration: "none",
-              fontWeight: 500,
-              letterSpacing: "0.02em",
-            }}
-          >
-            Get started
-          </Link>
-        </div>
-      </nav>
+      <SiteNav variant="light" />
 
       {/* Pricing hero */}
       <section style={{
@@ -80,7 +57,7 @@ export default function PricingPage() {
             color: "var(--muted)",
             marginBottom: "16px",
           }}>
-            Pricing
+            {t("pricing.eyebrow")}
           </p>
           <h1 style={{
             fontFamily: "'IBM Plex Serif', Georgia, serif",
@@ -89,7 +66,7 @@ export default function PricingPage() {
             letterSpacing: "-0.02em",
             margin: "0 0 20px 0",
           }}>
-            Simple, transparent pricing.
+            {t("pricing.title")}
           </h1>
           <p style={{
             fontSize: "18px",
@@ -98,8 +75,7 @@ export default function PricingPage() {
             maxWidth: "560px",
             margin: "0 auto",
           }}>
-            Start free. Upgrade when you need more power. No hidden fees.
-            Cancel anytime.
+            {t("pricing.subtitle")}
           </p>
         </div>
       </section>
@@ -107,10 +83,10 @@ export default function PricingPage() {
       {/* Pricing cards */}
       <section style={{ padding: "0 48px 96px" }}>
         <div style={{
-          maxWidth: "1120px",
+          maxWidth: "1200px",
           margin: "0 auto",
           display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
+          gridTemplateColumns: "repeat(4, 1fr)",
           gap: "0",
           border: "1px solid var(--rule)",
         }}>
@@ -130,7 +106,7 @@ export default function PricingPage() {
               color: "var(--muted)",
               marginBottom: "16px",
             }}>
-              Free
+              {p.free.name}
             </div>
             <div style={{ marginBottom: "8px" }}>
               <span style={{
@@ -139,29 +115,26 @@ export default function PricingPage() {
                 fontWeight: 300,
                 lineHeight: 1,
               }}>
-                $0
+                {p.free.price}
               </span>
             </div>
-            <p style={{ fontSize: "14px", color: "var(--muted)", marginBottom: "32px" }}>
-              Forever free
+            <p style={{ fontSize: "14px", color: "var(--muted)", marginBottom: "4px" }}>
+              {p.free.period}
+            </p>
+            <p style={{ fontSize: "13px", color: "var(--muted-2)", marginBottom: "32px" }}>
+              {p.free.qualityNote}
             </p>
 
             <div style={{ flex: 1, marginBottom: "32px" }}>
               <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-                {[
-                  "Public repositories",
-                  "3 analyses per day",
-                  "AGENTS.md generation",
-                  "Basic quality score",
-                  "Copy & download",
-                ].map((item, i) => (
+                {p.free.features.map((item, i) => (
                   <li key={i} style={{
                     display: "flex",
                     alignItems: "flex-start",
                     gap: "10px",
                     fontSize: "14px",
                     padding: "8px 0",
-                    borderBottom: i < 4 ? "1px solid var(--rule-2)" : "none",
+                    borderBottom: i < p.free.features.length - 1 ? "1px solid var(--rule-2)" : "none",
                     color: "var(--ink-2)",
                     lineHeight: 1.5,
                   }}>
@@ -196,7 +169,7 @@ export default function PricingPage() {
                 e.currentTarget.style.color = "var(--ink)"
               }}
             >
-              Get started free
+              {p.free.cta}
             </Link>
           </div>
 
@@ -208,7 +181,7 @@ export default function PricingPage() {
             display: "flex",
             flexDirection: "column",
             position: "relative",
-            borderRight: "1px solid var(--rule)",
+            borderRight: "1px solid rgba(255,255,255,0.2)",
           }}>
             <div style={{
               position: "absolute",
@@ -223,7 +196,7 @@ export default function PricingPage() {
               background: "var(--blue-50)",
               color: "white",
             }}>
-              Most Popular
+              {t("pricing.mostPopular")}
             </div>
 
             <div style={{
@@ -234,7 +207,7 @@ export default function PricingPage() {
               color: "var(--blue-30)",
               marginBottom: "16px",
             }}>
-              Pro
+              {p.pro.name}
             </div>
             <div style={{ marginBottom: "8px" }}>
               <span style={{
@@ -243,35 +216,27 @@ export default function PricingPage() {
                 fontWeight: 300,
                 lineHeight: 1,
               }}>
-                $9
+                {p.pro.price}
               </span>
-              <span style={{ fontSize: "16px", color: "var(--blue-20)" }}>/month</span>
+              <span style={{ fontSize: "16px", color: "var(--blue-20)" }}>{p.pro.period}</span>
             </div>
-            <p style={{ fontSize: "14px", color: "var(--blue-20)", marginBottom: "32px" }}>
-              For serious developers
+            <p style={{ fontSize: "14px", color: "var(--blue-20)", marginBottom: "4px" }}>
+              {p.pro.tagline}
+            </p>
+            <p style={{ fontSize: "13px", color: "var(--blue-30)", marginBottom: "32px" }}>
+              {p.pro.qualityNote}
             </p>
 
             <div style={{ flex: 1, marginBottom: "32px" }}>
               <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-                {[
-                  "Everything in Free",
-                  "Unlimited public repos",
-                  "Private repositories",
-                  "CLAUDE.md export",
-                  "Cursor Rules export",
-                  "Copilot Instructions export",
-                  "Evidence panel",
-                  "AGENTS.md Audit",
-                  "Analysis history",
-                  "Priority support",
-                ].map((item, i) => (
+                {p.pro.features.map((item, i) => (
                   <li key={i} style={{
                     display: "flex",
                     alignItems: "flex-start",
                     gap: "10px",
                     fontSize: "14px",
                     padding: "8px 0",
-                    borderBottom: i < 9 ? "1px solid rgba(255,255,255,0.1)" : "none",
+                    borderBottom: i < p.pro.features.length - 1 ? "1px solid rgba(255,255,255,0.1)" : "none",
                     color: "rgba(255,255,255,0.9)",
                     lineHeight: 1.5,
                   }}>
@@ -282,28 +247,26 @@ export default function PricingPage() {
               </ul>
             </div>
 
-            <form action="/api/creem/checkout" method="POST">
-              <input type="hidden" name="plan" value="pro" />
-              <button
-                type="submit"
-                style={{
-                  width: "100%",
-                  padding: "14px 24px",
-                  background: "white",
-                  border: "none",
-                  color: "var(--blue-90)",
-                  fontSize: "14px",
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  letterSpacing: "0.02em",
-                  transition: "background 0.15s ease",
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = "var(--blue-10)" }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = "white" }}
-              >
-                Start Pro trial
-              </button>
-            </form>
+            <button
+              type="button"
+              onClick={() => openCheckout("pro")}
+              style={{
+                width: "100%",
+                padding: "14px 24px",
+                background: "white",
+                border: "none",
+                color: "var(--blue-90)",
+                fontSize: "14px",
+                fontWeight: 600,
+                cursor: "pointer",
+                letterSpacing: "0.02em",
+                transition: "background 0.15s ease",
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = "var(--blue-10)" }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "white" }}
+            >
+              {p.pro.cta}
+            </button>
             <p style={{
               fontSize: "12px",
               color: "var(--blue-30)",
@@ -311,13 +274,101 @@ export default function PricingPage() {
               marginTop: "12px",
               marginBottom: 0,
             }}>
-              14-day free trial. No credit card needed.
+              {t("pricing.pro.trialNote", { pro: PRO_TRIAL_LIMIT, free: FREE_TRIAL_LIMIT })}
             </p>
           </div>
 
-          {/* Team */}
+          {/* Pro (annual) */}
           <div style={{
-            background: "white",
+            background: "#0F62FE",
+            color: "white",
+            padding: "40px 32px",
+            display: "flex",
+            flexDirection: "column",
+            borderRight: "1px solid rgba(255,255,255,0.2)",
+          }}>
+            <div style={{
+              fontSize: "11px",
+              fontWeight: 600,
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+              color: "rgba(255,255,255,0.7)",
+              marginBottom: "16px",
+            }}>
+              {p.annual.name}
+            </div>
+            <div style={{ marginBottom: "8px" }}>
+              <span style={{
+                fontFamily: "'IBM Plex Serif', serif",
+                fontSize: "48px",
+                fontWeight: 300,
+                lineHeight: 1,
+              }}>
+                {p.annual.price}
+              </span>
+              <span style={{ fontSize: "16px", color: "rgba(255,255,255,0.85)" }}>{p.annual.period}</span>
+            </div>
+            <p style={{ fontSize: "14px", color: "rgba(255,255,255,0.85)", marginBottom: "4px" }}>
+              {p.annual.tagline}
+            </p>
+            <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.7)", marginBottom: "32px" }}>
+              {p.annual.qualityNote}
+            </p>
+
+            <div style={{ flex: 1, marginBottom: "32px" }}>
+              <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+                {p.annual.features.map((item, i) => (
+                  <li key={i} style={{
+                    display: "flex",
+                    alignItems: "flex-start",
+                    gap: "10px",
+                    fontSize: "14px",
+                    padding: "8px 0",
+                    borderBottom: i < p.annual.features.length - 1 ? "1px solid rgba(255,255,255,0.15)" : "none",
+                    color: "rgba(255,255,255,0.9)",
+                    lineHeight: 1.5,
+                  }}>
+                    <span style={{ color: "white", fontWeight: 700, flexShrink: 0 }}>✓</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => openCheckout("team")}
+              style={{
+                display: "block",
+                width: "100%",
+                textAlign: "center",
+                padding: "14px 24px",
+                background: "white",
+                border: "2px solid white",
+                color: "#0F62FE",
+                fontSize: "14px",
+                fontWeight: 600,
+                cursor: "pointer",
+                letterSpacing: "0.02em",
+                transition: "all 0.15s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "#e8f0ff"
+                e.currentTarget.style.borderColor = "#e8f0ff"
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "white"
+                e.currentTarget.style.borderColor = "white"
+              }}
+            >
+              {p.annual.cta}
+            </button>
+          </div>
+
+          {/* Pro (lifetime) */}
+          <div style={{
+            background: "#FE7F0F",
+            color: "white",
             padding: "40px 32px",
             display: "flex",
             flexDirection: "column",
@@ -327,10 +378,10 @@ export default function PricingPage() {
               fontWeight: 600,
               letterSpacing: "0.12em",
               textTransform: "uppercase",
-              color: "var(--muted)",
+              color: "rgba(255,255,255,0.75)",
               marginBottom: "16px",
             }}>
-              Team
+              {p.lifetime.name}
             </div>
             <div style={{ marginBottom: "8px" }}>
               <span style={{
@@ -339,74 +390,69 @@ export default function PricingPage() {
                 fontWeight: 300,
                 lineHeight: 1,
               }}>
-                $29
+                {p.lifetime.price}
               </span>
-              <span style={{ fontSize: "16px", color: "var(--muted)" }}>/month</span>
+              <span style={{ fontSize: "16px", color: "rgba(255,255,255,0.85)" }}>{p.lifetime.period}</span>
             </div>
-            <p style={{ fontSize: "14px", color: "var(--muted)", marginBottom: "32px" }}>
-              For teams & automation
+            <p style={{ fontSize: "14px", color: "rgba(255,255,255,0.9)", marginBottom: "4px" }}>
+              {p.lifetime.tagline}
+            </p>
+            <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.7)", marginBottom: "32px" }}>
+              {p.lifetime.qualityNote}
             </p>
 
             <div style={{ flex: 1, marginBottom: "32px" }}>
               <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-                {[
-                  "Everything in Pro",
-                  "Team workspace",
-                  "Shared repositories",
-                  "GitHub App integration",
-                  "Automatic sync",
-                  "PR auto-generation",
-                  "Audit history",
-                  "SSO (coming soon)",
-                  "Priority support",
-                ].map((item, i) => (
+                {p.lifetime.features.map((item, i) => (
                   <li key={i} style={{
                     display: "flex",
                     alignItems: "flex-start",
                     gap: "10px",
                     fontSize: "14px",
                     padding: "8px 0",
-                    borderBottom: i < 8 ? "1px solid var(--rule-2)" : "none",
-                    color: "var(--ink-2)",
+                    borderBottom: i < p.lifetime.features.length - 1 ? "1px solid rgba(255,255,255,0.15)" : "none",
+                    color: "rgba(255,255,255,0.95)",
                     lineHeight: 1.5,
                   }}>
-                    <span style={{ color: "var(--green-50)", fontWeight: 700, flexShrink: 0 }}>✓</span>
+                    <span style={{ color: "white", fontWeight: 700, flexShrink: 0 }}>✓</span>
                     <span>{item}</span>
                   </li>
                 ))}
               </ul>
             </div>
 
-            <Link
-              href="#"
+            <button
+              type="button"
+              onClick={() => openCheckout("lifetime")}
               style={{
                 display: "block",
+                width: "100%",
                 textAlign: "center",
                 padding: "14px 24px",
-                background: "transparent",
-                border: "2px solid var(--ink)",
-                color: "var(--ink)",
+                background: "white",
+                border: "2px solid white",
+                color: "#FE7F0F",
                 fontSize: "14px",
-                fontWeight: 500,
-                textDecoration: "none",
+                fontWeight: 600,
+                cursor: "pointer",
                 letterSpacing: "0.02em",
                 transition: "all 0.15s ease",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = "var(--ink)"
-                e.currentTarget.style.color = "white"
+                e.currentTarget.style.background = "#fff0e6"
+                e.currentTarget.style.borderColor = "#fff0e6"
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = "transparent"
-                e.currentTarget.style.color = "var(--ink)"
+                e.currentTarget.style.background = "white"
+                e.currentTarget.style.borderColor = "white"
               }}
             >
-              Contact sales
-            </Link>
+              {p.lifetime.cta}
+            </button>
           </div>
         </div>
 
-        {/* FAQ / Notes */}
+        {/* Free vs Pro quality comparison */}
         <div style={{
           maxWidth: "720px",
           margin: "48px auto 0",
@@ -420,18 +466,75 @@ export default function PricingPage() {
             <h3 style={{
               fontSize: "20px",
               fontWeight: 600,
-              margin: "0 0 12px 0",
+              margin: "0 0 16px 0",
               fontFamily: "'IBM Plex Serif', serif",
             }}>
-              Not sure which plan is right for you?
+              {p.comparisonTitle}
             </h3>
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: "24px",
+              textAlign: "left",
+              marginBottom: "24px",
+            }}>
+              <div style={{
+                padding: "16px",
+                background: "white",
+                border: "1px solid var(--rule)",
+              }}>
+                <div style={{
+                  fontSize: "12px",
+                  fontWeight: 600,
+                  letterSpacing: "0.1em",
+                  textTransform: "uppercase",
+                  color: "var(--muted)",
+                  marginBottom: "8px",
+                }}>
+                  {p.freeModel}
+                </div>
+                <p style={{
+                  fontSize: "13px",
+                  color: "var(--muted)",
+                  margin: "0",
+                  lineHeight: 1.5,
+                }}>
+                  {p.freeModelDesc}
+                </p>
+              </div>
+              <div style={{
+                padding: "16px",
+                background: "var(--blue-90)",
+                color: "white",
+                border: "1px solid var(--blue-90)",
+              }}>
+                <div style={{
+                  fontSize: "12px",
+                  fontWeight: 600,
+                  letterSpacing: "0.1em",
+                  textTransform: "uppercase",
+                  color: "var(--blue-30)",
+                  marginBottom: "8px",
+                }}>
+                  {p.proModel}
+                </div>
+                <p style={{
+                  fontSize: "13px",
+                  color: "var(--blue-20)",
+                  margin: "0",
+                  lineHeight: 1.5,
+                }}>
+                  {p.proModelDesc}
+                </p>
+              </div>
+            </div>
             <p style={{
               fontSize: "15px",
               color: "var(--ink-2)",
               margin: "0 0 20px 0",
               lineHeight: 1.6,
             }}>
-              Start with the free plan and upgrade anytime. Your first 14 days of Pro are on us.
+              {p.comparisonFooter}
             </p>
             <Link
               href="/"
@@ -446,11 +549,124 @@ export default function PricingPage() {
                 letterSpacing: "0.02em",
               }}
             >
-              Try it free →
+              {p.tryFree}
             </Link>
           </div>
         </div>
       </section>
+
+      {/* Hidden checkout forms */}
+      <form ref={proFormRef} action="/api/creem/checkout" method="POST" style={{ display: "none" }}>
+        <input type="hidden" name="plan" value="pro" />
+      </form>
+      <form ref={teamFormRef} action="/api/creem/checkout" method="POST" style={{ display: "none" }}>
+        <input type="hidden" name="plan" value="team" />
+      </form>
+      <form ref={lifetimeFormRef} action="/api/creem/checkout" method="POST" style={{ display: "none" }}>
+        <input type="hidden" name="plan" value="lifetime" />
+      </form>
+
+      {/* No-refund confirmation modal */}
+      {modalOpen && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 200,
+            padding: "24px",
+          }}
+          onClick={() => setModalOpen(false)}
+        >
+          <div
+            style={{
+              background: "white",
+              maxWidth: "440px",
+              width: "100%",
+              padding: "32px",
+              border: "1px solid var(--rule)",
+              boxShadow: "0 20px 40px rgba(0,0,0,0.15)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 style={{
+              fontFamily: "'IBM Plex Serif', serif",
+              fontSize: "24px",
+              fontWeight: 300,
+              margin: "0 0 16px 0",
+              color: "var(--ink)",
+            }}>
+              {p.modalTitle}
+            </h3>
+            <p style={{
+              fontSize: "14px",
+              color: "var(--ink-2)",
+              lineHeight: 1.6,
+              marginBottom: "20px",
+            }}>
+              {p.modalBody}
+            </p>
+            <label style={{
+              display: "flex",
+              alignItems: "flex-start",
+              gap: "12px",
+              fontSize: "14px",
+              color: "var(--ink)",
+              lineHeight: 1.5,
+              marginBottom: "24px",
+              cursor: "pointer",
+            }}>
+              <input
+                type="checkbox"
+                checked={agreed}
+                onChange={(e) => setAgreed(e.target.checked)}
+                style={{ marginTop: "2px", flexShrink: 0 }}
+              />
+              <span>
+                {p.agreeLabel}
+              </span>
+            </label>
+            <div style={{ display: "flex", gap: "12px" }}>
+              <button
+                type="button"
+                onClick={() => setModalOpen(false)}
+                style={{
+                  flex: 1,
+                  padding: "12px 20px",
+                  background: "white",
+                  border: "1px solid var(--rule)",
+                  color: "var(--ink)",
+                  fontSize: "14px",
+                  fontWeight: 500,
+                  cursor: "pointer",
+                }}
+              >
+                {p.cancel}
+              </button>
+              <button
+                type="button"
+                onClick={confirmCheckout}
+                disabled={!agreed}
+                style={{
+                  flex: 1,
+                  padding: "12px 20px",
+                  background: agreed ? "var(--blue-60)" : "var(--muted-2)",
+                  border: "none",
+                  color: "white",
+                  fontSize: "14px",
+                  fontWeight: 600,
+                  cursor: agreed ? "pointer" : "not-allowed",
+                }}
+              >
+                {p.proceed}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Footer */}
       <footer style={{
@@ -486,43 +702,42 @@ export default function PricingPage() {
                 lineHeight: 1.6,
                 maxWidth: "320px",
               }}>
-                Enterprise-grade repository analysis for AI development teams.
-                Turn your codebase into AI-ready context.
+                {t("footer.tagline")}
               </p>
             </div>
 
             <div>
               <h4 style={{ fontSize: "13px", fontWeight: 600, margin: "0 0 16px 0", letterSpacing: "0.05em" }}>
-                PRODUCT
+                {t("footer.productTitle")}
               </h4>
               <div style={{ display: "flex", flexDirection: "column", gap: "10px", fontSize: "14px" }}>
-                <Link href="/pricing" style={{ color: "#949494", textDecoration: "none" }}>Pricing</Link>
-                <Link href="/" style={{ color: "#949494", textDecoration: "none" }}>Features</Link>
-                <Link href="/docs" style={{ color: "#949494", textDecoration: "none" }}>Documentation</Link>
-                <Link href="/docs#api" style={{ color: "#949494", textDecoration: "none" }}>API</Link>
+                <Link href="/pricing" style={{ color: "#949494", textDecoration: "none" }}>{t("nav.pricing")}</Link>
+                <Link href="/" style={{ color: "#949494", textDecoration: "none" }}>{t("nav.features")}</Link>
+                <Link href="/docs" style={{ color: "#949494", textDecoration: "none" }}>{t("nav.docs")}</Link>
+                <Link href="/docs#api" style={{ color: "#949494", textDecoration: "none" }}>{t("nav.api")}</Link>
               </div>
             </div>
 
             <div>
               <h4 style={{ fontSize: "13px", fontWeight: 600, margin: "0 0 16px 0", letterSpacing: "0.05em" }}>
-                RESOURCES
+                {t("footer.resourcesTitle")}
               </h4>
               <div style={{ display: "flex", flexDirection: "column", gap: "10px", fontSize: "14px" }}>
-                <a href="#" style={{ color: "#949494", textDecoration: "none" }}>Blog</a>
-                <a href="#" style={{ color: "#949494", textDecoration: "none" }}>Changelog</a>
-                <a href="#" style={{ color: "#949494", textDecoration: "none" }}>AGENTS.md Spec</a>
+                <a href="#" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.blog")}</a>
+                <a href="#" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.changelog")}</a>
+                <a href="#" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.spec")}</a>
               </div>
             </div>
 
             <div>
               <h4 style={{ fontSize: "13px", fontWeight: 600, margin: "0 0 16px 0", letterSpacing: "0.05em" }}>
-                COMPANY
+                {t("footer.companyTitle")}
               </h4>
               <div style={{ display: "flex", flexDirection: "column", gap: "10px", fontSize: "14px" }}>
-                <Link href="/terms" style={{ color: "#949494", textDecoration: "none" }}>Terms</Link>
-                <Link href="/privacy" style={{ color: "#949494", textDecoration: "none" }}>Privacy</Link>
-                <Link href="/refund" style={{ color: "#949494", textDecoration: "none" }}>Refund policy</Link>
-                <a href="#" style={{ color: "#949494", textDecoration: "none" }}>Contact</a>
+                <Link href="/terms" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.terms")}</Link>
+                <Link href="/privacy" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.privacy")}</Link>
+                <Link href="/refund" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.refund")}</Link>
+                <a href="#" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.contact")}</a>
               </div>
             </div>
           </div>
@@ -536,11 +751,11 @@ export default function PricingPage() {
             fontSize: "13px",
             color: "#6f6f6f",
           }}>
-            <span>© 2026 RepoContext. All rights reserved.</span>
+            <span>{t("footer.copyright")}</span>
             <div style={{ display: "flex", gap: "24px" }}>
-              <a href="#" style={{ color: "#6f6f6f", textDecoration: "none" }}>GitHub</a>
-              <a href="#" style={{ color: "#6f6f6f", textDecoration: "none" }}>Twitter</a>
-              <a href="#" style={{ color: "#6f6f6f", textDecoration: "none" }}>LinkedIn</a>
+              <a href="#" style={{ color: "#6f6f6f", textDecoration: "none" }}>{t("footer.github")}</a>
+              <a href="#" style={{ color: "#6f6f6f", textDecoration: "none" }}>{t("footer.twitter")}</a>
+              <a href="#" style={{ color: "#6f6f6f", textDecoration: "none" }}>{t("footer.linkedin")}</a>
             </div>
           </div>
         </div>
