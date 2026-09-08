@@ -1,7 +1,7 @@
 {
   "home": {
     "title": "Turn your codebase",
-    "subtitle": "into AI-ready context",
+    "subtitle": "into AI-ready context.",
     "heroEyebrow": "Enterprise AI Development",
     "description": "RepoContext analyzes your GitHub repositories and generates accurate, structured documentation for AI coding agents. Reduce hallucinations, increase productivity, and ship faster.",
     "inputPlaceholder": "github.com/owner/repository",

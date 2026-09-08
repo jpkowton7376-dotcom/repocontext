@@ -42,7 +42,7 @@
   },
   "home": {
     "title": "將你的程式碼庫",
-    "subtitle": "轉化為 AI 就緒的上下文",
+    "subtitle": "轉化為 AI 就緒的上下文。",
     "heroEyebrow": "企業級 AI 開發",
     "description": "RepoContext 分析你的 GitHub 儲存庫，並為 AI 程式編輯代理生成準確、結構化的文件。減少幻覺、提升生產力、更快交付。",
     "inputPlaceholder": "github.com/owner/repository",

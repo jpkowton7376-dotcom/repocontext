@@ -260,9 +260,18 @@ export default function HomePage() {
               color: "#ffffff",
               margin: "0 0 24px 0",
             }}>
-              {dict.home.subtitle.split(" ").slice(0, -2).join(" ")}
+              {dict.home.title}
               <br />
-              <span style={{ color: "#FE7F0F", fontWeight: 500, animation: "breathe-glow 2.6s ease-in-out infinite" }}>AI-ready</span> {dict.home.subtitle.split(" ").slice(-1)[0]}
+              {dict.home.subtitle.split("AI-ready").map((part, i, arr) => (
+                <span key={i}>
+                  {part}
+                  {i < arr.length - 1 && (
+                    <span style={{ color: "#FE7F0F", fontWeight: 500, animation: "breathe-glow 2.6s ease-in-out infinite" }}>
+                      AI-ready
+                    </span>
+                  )}
+                </span>
+              ))}
             </h1>
             <p style={{
               fontSize: "18px",

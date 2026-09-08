@@ -42,7 +42,7 @@
   },
   "home": {
     "title": "コードベースを",
-    "subtitle": "AI 対応のコンテキストに変換",
+    "subtitle": "AI 対応のコンテキストに変換。",
     "heroEyebrow": "エンタープライズ AI 開発",
     "description": "RepoContext は GitHub リポジトリを分析し、AI コーディングエージェント向けの正確で構造化されたドキュメントを生成します。幻覚を減らし、生産性を高め、より速くリリースしましょう。",
     "inputPlaceholder": "github.com/owner/repository",

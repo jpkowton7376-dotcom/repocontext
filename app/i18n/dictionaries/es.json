@@ -42,7 +42,7 @@
   },
   "home": {
     "title": "Convierte tu base de código",
-    "subtitle": "en contexto listo para IA",
+    "subtitle": "en contexto listo para IA.",
     "heroEyebrow": "Desarrollo de IA Empresarial",
     "description": "RepoContext analiza tus repositorios de GitHub y genera documentación precisa y estructurada para agentes de codificación con IA. Reduce alucinaciones, aumenta la productividad y entrega más rápido.",
     "inputPlaceholder": "github.com/owner/repository",
