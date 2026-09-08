@@ -5,26 +5,6 @@ import type { ReactNode } from "react"
 import { useTranslation } from "@/components/LanguageProvider"
 import { LanguageSwitcher } from "@/components/LanguageSwitcher"
 
-function CheckIcon() {
-  return (
-    <div style={{
-      flexShrink: 0,
-      width: "44px",
-      height: "44px",
-      borderRadius: "50%",
-      background: "var(--blue-90)",
-      color: "white",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      fontSize: "20px",
-      fontWeight: 700,
-    }}>
-      ✓
-    </div>
-  )
-}
-
 /* ---------- Illustrations (inline SVG, no external assets) ---------- */
 
 function BrowserMock({ url, children }: { url: string; children?: ReactNode }) {
@@ -210,7 +190,6 @@ export default function GetRepoLinkPage() {
               }}
             >
               <div style={{ display: "flex", alignItems: "flex-start", gap: "24px" }}>
-                <CheckIcon />
                 <div style={{ flex: 1 }}>
                   <div style={{
                     fontFamily: "'IBM Plex Serif', serif",
