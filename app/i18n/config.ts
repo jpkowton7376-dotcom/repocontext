@@ -8,3 +8,11 @@ export const localeLabels: Record<Locale, string> = {
   'zh-Hant': '繁體中文',
   ja: '日本語',
 }
+
+// Two-letter codes shown next to each option in the switcher dropdown.
+export const localeShort: Record<Locale, string> = {
+  en: 'EN',
+  es: 'ES',
+  'zh-Hant': 'ZH',
+  ja: 'JA',
+}
