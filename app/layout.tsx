@@ -3,10 +3,29 @@ import "./globals.css"
 import { LanguageProvider } from "@/components/LanguageProvider"
 import { CustomerServiceWidget } from "@/components/CustomerServiceWidget"
 
+const SITE_NAME = "RepoContext"
+const DEFAULT_TITLE = "RepoContext — Turn your codebase into AI-ready context"
+const DEFAULT_DESCRIPTION =
+  "Enterprise-grade repository analysis. Generate accurate AGENTS.md, CLAUDE.md, and Cursor rules for AI coding agents in seconds."
+
 export const metadata: Metadata = {
-  title: "RepoContext — Turn your codebase into AI-ready context",
-  description:
-    "Enterprise-grade repository analysis. Generate accurate AGENTS.md, CLAUDE.md, and Cursor rules for AI coding agents in seconds.",
+  // Required so relative openGraph images / urls resolve to absolute ones.
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || "https://repocontext.vercel.app",
+  ),
+  title: DEFAULT_TITLE,
+  description: DEFAULT_DESCRIPTION,
+  openGraph: {
+    title: DEFAULT_TITLE,
+    description: DEFAULT_DESCRIPTION,
+    type: "website",
+    siteName: SITE_NAME,
+  },
+  twitter: {
+    card: "summary",
+    title: DEFAULT_TITLE,
+    description: DEFAULT_DESCRIPTION,
+  },
 }
 
 export default function RootLayout({

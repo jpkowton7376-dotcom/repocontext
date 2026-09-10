@@ -16,6 +16,7 @@ export function SiteNav({ variant = "light" }: { variant?: Variant }) {
   const { t } = useTranslation()
   const router = useRouter()
   const [user, setUser] = useState<any>(null)
+  const [menuOpen, setMenuOpen] = useState(false)
   const isDark = variant === "dark"
 
   useEffect(() => {
@@ -95,6 +96,16 @@ export function SiteNav({ variant = "light" }: { variant?: Variant }) {
     letterSpacing: "0.02em",
   }
 
+  // On the dark variant the nav sits on the page itself, so anchors are
+  // relative; everywhere else they need the leading slash.
+  const navLinks = [
+    { href: isDark ? "#features" : "/#features", key: "nav.features" },
+    { href: isDark ? "#how" : "/#how", key: "nav.howItWorks" },
+    { href: "/pricing", key: "nav.pricing" },
+    { href: "/docs", key: "nav.docs" },
+    { href: "/ai-tools", key: "nav.aiTools" },
+  ]
+
   const renderCenterLink = (href: string, key: string) => {
     if (isDark) {
       return (
@@ -111,7 +122,7 @@ export function SiteNav({ variant = "light" }: { variant?: Variant }) {
   }
 
   return (
-    <nav style={navStyle}>
+    <nav className="rc-nav" style={navStyle}>
       <div style={leftGroupStyle}>
         <Link
           href="/"
@@ -133,22 +144,14 @@ export function SiteNav({ variant = "light" }: { variant?: Variant }) {
           </span>
         </Link>
         {isDark && (
-          <div style={centerLinksStyle}>
-            {renderCenterLink("#features", "nav.features")}
-            {renderCenterLink("#how", "nav.howItWorks")}
-            {renderCenterLink("/pricing", "nav.pricing")}
-            {renderCenterLink("/docs", "nav.docs")}
-            {renderCenterLink("/ai-tools", "nav.aiTools")}
+          <div className="rc-nav-links" style={centerLinksStyle}>
+            {navLinks.map((l) => renderCenterLink(l.href, l.key))}
           </div>
         )}
       </div>
       {!isDark && (
-        <div style={centerLinksStyle}>
-          {renderCenterLink("/#features", "nav.features")}
-          {renderCenterLink("/#how", "nav.howItWorks")}
-          {renderCenterLink("/pricing", "nav.pricing")}
-          {renderCenterLink("/docs", "nav.docs")}
-          {renderCenterLink("/ai-tools", "nav.aiTools")}
+        <div className="rc-nav-links" style={centerLinksStyle}>
+          {navLinks.map((l) => renderCenterLink(l.href, l.key))}
         </div>
       )}
       <div style={rightLinksStyle}>
@@ -208,7 +211,130 @@ export function SiteNav({ variant = "light" }: { variant?: Variant }) {
             </Link>
           </>
         )}
+
+        {/* Hamburger — hidden on desktop, shown from 900px down via CSS. */}
+        <button
+          type="button"
+          className="rc-nav-toggle"
+          onClick={() => setMenuOpen((o) => !o)}
+          aria-label="Toggle navigation"
+          aria-expanded={menuOpen}
+          style={{
+            alignItems: "center",
+            justifyContent: "center",
+            width: "40px",
+            height: "40px",
+            background: "none",
+            border: isDark
+              ? "1px solid rgba(255,255,255,0.2)"
+              : "1px solid var(--rule)",
+            color: isDark ? "white" : "var(--ink)",
+            cursor: "pointer",
+            fontSize: "16px",
+            lineHeight: 1,
+          }}
+        >
+          {menuOpen ? "✕" : "☰"}
+        </button>
       </div>
+
+      {menuOpen && (
+        <div
+          className="rc-nav-mobile"
+          style={{
+            position: "absolute",
+            top: "100%",
+            left: 0,
+            right: 0,
+            display: "flex",
+            flexDirection: "column",
+            gap: "18px",
+            padding: "20px",
+            background: isDark ? "#111111" : "white",
+            borderBottom: isDark
+              ? "1px solid rgba(255,255,255,0.1)"
+              : "1px solid var(--rule)",
+            zIndex: 200,
+          }}
+        >
+          {navLinks.map((l) => (
+            <Link
+              key={l.key}
+              href={l.href}
+              onClick={() => setMenuOpen(false)}
+              style={{
+                color: isDark ? "white" : "var(--ink)",
+                textDecoration: "none",
+                fontSize: "15px",
+              }}
+            >
+              {t(l.key)}
+            </Link>
+          ))}
+
+          <div
+            style={{
+              height: "1px",
+              background: isDark ? "rgba(255,255,255,0.15)" : "var(--rule)",
+            }}
+          />
+
+          {user ? (
+            <>
+              <Link
+                href="/dashboard"
+                onClick={() => setMenuOpen(false)}
+                style={{
+                  color: isDark ? "white" : "var(--ink)",
+                  textDecoration: "none",
+                  fontSize: "15px",
+                }}
+              >
+                {t("nav.dashboard")}
+              </Link>
+              <button
+                type="button"
+                onClick={() => {
+                  setMenuOpen(false)
+                  handleSignOut()
+                }}
+                style={{
+                  textAlign: "left",
+                  background: "none",
+                  border: "none",
+                  padding: 0,
+                  color: isDark ? "white" : "var(--ink)",
+                  fontSize: "15px",
+                  cursor: "pointer",
+                }}
+              >
+                {t("nav.signOut")}
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                onClick={() => setMenuOpen(false)}
+                style={{
+                  color: isDark ? "white" : "var(--ink)",
+                  textDecoration: "none",
+                  fontSize: "15px",
+                }}
+              >
+                {t("nav.signIn")}
+              </Link>
+              <Link
+                href="/signup"
+                onClick={() => setMenuOpen(false)}
+                style={{ ...getStartedStyle, textAlign: "center" }}
+              >
+                {t("nav.getStarted")}
+              </Link>
+            </>
+          )}
+        </div>
+      )}
     </nav>
   )
 }

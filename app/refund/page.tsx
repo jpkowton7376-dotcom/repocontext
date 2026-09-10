@@ -1,9 +1,14 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 
+const TITLE = "Refund Policy — RepoContext"
+const DESCRIPTION = "RepoContext's refund policy and how to request a refund."
+
 export const metadata: Metadata = {
-  title: "Refund Policy — RepoContext",
-  description: "RepoContext's refund policy and how to request a refund.",
+  title: TITLE,
+  description: DESCRIPTION,
+  openGraph: { title: TITLE, description: DESCRIPTION },
+  twitter: { card: "summary", title: TITLE, description: DESCRIPTION },
 }
 
 export default function RefundPage() {

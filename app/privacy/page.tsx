@@ -1,9 +1,14 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 
+const TITLE = "Privacy Policy — RepoContext"
+const DESCRIPTION = "How RepoContext collects, uses and protects your data."
+
 export const metadata: Metadata = {
-  title: "Privacy Policy — RepoContext",
-  description: "How RepoContext collects, uses and protects your data.",
+  title: TITLE,
+  description: DESCRIPTION,
+  openGraph: { title: TITLE, description: DESCRIPTION },
+  twitter: { card: "summary", title: TITLE, description: DESCRIPTION },
 }
 
 export default function PrivacyPage() {

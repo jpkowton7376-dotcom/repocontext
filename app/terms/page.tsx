@@ -1,10 +1,14 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 
+const TITLE = "Terms of Service — RepoContext"
+const DESCRIPTION = "The terms and conditions that govern your use of RepoContext."
+
 export const metadata: Metadata = {
-  title: "Terms of Service — RepoContext",
-  description:
-    "The terms and conditions that govern your use of RepoContext.",
+  title: TITLE,
+  description: DESCRIPTION,
+  openGraph: { title: TITLE, description: DESCRIPTION },
+  twitter: { card: "summary", title: TITLE, description: DESCRIPTION },
 }
 
 export default function TermsPage() {
