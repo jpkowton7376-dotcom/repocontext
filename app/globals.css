@@ -596,7 +596,21 @@ img, svg, video, iframe, table, pre, .code-block {
      plus floating cards) and dominates the screen on a phone. Drop it
      entirely so the headline, form and CTA have the full width. */
   .rc-hero-illu {
-    display: none !important;
+    display: block !important;
+    height: 600px !important;
+    transform: scale(0.5);
+    transform-origin: top center;
+    margin-bottom: -300px;
+  }
+
+  /* On phones the 3D illustration is the site’s main visual, so it
+     comes first and the copy follows underneath. The desktop 80px
+     column gap is also far too much for a single-column phone layout. */
+  .rc-hero-grid {
+    gap: 24px !important;
+  }
+  .rc-hero-grid > *:last-child {
+    order: -1;
   }
 
   /* Grid and flex items default to min-width:auto, which stops them

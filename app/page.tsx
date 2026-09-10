@@ -226,7 +226,7 @@ export default function HomePage() {
           pointerEvents: "none",
         }} />
 
-        <div style={{
+        <div className="rc-hero-grid" style={{
           maxWidth: "1280px",
           margin: "0 auto",
           position: "relative",
