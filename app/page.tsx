@@ -992,7 +992,7 @@ export default function HomePage() {
               </h4>
               <div style={{ display: "flex", flexDirection: "column", gap: "10px", fontSize: "14px" }}>
                 <GlowLink href="#" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.blog")}</GlowLink>
-                <GlowLink href="#" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.changelog")}</GlowLink>
+                <GlowLink href="/changelog" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.changelog")}</GlowLink>
                 <GlowLink href="#" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.spec")}</GlowLink>
               </div>
             </div>
