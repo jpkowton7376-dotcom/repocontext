@@ -4,7 +4,7 @@ import { useMemo, useState } from "react"
 import Link from "next/link"
 import { SiteNav } from "@/components/SiteNav"
 import { useTranslation } from "@/components/LanguageProvider"
-import { AI_TOOL_CATEGORIES, AI_TOOL_TOTAL, toolHostname, toolLogo } from "@/lib/ai-tools"
+import { AI_TOOL_CATEGORIES, AI_TOOL_TOTAL, toolHostname, toolLogo, displayName } from "@/lib/ai-tools"
 
 function BrandIcon({ url, name }: { url: string; name: string }) {
   const [failed, setFailed] = useState(false)
@@ -65,6 +65,7 @@ export default function AiToolsPage() {
       tools: cat.tools.filter(
         (tool) =>
           tool.name.toLowerCase().includes(q) ||
+          displayName(tool, locale).toLowerCase().includes(q) ||
           tool.desc[locale].toLowerCase().includes(q) ||
           tool.url.toLowerCase().includes(q),
       ),
@@ -290,7 +291,7 @@ export default function AiToolsPage() {
                     href={tool.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    title={`${tool.name} · ${t("aiTools.official")}`}
+                    title={`${displayName(tool, locale)} · ${t("aiTools.official")}`}
                     style={{
                       display: "flex",
                       gap: "12px",
@@ -303,11 +304,11 @@ export default function AiToolsPage() {
                       transition: "border-color .15s ease, box-shadow .15s ease",
                     }}
                   >
-                    <BrandIcon url={tool.url} name={tool.name} />
+                    <BrandIcon url={tool.url} name={displayName(tool, locale)} />
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "8px" }}>
                         <span style={{ fontSize: "15px", fontWeight: 600, color: "var(--ink)", lineHeight: 1.35 }}>
-                          {tool.name}
+                          {displayName(tool, locale)}
                         </span>
                       </div>
                       <p

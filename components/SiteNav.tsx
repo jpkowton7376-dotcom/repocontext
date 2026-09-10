@@ -152,7 +152,7 @@ export function SiteNav({ variant = "light" }: { variant?: Variant }) {
         </div>
       )}
       <div style={rightLinksStyle}>
-        <LanguageSwitcher />
+        <LanguageSwitcher variant={isDark ? "dark" : "light"} />
         {user ? (
           <>
             <Link

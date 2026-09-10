@@ -16,6 +16,13 @@ export type AiTool = {
   url: string
   /** "intl" = international, "cn" = mainland China. */
   region: "intl" | "cn"
+  /**
+   * Optional localized brand name. When set, the page renders the entry
+   * for the active locale. `displayName()` falls back to `nameLocalized.en`,
+   * then `name`, so users in any language see a clean brand name instead
+   * of a mixed Chinese/English string.
+   */
+  nameLocalized?: LocalizedText
 }
 
 export type AiToolCategory = {
@@ -3543,4 +3550,123 @@ export function toolHostname(url: string): string {
 export function toolLogo(url: string): string {
   const host = toolHostname(url)
   return `https://www.google.com/s2/favicons?domain=${host}&sz=128`
+}
+
+/**
+ * English-only brand names for CN tools. Used by `displayName()` to keep
+ * brand names clean in any locale — falls back to `nameLocalized.en`,
+ * then `name`.
+ */
+const CN_TOOL_NAME_EN: Record<string, string> = {
+  // AI Art / Image / Video
+  "即梦 Jimeng": "Jimeng",
+  "豆包 Doubao": "Doubao",
+  "稿定 AI Gaoding": "Gaoding",
+  "AI 星踪岛": "AI Xingzong",
+  "liblib哩布哩布": "Liblib",
+  "无界 AI": "Wujie AI",
+  "星流 AI": "Xingliu AI",
+  "腾讯元宝": "Tencent Yuanbao",
+  "美图 AI 开放平台": "Meitu AI Platform",
+  "美图云修": "Meitu Cloud Editor",
+  "清图": "Qingtu",
+  "字体家 AI 神笔": "Zitijia Magic Pen",
+  "标小智": "LogoSC",
+  "蝉妈妈": "Chanmama",
+  "网易天音": "NetEase Tianyin",
+  "剪映专业版": "CapCut",
+  "腾讯智影": "Tencent Zenvideo",
+
+  // AI Chat / Coding / Agent
+  "扣子 Coze": "Coze",
+  "星辰 Agent": "iFlytek Agent",
+  "DeepSeek": "DeepSeek",
+  "文心一言": "Wenxin Yiyan",
+  "通义千问": "Tongyi Qianwen",
+  "Kimi": "Kimi",
+  "腾讯 AI Lab": "Tencent AI Lab",
+  "达摩院": "DAMO Academy",
+  "360 智脑": "360 Brain",
+  "网易伏羲": "NetEase Fuxi",
+  "HiAI": "HiAI",
+
+  // AI Writing
+  "秘塔 AI 搜索": "Metaso",
+  "秘塔写作猫": "Xiezuocat",
+  "火山写作": "Writingo",
+  "据意查句": "WantQuotes",
+  "Effidit": "Effidit",
+  "爱改写": "Aigaixie",
+  "新华妙笔": "Xinhua Miaobi",
+  "悉语": "Xiyu",
+  "爱创作": "Aichuangzuo",
+  "字语未来": "GetGetAI",
+
+  // AI Translate
+  "秘塔 AI 翻译": "Metaso Translate",
+  "TranSmart": "TranSmart",
+  "有道翻译": "Youdao Translate",
+  "阿里翻译": "Alibaba Translate",
+  "讯飞智能翻译": "iFlytek Translate",
+  "百度翻译": "Baidu Translate",
+  "彩云小译": "Caiyun Translate",
+  "搜狗翻译": "Sogou Translate",
+  "Lufe AI": "Lufe AI",
+
+  // AI Image Tools (non-art)
+  "Arc Lab": "Arc Lab",
+  "PicWish": "PicWish",
+  "BgSub": "BgSub",
+  "像素蛋糕": "Pixcake",
+  "AIDesign": "AIDesign",
+  "ImageCreator": "ImageCreator",
+
+  // Office / Productivity
+  "酷表 ChatExcel": "ChatExcel",
+  "阿里云 AI 学习路线": "Alibaba Cloud AI Path",
+  "AI 大课堂": "AI Daxuetang",
+
+  // Research Labs
+  "中国科学院自动化研究所": "CAS Institute of Automation",
+  "北京大学人工智能研究院": "Peking University AI Institute",
+  "清华大学人工智能研究院": "Tsinghua AI Institute",
+  "复旦大学人工智能研究院": "Fudan AI Institute",
+  "上海交通大学人工智能研究院": "SJTU AI Institute",
+  "北京通用人工智能研究院": "BIGAI",
+  "北京智源人工智能研究院": "BAAI",
+
+  // Bloggers / KOLs
+  "Simon_阿文": "Simon Awen",
+  "木遥": "Mu Yao",
+  "宝玉 xp": "Baoyu",
+  "海辛 Hyacinth": "Hyacinth",
+  "互联网的那点事": "Internet Things",
+  "Barret 李靖": "Barret Li Jing",
+  "量子位": "QbitAI",
+  "刘群": "Liu Qun",
+  "陈怡然（杜克大学）": "Chen Yiran (Duke)",
+  "拉面 daybreak": "Lamian",
+  "AI 帮个忙": "AI Bangmang",
+
+  // Skill sites
+  "Skillstore": "Skillstore",
+  "SkillHub": "SkillHub",
+  "Skillbox": "Skillbox",
+
+  // TTS
+  "TTSMaker": "TTSMaker",
+}
+
+/**
+ * Returns the brand name to render for the active locale.
+ * Priority: nameLocalized[locale] → nameLocalized.en → CN_TOOL_NAME_EN[name] → name.
+ * Guarantees users never see a mixed Chinese/English brand string.
+ */
+export function displayName(tool: AiTool, locale: Locale): string {
+  if (tool.nameLocalized?.[locale]) return tool.nameLocalized[locale]
+  if (tool.nameLocalized?.en) return tool.nameLocalized.en
+  if (tool.region === "cn" && CN_TOOL_NAME_EN[tool.name]) {
+    return CN_TOOL_NAME_EN[tool.name]
+  }
+  return tool.name
 }
