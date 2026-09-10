@@ -733,6 +733,11 @@ export default function HomePage() {
               </p>
             </div>
             <button
+              onClick={() => {
+                window.location.href =
+                  "mailto:kowton@163.com?subject=" +
+                  encodeURIComponent("RepoContext waitlist")
+              }}
               onMouseEnter={() => setWaitlistHover(true)}
               onMouseLeave={() => setWaitlistHover(false)}
               style={{
@@ -991,9 +996,8 @@ export default function HomePage() {
                 {t("footer.resourcesTitle")}
               </h4>
               <div style={{ display: "flex", flexDirection: "column", gap: "10px", fontSize: "14px" }}>
-                <GlowLink href="#" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.blog")}</GlowLink>
                 <GlowLink href="/changelog" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.changelog")}</GlowLink>
-                <GlowLink href="#" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.spec")}</GlowLink>
+                <GlowLink href="/docs" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.spec")}</GlowLink>
               </div>
             </div>
 
@@ -1005,7 +1009,7 @@ export default function HomePage() {
                 <GlowLink href="/terms" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.terms")}</GlowLink>
                 <GlowLink href="/privacy" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.privacy")}</GlowLink>
                 <GlowLink href="/refund" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.refund")}</GlowLink>
-                <GlowLink href="#" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.contact")}</GlowLink>
+                <GlowLink href="mailto:kowton@163.com" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.contact")}</GlowLink>
               </div>
             </div>
           </div>
@@ -1021,9 +1025,14 @@ export default function HomePage() {
           }}>
             <span>{t("footer.copyright")}</span>
             <div style={{ display: "flex", gap: "24px" }}>
-              <GlowLink href="#" style={{ color: "#6f6f6f", textDecoration: "none" }}>{t("footer.github")}</GlowLink>
-              <GlowLink href="#" style={{ color: "#6f6f6f", textDecoration: "none" }}>{t("footer.twitter")}</GlowLink>
-              <GlowLink href="#" style={{ color: "#6f6f6f", textDecoration: "none" }}>{t("footer.linkedin")}</GlowLink>
+              <GlowLink
+                href="https://github.com/jpkowton7376-dotcom/repocontext"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: "#6f6f6f", textDecoration: "none" }}
+              >
+                {t("footer.github")}
+              </GlowLink>
             </div>
           </div>
         </div>

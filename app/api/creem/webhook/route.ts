@@ -22,8 +22,9 @@ function extractEmail(obj: CreemObj): string | undefined {
   return undefined
 }
 
-// The one-time plan is sold as Pro on the pricing page, so both the monthly
-// and one-time products map to the "pro" plan in the database.
+// All three products on the pricing page are Pro tier (Pro monthly, Pro Year
+// annual, Pro One-time buyout), so every successful payment records the user
+// as a Pro subscriber.
 function extractPlan(obj: CreemObj): "pro" {
   return "pro"
 }

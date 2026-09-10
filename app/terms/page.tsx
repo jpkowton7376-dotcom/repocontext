@@ -1,4 +1,11 @@
+import type { Metadata } from "next"
 import Link from "next/link"
+
+export const metadata: Metadata = {
+  title: "Terms of Service — RepoContext",
+  description:
+    "The terms and conditions that govern your use of RepoContext.",
+}
 
 export default function TermsPage() {
   return (

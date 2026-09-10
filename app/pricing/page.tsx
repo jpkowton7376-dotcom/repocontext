@@ -723,9 +723,8 @@ export default function PricingPage() {
                 {t("footer.resourcesTitle")}
               </h4>
               <div style={{ display: "flex", flexDirection: "column", gap: "10px", fontSize: "14px" }}>
-                <a href="#" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.blog")}</a>
-                <a href="#" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.changelog")}</a>
-                <a href="#" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.spec")}</a>
+                <a href="/changelog" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.changelog")}</a>
+                <a href="/docs" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.spec")}</a>
               </div>
             </div>
 
@@ -737,7 +736,7 @@ export default function PricingPage() {
                 <Link href="/terms" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.terms")}</Link>
                 <Link href="/privacy" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.privacy")}</Link>
                 <Link href="/refund" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.refund")}</Link>
-                <a href="#" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.contact")}</a>
+                <a href="mailto:kowton@163.com" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.contact")}</a>
               </div>
             </div>
           </div>
@@ -753,9 +752,14 @@ export default function PricingPage() {
           }}>
             <span>{t("footer.copyright")}</span>
             <div style={{ display: "flex", gap: "24px" }}>
-              <a href="#" style={{ color: "#6f6f6f", textDecoration: "none" }}>{t("footer.github")}</a>
-              <a href="#" style={{ color: "#6f6f6f", textDecoration: "none" }}>{t("footer.twitter")}</a>
-              <a href="#" style={{ color: "#6f6f6f", textDecoration: "none" }}>{t("footer.linkedin")}</a>
+              <a
+                href="https://github.com/jpkowton7376-dotcom/repocontext"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: "#6f6f6f", textDecoration: "none" }}
+              >
+                {t("footer.github")}
+              </a>
             </div>
           </div>
         </div>

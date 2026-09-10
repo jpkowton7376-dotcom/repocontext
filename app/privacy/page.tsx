@@ -1,4 +1,10 @@
+import type { Metadata } from "next"
 import Link from "next/link"
+
+export const metadata: Metadata = {
+  title: "Privacy Policy — RepoContext",
+  description: "How RepoContext collects, uses and protects your data.",
+}
 
 export default function PrivacyPage() {
   return (
