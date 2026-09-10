@@ -14,9 +14,9 @@
     "subscribe": "Subscribe →",
     "examplesTry": "Try it with",
     "examples": [
-      "https://github.com/psf/requests",
-      "https://github.com/vercel/next.js",
-      "https://github.com/gin-gonic/gin"
+      "psf/requests",
+      "vercel/next.js",
+      "gin-gonic/gin"
     ],
     "linkHint": "How do I get this link? →",
     "announcement": "New: Multi-format export — AGENTS.md · CLAUDE.md · Cursor Rules · Copilot Instructions",

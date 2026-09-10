@@ -55,9 +55,9 @@
     "subscribe": "立即訂閱 →",
     "examplesTry": "試試看",
     "examples": [
-      "https://github.com/psf/requests",
-      "https://github.com/vercel/next.js",
-      "https://github.com/gin-gonic/gin"
+      "psf/requests",
+      "vercel/next.js",
+      "gin-gonic/gin"
     ],
     "linkHint": "如何取得這個連結？ →",
     "trustedBy": "深受領先企業工程團隊信賴",

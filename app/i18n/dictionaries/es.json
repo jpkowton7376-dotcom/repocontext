@@ -55,9 +55,9 @@
     "subscribe": "Suscribirse →",
     "examplesTry": "Pruébalo con",
     "examples": [
-      "https://github.com/psf/requests",
-      "https://github.com/vercel/next.js",
-      "https://github.com/gin-gonic/gin"
+      "psf/requests",
+      "vercel/next.js",
+      "gin-gonic/gin"
     ],
     "linkHint": "¿Cómo obtengo este enlace? →",
     "trustedBy": "Confiado por equipos de ingeniería de empresas líderes",

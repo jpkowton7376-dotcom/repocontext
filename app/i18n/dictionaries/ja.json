@@ -55,9 +55,9 @@
     "subscribe": "登録する →",
     "examplesTry": "試してみる",
     "examples": [
-      "https://github.com/psf/requests",
-      "https://github.com/vercel/next.js",
-      "https://github.com/gin-gonic/gin"
+      "psf/requests",
+      "vercel/next.js",
+      "gin-gonic/gin"
     ],
     "linkHint": "このリンクの取得方法 →",
     "trustedBy": "最先端企業のエンジニアリングチームに信頼されています",

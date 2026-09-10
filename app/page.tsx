@@ -416,7 +416,7 @@ export default function HomePage() {
           </div>
 
           {/* Right: Hero visual */}
-          <div style={{ position: "relative", height: "600px" }}>
+          <div className="rc-hero-illu" style={{ position: "relative", height: "600px" }}>
             {/* Floating logo — further enlarged to anchor the hero composition; cards layered above it */}
             <div style={{
               position: "absolute",
