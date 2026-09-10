@@ -63,7 +63,7 @@ export default function ChangelogPage() {
   return (
     <main style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "white" }}>
       {/* Nav */}
-      <nav style={{
+      <nav className="rc-page-header" style={{
         display: "flex", alignItems: "center", justifyContent: "space-between",
         padding: "0 48px", height: "64px",
         borderBottom: "1px solid var(--rule)",
@@ -76,12 +76,12 @@ export default function ChangelogPage() {
           </div>
           <span style={{ fontSize: "18px", fontWeight: 600, letterSpacing: "-0.01em" }}>RepoContext</span>
         </Link>
-        <div style={{ display: "flex", alignItems: "center", gap: "32px", fontSize: "14px" }}>
+        <div className="rc-page-header-group" style={{ display: "flex", alignItems: "center", gap: "32px", fontSize: "14px" }}>
           <Link href="/" style={{ color: "var(--muted)", textDecoration: "none" }}>Features</Link>
           <Link href="/pricing" style={{ color: "var(--muted)", textDecoration: "none" }}>Pricing</Link>
           <Link href="/docs" style={{ color: "var(--muted)", textDecoration: "none" }}>Documentation</Link>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+        <div className="rc-page-header-group" style={{ display: "flex", alignItems: "center", gap: "16px" }}>
           <Link href="/login" style={{ fontSize: "14px", color: "var(--ink)", textDecoration: "none", fontWeight: 500 }}>Sign in</Link>
           <Link href="/pricing" style={{
             fontSize: "14px", padding: "10px 20px",

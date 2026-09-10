@@ -42,6 +42,14 @@
 
 * { box-sizing: border-box; }
 
+/* Repository URLs are long, unbroken strings. Without this they set a huge
+   min-content width and force grid/flex items wider than their container.
+   `anywhere` — unlike `break-word` — also shrinks the min-content size, so
+   the items can actually shrink instead of overflowing. */
+body {
+  overflow-wrap: anywhere;
+}
+
 html, body {
   margin: 0;
   padding: 0;
@@ -521,6 +529,14 @@ img, svg, video, iframe, table, pre, .code-block {
 /* ---- Site navigation ---- */
 .rc-nav-toggle { display: none; }
 
+/* Comfortable tap targets inside the collapsible menu (the links are only
+   ~23px tall on their own, which is well under the 44px guideline). */
+.rc-nav-mobile a,
+.rc-nav-mobile button {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
 /* The collapsible menu only exists on small screens; force it away
    again if the viewport grows while it is open. */
 @media (min-width: 901px) {
@@ -535,6 +551,9 @@ img, svg, video, iframe, table, pre, .code-block {
   /* The horizontal link row cannot fit on a phone, so it moves into
      the toggleable menu instead. */
   .rc-nav-links { display: none !important; }
+  /* Auth actions are duplicated inside the menu; drop them from the bar
+     so the logo, language switcher and toggle all stay on screen. */
+  .rc-nav-hide-sm { display: none !important; }
   .rc-nav-toggle { display: inline-flex !important; }
 }
 
@@ -558,12 +577,42 @@ img, svg, video, iframe, table, pre, .code-block {
   h3 { font-size: 19px !important; }
   .display-num { font-size: 36px !important; }
 
+  /* ...and nudge the smallest meta labels up so they stay legible.
+     React serialises inline styles as `font-size: 10px`, which lets these
+     be matched directly. */
+  [style*="font-size: 10px"],
+  [style*="font-size: 11px"] {
+    font-size: 12px !important;
+  }
+
   /* Full-width controls are far easier to tap. */
   .ibm-input,
   .btn-primary,
   .btn-secondary,
   .btn-ghost {
     width: 100%;
+  }
+
+  /* Grid and flex items default to min-width:auto, which stops them
+     shrinking below their longest unbreakable word. Allow shrinking so a
+     long URL cannot push the layout past the viewport. */
+  .step-card > *,
+  [style*="grid-template-columns"] > * {
+    min-width: 0;
+  }
+
+  /* Several pages (changelog, get-repo-link) ship their own inline nav
+     markup instead of SiteNav. Let those bars wrap onto extra rows rather
+     than being clipped off the side of the screen. */
+  .rc-page-header {
+    flex-wrap: wrap !important;
+    height: auto !important;
+    padding: 12px 20px !important;
+    gap: 12px !important;
+  }
+  .rc-page-header-group {
+    flex-wrap: wrap !important;
+    gap: 16px !important;
   }
 }
 

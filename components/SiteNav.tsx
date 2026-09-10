@@ -155,7 +155,20 @@ export function SiteNav({ variant = "light" }: { variant?: Variant }) {
         </div>
       )}
       <div style={rightLinksStyle}>
-        <LanguageSwitcher variant={isDark ? "dark" : "light"} />
+        {/* The switcher lists all four languages inline and is far too wide
+            for a phone; it is rendered inside the menu instead. */}
+        <div
+          className="rc-nav-hide-sm"
+          style={{ display: "flex", alignItems: "center", flexShrink: 0 }}
+        >
+          <LanguageSwitcher variant={isDark ? "dark" : "light"} />
+        </div>
+        {/* These also live in the hamburger panel, so hide them from the
+            top bar on phones — otherwise they push the toggle off-screen. */}
+        <div
+          className="rc-nav-hide-sm"
+          style={{ display: "flex", alignItems: "center", gap: "16px" }}
+        >
         {user ? (
           <>
             <Link
@@ -211,6 +224,7 @@ export function SiteNav({ variant = "light" }: { variant?: Variant }) {
             </Link>
           </>
         )}
+        </div>
 
         {/* Hamburger — hidden on desktop, shown from 900px down via CSS. */}
         <button
@@ -271,6 +285,8 @@ export function SiteNav({ variant = "light" }: { variant?: Variant }) {
               {t(l.key)}
             </Link>
           ))}
+
+          <LanguageSwitcher variant={isDark ? "dark" : "light"} />
 
           <div
             style={{

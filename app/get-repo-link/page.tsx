@@ -108,7 +108,7 @@ export default function GetRepoLinkPage() {
   return (
     <main style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "white" }}>
       {/* Header */}
-      <nav style={{
+      <nav className="rc-page-header" style={{
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
@@ -122,7 +122,7 @@ export default function GetRepoLinkPage() {
             RepoContext
           </span>
         </Link>
-        <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+        <div className="rc-page-header-group" style={{ display: "flex", alignItems: "center", gap: "20px" }}>
           <LanguageSwitcher />
           <Link
             href="/"
