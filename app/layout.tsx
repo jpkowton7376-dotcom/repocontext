@@ -22,11 +22,20 @@ export const metadata: Metadata = {
     description: DEFAULT_DESCRIPTION,
     type: "website",
     siteName: SITE_NAME,
+    images: [
+      {
+        url: `${SITE_URL}/api/og`,
+        width: 1200,
+        height: 630,
+        alt: DEFAULT_TITLE,
+      },
+    ],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: DEFAULT_TITLE,
     description: DEFAULT_DESCRIPTION,
+    images: [`${SITE_URL}/api/og`],
   },
 }
 
