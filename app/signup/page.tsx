@@ -82,6 +82,16 @@ SUPABASE_SERVICE_ROLE_KEY=...`}
       })
       if (error) throw error
 
+      // Fire-and-forget the welcome email. The endpoint is a no-op if
+      // RESEND_API_KEY is not set, so this is safe in dev.
+      fetch("/api/email/welcome", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      }).catch(() => {
+        // Ignore network errors — the user still got signed up.
+      })
+
       // Email confirmation is disabled in Supabase: a returned session means
       // the user is already signed in, so skip the "check your email" prompt.
       if (data && data.session) {

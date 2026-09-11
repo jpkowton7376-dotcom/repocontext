@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server"
 import crypto from "crypto"
 import { createAdminClient } from "@/lib/supabase"
+import {
+  sendPaymentReceiptEmail,
+  sendPaymentFailedEmail,
+} from "@/lib/email"
 
 export const runtime = "nodejs"
 
@@ -183,6 +187,34 @@ export async function POST(request: Request) {
       case "subscription.active":
       case "checkout.completed":
         await upgrade(extractPlan(obj))
+        // Send the receipt once per upgrade. Creem may emit several of
+        // these events for the same subscription over its lifetime, but
+        // they happen far apart in time, so a duplicate is acceptable.
+        if (type === "subscription.paid" || type === "checkout.completed") {
+          const customerEmail = extractEmail(obj)
+          if (customerEmail) {
+            const productName = obj?.product?.name || "RepoContext Pro"
+            const amount =
+              obj?.order?.amount ??
+              obj?.amount ??
+              obj?.subscription?.amount ??
+              null
+            const currency =
+              obj?.order?.currency ?? obj?.currency ?? undefined
+            sendPaymentReceiptEmail({
+              email: customerEmail,
+              productName,
+              amount: amount != null ? String(amount) : "—",
+              currency: typeof currency === "string" ? currency.toUpperCase() : undefined,
+              invoiceUrl:
+                typeof obj?.order?.receipt_url === "string"
+                  ? obj.order.receipt_url
+                  : undefined,
+            }).catch((err) =>
+              console.error("[creem webhook] receipt email failed:", err),
+            )
+          }
+        }
         break
 
       case "subscription.canceled":
@@ -190,6 +222,14 @@ export async function POST(request: Request) {
       case "subscription.past_due":
       case "subscription.unpaid":
         await downgrade()
+        if (type === "subscription.past_due" || type === "subscription.unpaid") {
+          const customerEmail = extractEmail(obj)
+          if (customerEmail) {
+            sendPaymentFailedEmail(customerEmail).catch((err) =>
+              console.error("[creem webhook] failed-payment email failed:", err),
+            )
+          }
+        }
         break
 
       default:
