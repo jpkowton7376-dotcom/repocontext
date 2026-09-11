@@ -39,6 +39,8 @@ export default function DashboardPage() {
   const [analysesToday, setAnalysesToday] = useState<number>(0)
   const [totalAnalyses, setTotalAnalyses] = useState<number>(0)
   const [recentAnalyses, setRecentAnalyses] = useState<RecentAnalysis[]>([])
+  const [openingPortal, setOpeningPortal] = useState(false)
+  const [portalError, setPortalError] = useState<string | null>(null)
   const router = useRouter()
 
   // Supabase 未配置时显示提示
@@ -280,6 +282,34 @@ SUPABASE_SERVICE_ROLE_KEY=...`}
     await supabase!.auth.signOut()
     router.push("/")
     router.refresh()
+  }
+
+  // Open the Creem-hosted Customer Portal so the signed-in user can
+  // cancel, change payment method or download invoices on their own.
+  // Without this, paying users have no way to stop the subscription and
+  // would have to file a chargeback — which is the single most common
+  // way a small SaaS loses its payment-processing account.
+  const handleManageSubscription = async () => {
+    setPortalError(null)
+    setOpeningPortal(true)
+    try {
+      const res = await fetch("/api/creem/portal", { method: "POST" })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok || !data?.url) {
+        setPortalError(
+          data?.error ||
+            "Could not open the billing portal. Please try again in a moment.",
+        )
+        return
+      }
+      window.location.href = data.url
+    } catch (err: any) {
+      setPortalError(
+        err?.message || "Could not open the billing portal.",
+      )
+    } finally {
+      setOpeningPortal(false)
+    }
   }
 
   if (loading) {
@@ -636,7 +666,7 @@ SUPABASE_SERVICE_ROLE_KEY=...`}
               <Link
                 href="/pricing"
                 style={{
-                  display: "block",
+                  display: plan === "free" ? "block" : "none",
                   padding: "24px 28px",
                   textDecoration: "none",
                   color: "var(--ink)",
@@ -663,6 +693,56 @@ SUPABASE_SERVICE_ROLE_KEY=...`}
                   Unlimited analyses, private repos, multi-format export
                 </div>
               </Link>
+
+              {plan !== "free" && (
+                <button
+                  type="button"
+                  onClick={handleManageSubscription}
+                  disabled={openingPortal}
+                  style={{
+                    display: "block",
+                    width: "100%",
+                    textAlign: "left",
+                    padding: "24px 28px",
+                    border: "none",
+                    background: "transparent",
+                    cursor: openingPortal ? "wait" : "pointer",
+                    color: "var(--ink)",
+                    fontFamily: "inherit",
+                    transition: "background 0.15s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!openingPortal) e.currentTarget.style.background = "var(--bg-cool)"
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "transparent"
+                  }}
+                >
+                  <div style={{
+                    fontSize: "16px",
+                    fontWeight: 500,
+                    marginBottom: "4px",
+                  }}>
+                    {openingPortal ? "Opening billing portal…" : "Manage subscription →"}
+                  </div>
+                  <div style={{
+                    fontSize: "13px",
+                    color: "var(--muted)",
+                  }}>
+                    Cancel, update payment method or download invoices
+                  </div>
+                  {portalError && (
+                    <div style={{
+                      marginTop: "8px",
+                      fontSize: "12px",
+                      color: "#dc2626",
+                      fontFamily: "'IBM Plex Mono', monospace",
+                    }}>
+                      {portalError}
+                    </div>
+                  )}
+                </button>
+              )}
             </div>
           </div>
 
