@@ -2,6 +2,29 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import {
+  Globe,
+  FileCode2,
+  Cpu,
+  Zap,
+  Smartphone,
+  Layers,
+  Search,
+  FileText,
+  Link2,
+  Gauge,
+  Languages,
+  LayoutGrid,
+  Shield,
+  GitBranch,
+  RefreshCw,
+  ChevronDown,
+  ChevronUp,
+  Copy,
+  Check,
+  Boxes,
+  type LucideIcon,
+} from "lucide-react"
 import { SiteNav } from "@/components/SiteNav"
 import { JsonLd } from "@/components/JsonLd"
 import { useTranslation } from "@/components/LanguageProvider"
@@ -10,15 +33,64 @@ import type { Locale } from "@/app/i18n/config"
 
 type Tab = "samples" | "prompts" | "best"
 
-function CodeBlock({
-  code,
-  copyLabel,
-  copiedLabel,
-}: {
-  code: string
-  copyLabel: string
-  copiedLabel: string
-}) {
+const GRADIENTS = {
+  blue: "linear-gradient(135deg, #0f62fe 0%, #4589ff 100%)",
+  teal: "linear-gradient(135deg, #009d9a 0%, #33b1b1 100%)",
+  rust: "linear-gradient(135deg, #cc6600 0%, #fa4d56 100%)",
+  cyan: "linear-gradient(135deg, #08bdba 0%, #3ddbd9 100%)",
+  violet: "linear-gradient(135deg, #8a3ffc 0%, #a56eff 100%)",
+  sky: "linear-gradient(135deg, #1192e8 0%, #82cfff 100%)",
+  indigo: "linear-gradient(135deg, #4f46e5 0%, #818cf8 100%)",
+  emerald: "linear-gradient(135deg, #059669 0%, #34d399 100%)",
+  amber: "linear-gradient(135deg, #d97706 0%, #fbbf24 100%)",
+}
+
+const SAMPLE_META: Record<string, { icon: LucideIcon; gradient: string }> = {
+  nextjs: { icon: Globe, gradient: GRADIENTS.blue },
+  python: { icon: FileCode2, gradient: GRADIENTS.teal },
+  rust: { icon: Cpu, gradient: GRADIENTS.rust },
+  go: { icon: Zap, gradient: GRADIENTS.cyan },
+  reactnative: { icon: Smartphone, gradient: GRADIENTS.violet },
+  monorepo: { icon: Layers, gradient: GRADIENTS.sky },
+}
+
+const PROMPT_META: Record<string, { icon: LucideIcon; gradient: string }> = {
+  analyze: { icon: Search, gradient: GRADIENTS.indigo },
+  generate: { icon: FileText, gradient: GRADIENTS.blue },
+  evidence: { icon: Link2, gradient: GRADIENTS.emerald },
+  score: { icon: Gauge, gradient: GRADIENTS.amber },
+  translate: { icon: Languages, gradient: GRADIENTS.violet },
+}
+
+const BEST_META: Record<string, { icon: LucideIcon; gradient: string }> = {
+  monorepo: { icon: Boxes, gradient: GRADIENTS.blue },
+  private: { icon: Shield, gradient: GRADIENTS.emerald },
+  multilingual: { icon: Globe, gradient: GRADIENTS.violet },
+  cicd: { icon: GitBranch, gradient: GRADIENTS.rust },
+  fresh: { icon: RefreshCw, gradient: GRADIENTS.teal },
+}
+
+function IconBadge({ icon: Icon, gradient }: { icon: LucideIcon; gradient: string }) {
+  return (
+    <div
+      style={{
+        width: "48px",
+        height: "48px",
+        borderRadius: "12px",
+        background: gradient,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        boxShadow: "0 6px 18px rgba(0,0,0,0.10)",
+        flexShrink: 0,
+      }}
+    >
+      <Icon size={24} color="white" strokeWidth={1.8} />
+    </div>
+  )
+}
+
+function CopyButton({ code, copyLabel, copiedLabel }: { code: string; copyLabel: string; copiedLabel: string }) {
   const [copied, setCopied] = useState(false)
   const onCopy = async () => {
     try {
@@ -26,48 +98,53 @@ function CodeBlock({
       setCopied(true)
       setTimeout(() => setCopied(false), 1800)
     } catch {
-      /* clipboard unavailable — ignore */
+      /* ignore */
     }
   }
   return (
-    <div style={{ position: "relative" }}>
-      <button
-        type="button"
-        onClick={onCopy}
-        style={{
-          position: "absolute",
-          top: "10px",
-          right: "10px",
-          zIndex: 2,
-          fontSize: "12px",
-          padding: "5px 12px",
-          borderRadius: "4px",
-          border: "1px solid rgba(255,255,255,0.18)",
-          background: copied ? "#198038" : "rgba(15,98,254,0.85)",
-          color: "white",
-          cursor: "pointer",
-          fontFamily: "'IBM Plex Mono', monospace",
-        }}
-      >
-        {copied ? copiedLabel : copyLabel}
-      </button>
-      <pre
-        style={{
-          margin: 0,
-          padding: "18px 18px",
-          background: "#0d1117",
-          color: "#e6edf3",
-          borderRadius: "8px",
-          overflowX: "auto",
-          maxHeight: "420px",
-          fontSize: "12.5px",
-          lineHeight: 1.6,
-          fontFamily: "'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace",
-        }}
-      >
-        <code>{code}</code>
-      </pre>
-    </div>
+    <button
+      type="button"
+      onClick={onCopy}
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: "6px",
+        fontSize: "12px",
+        padding: "6px 12px",
+        borderRadius: "6px",
+        border: "1px solid var(--rule)",
+        background: copied ? "var(--green-50)" : "white",
+        color: copied ? "white" : "var(--ink-2)",
+        cursor: "pointer",
+        fontFamily: "'IBM Plex Mono', monospace",
+        fontWeight: 500,
+      }}
+    >
+      {copied ? <Check size={14} /> : <Copy size={14} />}
+      {copied ? copiedLabel : copyLabel}
+    </button>
+  )
+}
+
+function CodeBlock({ code }: { code: string }) {
+  return (
+    <pre
+      style={{
+        margin: 0,
+        padding: "18px",
+        background: "#161b22",
+        color: "#e6edf3",
+        borderRadius: "10px",
+        overflowX: "auto",
+        maxHeight: "360px",
+        fontSize: "12.5px",
+        lineHeight: 1.6,
+        fontFamily: "'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace",
+        border: "1px solid rgba(255,255,255,0.08)",
+      }}
+    >
+      <code>{code}</code>
+    </pre>
   )
 }
 
@@ -84,14 +161,132 @@ function SectionBanner({ src, alt }: { src: string; alt: string }) {
         marginBottom: "28px",
       }}
     >
-      {/* Plain img keeps the decorative 3D render responsive without
-          next/image domain config. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={src}
         alt={alt}
         style={{ width: "100%", height: "100%", objectFit: "cover" }}
       />
+    </div>
+  )
+}
+
+function PromptCard({
+  p,
+  L,
+}: {
+  p: (typeof PROMPTS)[number]
+  L: Locale
+}) {
+  const [expanded, setExpanded] = useState(false)
+  const meta = PROMPT_META[p.id]
+  const preview = p.prompt.slice(0, 140).trim() + (p.prompt.length > 140 ? "…" : "")
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "16px",
+        padding: "24px",
+        border: "1px solid var(--rule)",
+        borderRadius: "14px",
+        background: "white",
+        transition: "box-shadow .15s ease",
+      }}
+      onMouseEnter={(e) => (e.currentTarget.style.boxShadow = "0 8px 28px rgba(15,98,254,0.08)")}
+      onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}
+    >
+      <div style={{ display: "flex", gap: "14px", alignItems: "flex-start" }}>
+        <IconBadge icon={meta.icon} gradient={meta.gradient} />
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px", flexWrap: "wrap" }}>
+            <span
+              style={{
+                fontSize: "11px",
+                fontWeight: 700,
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+                color: "var(--blue-50)",
+                background: "var(--accent-light)",
+                padding: "3px 9px",
+                borderRadius: "4px",
+              }}
+            >
+              {p.badge}
+            </span>
+            <span style={{ fontSize: "13px", color: "var(--muted-2)" }}>
+              {UI.useCase[L]}: {p.useCase[L]}
+            </span>
+          </div>
+          <p style={{ margin: 0, fontSize: "15px", color: "var(--ink-2)", lineHeight: 1.6 }}>
+            {p.note[L]}
+          </p>
+        </div>
+      </div>
+
+      <div
+        style={{
+          background: "linear-gradient(180deg, #f8fafc 0%, #ffffff 100%)",
+          border: "1px solid var(--rule-2)",
+          borderRadius: "10px",
+          padding: "16px",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "12px",
+            marginBottom: expanded ? "14px" : 0,
+          }}
+        >
+          <span style={{ fontSize: "12px", color: "var(--muted-2)", fontFamily: "'IBM Plex Mono', monospace" }}>
+            Prompt
+          </span>
+          <div style={{ display: "flex", gap: "8px" }}>
+            <CopyButton code={p.prompt} copyLabel={UI.copy[L]} copiedLabel={UI.copied[L]} />
+            <button
+              type="button"
+              onClick={() => setExpanded((v) => !v)}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "4px",
+                fontSize: "12px",
+                padding: "6px 12px",
+                borderRadius: "6px",
+                border: "1px solid var(--rule)",
+                background: "white",
+                color: "var(--ink-2)",
+                cursor: "pointer",
+                fontWeight: 500,
+              }}
+            >
+              {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+              {expanded ? "Hide" : "Show full"}
+            </button>
+          </div>
+        </div>
+
+        {expanded ? (
+          <CodeBlock code={p.prompt} />
+        ) : (
+          <p
+            style={{
+              margin: "12px 0 0",
+              fontSize: "13.5px",
+              color: "var(--ink)",
+              fontFamily: "'IBM Plex Mono', monospace",
+              lineHeight: 1.6,
+              opacity: 0.85,
+            }}
+          >
+            {preview}
+          </p>
+        )}
+      </div>
     </div>
   )
 }
@@ -247,66 +442,74 @@ export default function TemplatesPage() {
             </p>
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
-            {SAMPLES.map((s) => (
-              <div
-                key={s.id}
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "minmax(0, 360px) minmax(0, 1fr)",
-                  gap: "28px",
-                  padding: "24px",
-                  border: "1px solid var(--rule)",
-                  borderRadius: "10px",
-                  background: "white",
-                  alignItems: "start",
-                }}
-                className="templates-sample-grid"
-              >
-                <div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
-                    <span
-                      style={{
-                        fontSize: "11px",
-                        fontWeight: 700,
-                        letterSpacing: "0.08em",
-                        textTransform: "uppercase",
-                        color: s.accent,
-                        border: `1px solid ${s.accent}`,
-                        padding: "3px 8px",
-                        borderRadius: "4px",
-                      }}
-                    >
-                      {s.format}
-                    </span>
+          <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+            {SAMPLES.map((s) => {
+              const meta = SAMPLE_META[s.id]
+              return (
+                <div
+                  key={s.id}
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "minmax(0, 280px) minmax(0, 1fr)",
+                    gap: "24px",
+                    padding: "24px",
+                    border: "1px solid var(--rule)",
+                    borderRadius: "14px",
+                    background: "white",
+                    alignItems: "start",
+                  }}
+                  className="templates-sample-grid"
+                >
+                  <div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "14px", marginBottom: "16px" }}>
+                      <IconBadge icon={meta.icon} gradient={meta.gradient} />
+                      <div>
+                        <span
+                          style={{
+                            fontSize: "11px",
+                            fontWeight: 700,
+                            letterSpacing: "0.08em",
+                            textTransform: "uppercase",
+                            color: s.accent,
+                            border: `1px solid ${s.accent}`,
+                            padding: "3px 8px",
+                            borderRadius: "4px",
+                            display: "inline-block",
+                            marginBottom: "6px",
+                          }}
+                        >
+                          {s.format}
+                        </span>
+                        <h3 style={{ fontSize: "19px", fontWeight: 600, margin: 0, letterSpacing: "-0.01em" }}>
+                          {s.stack}
+                        </h3>
+                      </div>
+                    </div>
+                    <p style={{ fontSize: "14px", color: "var(--muted)", lineHeight: 1.6, margin: "0 0 14px" }}>
+                      {s.desc[L]}
+                    </p>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                      {s.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          style={{
+                            fontSize: "12px",
+                            color: "var(--muted-2)",
+                            background: "var(--bg-cool)",
+                            border: "1px solid var(--rule-2)",
+                            padding: "3px 9px",
+                            borderRadius: "999px",
+                          }}
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                  <h3 style={{ fontSize: "20px", fontWeight: 600, margin: "0 0 10px", letterSpacing: "-0.01em" }}>
-                    {s.stack}
-                  </h3>
-                  <p style={{ fontSize: "14px", color: "var(--muted)", lineHeight: 1.6, margin: "0 0 14px" }}>
-                    {s.desc[L]}
-                  </p>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-                    {s.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        style={{
-                          fontSize: "12px",
-                          color: "var(--muted-2)",
-                          background: "var(--bg-cool)",
-                          border: "1px solid var(--rule-2)",
-                          padding: "3px 9px",
-                          borderRadius: "999px",
-                        }}
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
+                  <CodeBlock code={s.code} />
                 </div>
-                <CodeBlock code={s.code} copyLabel={UI.copy[L]} copiedLabel={UI.copied[L]} />
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
 
@@ -331,53 +534,7 @@ export default function TemplatesPage() {
             className="templates-prompt-grid"
           >
             {PROMPTS.map((p) => (
-              <div
-                key={p.id}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "14px",
-                  padding: "22px",
-                  border: "1px solid var(--rule)",
-                  borderRadius: "10px",
-                  background: "white",
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <span
-                    style={{
-                      fontSize: "11px",
-                      fontWeight: 700,
-                      letterSpacing: "0.08em",
-                      textTransform: "uppercase",
-                      color: "var(--blue-50)",
-                      background: "var(--accent-light)",
-                      padding: "3px 9px",
-                      borderRadius: "4px",
-                    }}
-                  >
-                    {p.badge}
-                  </span>
-                  <span style={{ fontSize: "13px", color: "var(--muted-2)", fontStyle: "italic" }}>
-                    {UI.useCase[L]}: {p.useCase[L]}
-                  </span>
-                </div>
-                <CodeBlock code={p.prompt} copyLabel={UI.copy[L]} copiedLabel={UI.copied[L]} />
-                <div
-                  style={{
-                    fontSize: "13px",
-                    color: "var(--ink-2)",
-                    lineHeight: 1.6,
-                    borderLeft: "3px solid var(--blue-30)",
-                    paddingLeft: "12px",
-                    background: "var(--bg-cool)",
-                    padding: "10px 12px",
-                    borderRadius: "0 6px 6px 0",
-                  }}
-                >
-                  <strong style={{ color: "var(--blue-70)" }}>{UI.note[L]}:</strong> {p.note[L]}
-                </div>
-              </div>
+              <PromptCard key={p.id} p={p} L={L} />
             ))}
           </div>
         </div>
@@ -402,38 +559,44 @@ export default function TemplatesPage() {
             }}
             className="templates-best-grid"
           >
-            {BEST_PRACTICES.map((b) => (
-              <div
-                key={b.id}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "12px",
-                  padding: "24px",
-                  border: "1px solid var(--rule)",
-                  borderRadius: "10px",
-                  background: "white",
-                }}
-              >
-                <h3 style={{ fontSize: "18px", fontWeight: 600, margin: 0, letterSpacing: "-0.01em" }}>
-                  {b.title[L]}
-                </h3>
-                <p style={{ fontSize: "14px", color: "var(--muted)", lineHeight: 1.6, margin: 0 }}>
-                  {b.desc[L]}
-                </p>
-                <div style={{ fontSize: "11px", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--muted-2)", marginTop: "4px" }}>
-                  {UI.tips[L]}
+            {BEST_PRACTICES.map((b) => {
+              const meta = BEST_META[b.id]
+              return (
+                <div
+                  key={b.id}
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "14px",
+                    padding: "24px",
+                    border: "1px solid var(--rule)",
+                    borderRadius: "14px",
+                    background: "white",
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+                    <IconBadge icon={meta.icon} gradient={meta.gradient} />
+                    <h3 style={{ fontSize: "18px", fontWeight: 600, margin: 0, letterSpacing: "-0.01em" }}>
+                      {b.title[L]}
+                    </h3>
+                  </div>
+                  <p style={{ fontSize: "14px", color: "var(--muted)", lineHeight: 1.6, margin: 0 }}>
+                    {b.desc[L]}
+                  </p>
+                  <div style={{ fontSize: "11px", letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--muted-2)", marginTop: "4px" }}>
+                    {UI.tips[L]}
+                  </div>
+                  <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: "10px" }}>
+                    {b.tips.map((tip, i) => (
+                      <li key={i} style={{ display: "flex", gap: "10px", fontSize: "14px", lineHeight: 1.55, color: "var(--ink-2)" }}>
+                        <span style={{ color: "var(--green-50)", fontWeight: 700, flexShrink: 0 }}>✓</span>
+                        <span>{tip[L]}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: "10px" }}>
-                  {b.tips.map((tip, i) => (
-                    <li key={i} style={{ display: "flex", gap: "10px", fontSize: "14px", lineHeight: 1.55, color: "var(--ink-2)" }}>
-                      <span style={{ color: "var(--green-50)", fontWeight: 700, flexShrink: 0 }}>✓</span>
-                      <span>{tip[L]}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       </section>
@@ -494,7 +657,7 @@ export default function TemplatesPage() {
               {t("nav.docs")}
             </Link>
             <Link href="/terms" style={{ color: "var(--muted-2)", textDecoration: "none" }}>
-              {t("footer.terms")}
+              {t("nav.terms")}
             </Link>
           </div>
         </div>
