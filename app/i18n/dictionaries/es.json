@@ -374,5 +374,508 @@
     "footerHome": "Inicio",
     "footerPricing": "Precios",
     "footerSignIn": "Iniciar sesión"
+  },
+  "legal": {
+    "backHome": "← Volver al inicio",
+    "updatedLabel": "Última actualización",
+    "updatedDate": "12 de septiembre de 2026",
+    "languageTitle": "Sobre estas traducciones",
+    "languageBody": "Estos documentos se redactaron en inglés y se han traducido para tu comodidad. Si una versión traducida contradice la versión en inglés, prevalece la versión en inglés.",
+    "disclaimerTitle": "Aviso legal",
+    "disclaimerBody": "Estos documentos son plantillas que no han sido revisadas por un abogado cualificado. Se ofrecen solo con fines informativos y no constituyen asesoramiento legal.",
+    "contactTitle": "Contacto",
+    "contactPrefix": "¿Preguntas sobre estos documentos? Escribe a",
+    "relatedTitle": "Documentos relacionados",
+    "linkTerms": "Términos del servicio",
+    "linkPrivacy": "Política de privacidad",
+    "linkRefund": "Política de reembolsos",
+    "linkAup": "Política de uso aceptable"
+  },
+  "terms": {
+    "metaTitle": "Términos del servicio — RepoContext",
+    "metaDescription": "Los términos que rigen tu uso de RepoContext: cuentas, claves de API, facturación y enlaces compartidos.",
+    "title": "Términos del servicio",
+    "sections": [
+      {
+        "heading": "1. Aceptación de los términos",
+        "body": [
+          "Al acceder o utilizar RepoContext (el «Servicio») aceptas estos Términos del servicio y nuestra Política de uso aceptable. Si no estás de acuerdo, no uses el Servicio.",
+          "Debes tener al menos 16 años — o la edad mínima exigida en tu país — para crear una cuenta."
+        ]
+      },
+      {
+        "heading": "2. Descripción del servicio",
+        "body": [
+          "RepoContext analiza repositorios públicos de GitHub y genera archivos de contexto legibles por IA: AGENTS.md, CLAUDE.md, reglas de Cursor e instrucciones de Copilot. También ofrece una API REST JSON y permite publicar un resultado como enlace público.",
+          "El Servicio se presta «tal cual» y «según disponibilidad». No garantizamos un acceso ininterrumpido ni libre de errores."
+        ]
+      },
+      {
+        "heading": "3. Tu cuenta",
+        "body": [
+          "Eres responsable de la seguridad de tus credenciales y de toda la actividad que se realice con tu cuenta."
+        ],
+        "bullets": [
+          "Mantén tu contraseña en secreto y no compartas tu cuenta con terceros.",
+          "Las claves de API se muestran una sola vez al crearlas y se guardan únicamente como un hash SHA-256. Si pierdes una clave, revócala y crea otra.",
+          "No añadas nunca una clave de API a un repositorio, la pegues en un enlace compartido ni la incluyas en código de cliente.",
+          "Escribe a jpkowton@gmail.com cuanto antes si crees que tu cuenta o una clave se han visto comprometidas."
+        ]
+      },
+      {
+        "heading": "4. Uso gratuito y pruebas",
+        "body": [
+          "Quien no ha iniciado sesión dispone de 5 análisis gratuitos al mes natural más 2 análisis con el modelo premium. Los contadores se guardan en una cookie del navegador, por lo que borrar las cookies, cambiar de navegador o usar una ventana privada puede reiniciarlos: no lo uses para eludir la cuota.",
+          "Los planes de pago se facturan mensual o anualmente y se renuevan automáticamente hasta que los canceles."
+        ]
+      },
+      {
+        "heading": "5. Suscripciones y facturación",
+        "bullets": [
+          "Los pagos los procesa Creem. Nunca vemos ni almacenamos el número de tu tarjeta.",
+          "Las suscripciones se renuevan automáticamente al final de cada periodo salvo que las canceles antes de la fecha de renovación.",
+          "Puedes cancelar en cualquier momento desde Panel → Acciones rápidas → Gestionar suscripción. Cancelar solo detiene los cargos futuros.",
+          "Podemos cambiar los precios avisando por correo con 30 días de antelación; el nuevo precio se aplica desde tu próxima renovación.",
+          "Si un pago falla, tu cuenta pasa al plan gratuito hasta que actualices el método de pago."
+        ]
+      },
+      {
+        "heading": "6. Uso de la API",
+        "body": [
+          "Cada clave de API tiene un límite de peticiones por minuto (30 por defecto). Si lo superas se devuelve HTTP 429 con una cabecera Retry-After."
+        ],
+        "bullets": [
+          "No eludas los límites rotando claves, creando cuentas adicionales o repartiendo el tráfico entre direcciones IP.",
+          "No uses la API para pruebas de carga ni para escanear nuestra infraestructura.",
+          "Revender o etiquetar en blanco el acceso a la API requiere nuestro permiso por escrito.",
+          "Podemos limitar o revocar una clave que amenace la estabilidad del Servicio."
+        ]
+      },
+      {
+        "heading": "7. Enlaces compartidos",
+        "body": [
+          "Crear un enlace compartido publica una instantánea de tu análisis — nombre del repositorio, puntuación de calidad y archivos de contexto generados — en una URL pública. Cualquiera que tenga el enlace puede abrirla y los motores de búsqueda pueden indexarla.",
+          "Crea un enlace compartido solo para contenido que te resulte aceptable hacer público. Para que lo eliminemos, escribe a jpkowton@gmail.com indicando la URL."
+        ]
+      },
+      {
+        "heading": "8. Contenido generado por IA",
+        "body": [
+          "El Servicio usa modelos de lenguaje de gran tamaño. El resultado puede ser incompleto, inexacto o inventado. Revisa siempre cada archivo generado comparándolo con el código real antes de fiarte de él, y no despliegues configuración generada sin leerla antes.",
+          "El Servicio no sustituye la revisión humana de código ni de seguridad."
+        ]
+      },
+      {
+        "heading": "9. Tu contenido y propiedad intelectual",
+        "body": [
+          "Conservas todos los derechos sobre los repositorios que analizas y sobre el resultado que generamos para ti. No reclamamos ninguna titularidad sobre ellos.",
+          "Nosotros conservamos la titularidad del Servicio: su software, prompts, diseño y marca."
+        ]
+      },
+      {
+        "heading": "10. Uso aceptable",
+        "body": [
+          "Tu uso del Servicio debe cumplir nuestra Política de uso aceptable, que forma parte de estos Términos. Podemos suspender o cerrar las cuentas que la incumplan."
+        ]
+      },
+      {
+        "heading": "11. Terminación",
+        "body": [
+          "Puedes eliminar tu cuenta en cualquier momento desde el panel; al hacerlo se borran tu perfil, tu historial de análisis y tus claves de API.",
+          "Podemos suspender o finalizar el acceso por incumplimiento de estos Términos, por falta de pago o cuando lo exija la ley. Siempre que sea posible avisaremos antes."
+        ]
+      },
+      {
+        "heading": "12. Exención de garantías",
+        "body": [
+          "En la medida máxima permitida por la ley, el Servicio se presta sin garantías de ningún tipo, expresas o implícitas, incluida cualquier garantía implícita de comerciabilidad, idoneidad para un fin concreto o no infracción."
+        ]
+      },
+      {
+        "heading": "13. Limitación de responsabilidad",
+        "body": [
+          "En la medida máxima permitida por la ley, RepoContext no responde de daños indirectos, incidentales, especiales, consecuentes ni punitivos, ni de la pérdida de beneficios, ingresos, datos o prestigio, hayamos sido o no advertidos de esa posibilidad. Nuestra responsabilidad total por cualquier reclamación derivada del Servicio se limita a la mayor de estas dos cantidades: lo que nos hayas pagado en los 12 meses anteriores a la reclamación o 50 USD.",
+          "Nada de lo dispuesto en estos Términos limita la responsabilidad que la ley no permita limitar."
+        ]
+      },
+      {
+        "heading": "14. Cambios en estos términos",
+        "body": [
+          "Podemos actualizar estos Términos. Los cambios relevantes se anuncian en esta página y, si tienes sesión iniciada, por correo al menos 14 días antes de que entren en vigor. Seguir usando el Servicio después de esa fecha significa que los aceptas."
+        ]
+      },
+      {
+        "heading": "15. Legislación aplicable",
+        "body": [
+          "Estos Términos se rigen por la ley de la jurisdicción en la que opera RepoContext, sin perjuicio de las normas imperativas de protección de consumidores de tu país de residencia."
+        ]
+      },
+      {
+        "heading": "16. Contacto",
+        "body": [
+          "¿Preguntas sobre estos Términos? Escribe a jpkowton@gmail.com."
+        ]
+      }
+    ]
+  },
+  "privacy": {
+    "metaTitle": "Política de privacidad — RepoContext",
+    "metaDescription": "Qué datos recoge RepoContext, por qué, cuánto tiempo los conserva y qué derechos tienes sobre ellos.",
+    "title": "Política de privacidad",
+    "sections": [
+      {
+        "heading": "1. Introducción",
+        "body": [
+          "RepoContext («nosotros») convierte repositorios de GitHub en contexto legible por IA. Esta política explica qué datos personales recogemos, con qué fin, cuánto tiempo los conservamos y qué puedes pedirnos que hagamos con ellos."
+        ]
+      },
+      {
+        "heading": "2. Datos que nos facilitas",
+        "bullets": [
+          "Datos de cuenta: tu correo electrónico y una contraseña cifrada mediante hash, gestionados por Supabase.",
+          "Mensajes de soporte: el mensaje que escribes en el widget de atención al cliente y, si la indicas, tu dirección de correo para poder responderte.",
+          "Lista de espera: el correo que nos envías para conocer las novedades.",
+          "Datos de pago: nunca recibimos ni almacenamos el número de tu tarjeta; Creem gestiona la transacción y tiene su propia política de privacidad."
+        ]
+      },
+      {
+        "heading": "3. Datos que recogemos automáticamente",
+        "bullets": [
+          "Datos de análisis: URL de los repositorios que analizas, la puntuación de calidad resultante y los archivos generados, vinculados a tu cuenta si has iniciado sesión.",
+          "Uso de la API: recuento de peticiones por minuto para aplicar los límites y la fecha del último uso de cada clave.",
+          "Datos de registro: dirección IP, información del navegador y del dispositivo, y las páginas que visitas.",
+          "Informes de error: los fallos y excepciones se envían a Sentry para poder diagnosticarlos."
+        ]
+      },
+      {
+        "heading": "4. Cookies y almacenamiento local",
+        "body": [
+          "Usamos un pequeño número de cookies estrictamente necesarias y ninguna cookie publicitaria o de seguimiento entre sitios."
+        ],
+        "bullets": [
+          "Cookie de sesión: te mantiene con la sesión iniciada.",
+          "Preferencia de idioma: recuerda el idioma que elegiste.",
+          "Contador de prueba: lleva la cuenta de los análisis gratuitos que has usado este mes.",
+          "Consentimiento de cookies: recuerda tu elección en el banner.",
+          "Almacenamiento local: tus análisis más recientes se guardan en caché en tu propio navegador para que los resultados sobrevivan a una recarga. Estos datos nunca salen de tu dispositivo salvo que crees explícitamente un enlace compartido."
+        ]
+      },
+      {
+        "heading": "5. Datos de repositorios de GitHub",
+        "body": [
+          "Leemos los metadatos del repositorio y sus archivos de configuración a través de la API de GitHub. No clonamos ni almacenamos tu árbol de código fuente completo.",
+          "En el caso de repositorios privados solo leemos lo que permite tu autorización OAuth, y únicamente después de que conectes tu cuenta."
+        ]
+      },
+      {
+        "heading": "6. Enlaces de análisis compartidos",
+        "body": [
+          "Cuando creas un enlace compartido, una instantánea de ese análisis — nombre del repositorio, puntuación de calidad y archivos de contexto generados — pasa a ser legible públicamente en una URL difícil de adivinar. Cualquiera que tenga el enlace puede verla.",
+          "No crees un enlace compartido para contenido sensible. Para que lo eliminemos, escribe a jpkowton@gmail.com indicando la URL."
+        ]
+      },
+      {
+        "heading": "7. Proveedores externos",
+        "body": [
+          "Compartimos datos con estos proveedores únicamente para prestar el Servicio:"
+        ],
+        "bullets": [
+          "GitHub: lee los metadatos y archivos del repositorio.",
+          "OpenAI: genera los archivos de contexto. Se envían metadatos y fragmentos de archivos para su procesamiento.",
+          "Creem: procesa pagos y suscripciones.",
+          "Supabase: aloja la base de datos y la autenticación.",
+          "Resend: envía correos transaccionales (bienvenida, recibos, soporte).",
+          "Sentry: recoge informes de errores y rendimiento.",
+          "Vercel: aloja y sirve la aplicación."
+        ]
+      },
+      {
+        "heading": "8. Por qué tratamos tus datos",
+        "bullets": [
+          "Para prestar el Servicio que has solicitado, incluidos los análisis y el control de cuotas.",
+          "Para mantener el Servicio fiable y seguro e investigar abusos.",
+          "Para enviarte comunicaciones de servicio a las que no puedes renunciar mientras mantengas la cuenta, como recibos y avisos de seguridad.",
+          "Para cumplir obligaciones legales y fiscales."
+        ]
+      },
+      {
+        "heading": "9. Cuánto tiempo conservamos los datos",
+        "bullets": [
+          "Cuenta e historial de análisis: mientras la cuenta esté abierta; se eliminan en un plazo de 30 días desde que borras la cuenta.",
+          "Mensajes de soporte y lista de espera: hasta que nos pidas que los eliminemos.",
+          "Análisis compartidos: hasta que se eliminen a petición tuya.",
+          "Contadores de límite de la API: se descartan al cabo de unas dos horas.",
+          "Registros del servidor: se renuevan en ciclos cortos."
+        ]
+      },
+      {
+        "heading": "10. Tus derechos",
+        "body": [
+          "Según dónde vivas puedes tener derecho a acceder, rectificar, suprimir, exportar o limitar el tratamiento de tus datos personales, y a oponerte al tratamiento basado en nuestro interés legítimo. También puedes reclamar ante tu autoridad de protección de datos."
+        ],
+        "bullets": [
+          "Borra tu cuenta y sus datos directamente desde el panel.",
+          "Pide una copia de tus datos, o que los corrijamos o eliminemos, escribiendo a jpkowton@gmail.com.",
+          "Respondemos a las solicitudes en un plazo de 30 días."
+        ]
+      },
+      {
+        "heading": "11. Seguridad",
+        "body": [
+          "Usamos HTTPS en todo momento, guardamos las claves de API como hash SHA-256 para que el texto plano nunca se almacene y mantenemos las credenciales privilegiadas solo en el servidor. Ningún método de transmisión por internet es totalmente seguro, así que protege también tus propias credenciales."
+        ]
+      },
+      {
+        "heading": "12. Transferencias internacionales",
+        "body": [
+          "Nuestros proveedores operan a nivel global, por lo que tus datos pueden tratarse fuera de tu país. Nos apoyamos en cláusulas contractuales tipo y garantías equivalentes cuando la ley lo exige."
+        ]
+      },
+      {
+        "heading": "13. Privacidad de los menores",
+        "body": [
+          "El Servicio no se dirige a menores de 16 años y no recogemos sus datos de forma deliberada. Si crees que un menor nos ha facilitado datos, escribe a jpkowton@gmail.com y los eliminaremos."
+        ]
+      },
+      {
+        "heading": "14. Cambios en esta política",
+        "body": [
+          "Podemos actualizar esta política. Los cambios relevantes se anuncian en esta página y, si tienes sesión iniciada, por correo al menos 14 días antes de que entren en vigor."
+        ]
+      },
+      {
+        "heading": "15. Contacto",
+        "body": [
+          "¿Preguntas sobre esta política o sobre tus datos? Escribe a jpkowton@gmail.com."
+        ]
+      }
+    ]
+  },
+  "refund": {
+    "metaTitle": "Política de reembolsos — RepoContext",
+    "metaDescription": "Cómo gestiona RepoContext los reembolsos, las cancelaciones y las disputas de facturación.",
+    "title": "Política de reembolsos",
+    "sections": [
+      {
+        "heading": "1. Resumen",
+        "body": [
+          "RepoContext es un servicio digital que se entrega al instante, por lo que las compras son definitivas. Puedes cancelar una suscripción en cualquier momento para detener los cargos futuros, y reembolsamos en las situaciones concretas del apartado 5."
+        ]
+      },
+      {
+        "heading": "2. Todas las ventas son definitivas",
+        "body": [
+          "Las compras de los planes Pro y Team son definitivas. No reembolsamos por cambio de opinión, por capacidad no utilizada ni porque una función no cumpla tus expectativas tras la compra. Al finalizar el pago confirmas que lo entiendes."
+        ]
+      },
+      {
+        "heading": "3. Prueba antes de comprar",
+        "body": [
+          "Toda cuenta empieza con 5 análisis gratuitos al mes más 2 análisis con el modelo premium, y no se requiere tarjeta. Usa esa asignación para comprobar si RepoContext encaja en tu flujo de trabajo antes de contratar un plan de pago."
+        ]
+      },
+      {
+        "heading": "4. Cancelar una suscripción",
+        "body": [
+          "Puedes cancelar en cualquier momento desde Panel → Acciones rápidas → Gestionar suscripción. Cancelar detiene toda la facturación futura. Mantienes el acceso hasta el final del periodo ya pagado y no se emite ningún reembolso parcial por el tiempo restante."
+        ]
+      },
+      {
+        "heading": "5. Cuándo sí reembolsamos",
+        "body": [
+          "Estudiaremos una solicitud de reembolso en estos casos:"
+        ],
+        "bullets": [
+          "Falta de entrega: un fallo confirmado por nuestra parte te impidió usar el Servicio durante un periodo prolongado. Escríbenos dentro de los 14 días siguientes al incidente.",
+          "Cargo duplicado o incorrecto: se te facturó más de una vez, o un importe distinto del precio mostrado al pagar.",
+          "Cargo no autorizado: un pago que no autorizaste. Avísanos en cuanto lo detectes.",
+          "Descripción sustancialmente errónea: el Servicio difiere de forma importante de lo que describimos en la página de precios."
+        ]
+      },
+      {
+        "heading": "6. Tus derechos legales",
+        "body": [
+          "Nada de lo dispuesto en esta política elimina los derechos que te reconoce la legislación de consumo de tu país. Cuando exista un derecho legal imperativo al reembolso o un plazo de desistimiento, lo respetamos."
+        ]
+      },
+      {
+        "heading": "7. Cómo solicitar un reembolso",
+        "body": [
+          "Escribe a jpkowton@gmail.com con el asunto «Solicitud de reembolso»."
+        ],
+        "bullets": [
+          "Indica el correo electrónico de la cuenta y la fecha aproximada del cargo.",
+          "Explícanos brevemente el motivo para poder tramitarlo correctamente.",
+          "Acusamos recibo de las solicitudes en un plazo de 5 días hábiles.",
+          "Los reembolsos aprobados vuelven al método de pago original; tu banco o emisor suele tardar entre 5 y 10 días hábiles más en reflejarlos."
+        ]
+      },
+      {
+        "heading": "8. Contracargos",
+        "body": [
+          "Si presentas un contracargo ante tu banco, avísanos antes: la mayoría de los problemas de facturación se resuelven antes directamente. Las cuentas con un contracargo sin resolver pueden suspenderse mientras la disputa esté abierta."
+        ]
+      },
+      {
+        "heading": "9. Contacto",
+        "body": [
+          "¿Preguntas sobre esta política? Escribe a jpkowton@gmail.com."
+        ]
+      }
+    ]
+  },
+  "aup": {
+    "metaTitle": "Política de uso aceptable — RepoContext",
+    "metaDescription": "Las normas sobre qué puedes analizar, cómo usar la API y qué motivos pueden suspender tu cuenta.",
+    "title": "Política de uso aceptable",
+    "sections": [
+      {
+        "heading": "1. Ámbito de aplicación",
+        "body": [
+          "Esta Política de uso aceptable («PUA») se aplica junto con nuestros Términos del servicio. Si ambos discrepan sobre un tema que cubre esta PUA, prevalece esta PUA en ese tema."
+        ]
+      },
+      {
+        "heading": "2. Contenidos prohibidos",
+        "body": [
+          "No puedes enviar ni analizar contenido que:"
+        ],
+        "bullets": [
+          "Sea ilegal donde resides o donde está alojado el contenido.",
+          "Vulnere derechos de propiedad intelectual, privacidad o imagen de terceros; por ejemplo, código copiado de un repositorio privado al que no tienes permiso de acceso.",
+          "Sea malware, ransomware, código de explotación o cualquier elemento diseñado para comprometer un sistema informático.",
+          "Facilite phishing, ingeniería social o robo de credenciales.",
+          "Contenga datos personales que no estés autorizado a tratar conforme al RGPD, la CCPA, la PIPL u otra ley de privacidad aplicable."
+        ]
+      },
+      {
+        "heading": "3. Usos prohibidos",
+        "body": [
+          "No puedes usar RepoContext para:"
+        ],
+        "bullets": [
+          "Aplicar ingeniería inversa al Servicio ni intentar extraer los pesos del modelo, los prompts o el código fuente subyacentes.",
+          "Sondear, escanear o someter a pruebas de carga nuestra infraestructura.",
+          "Eludir los límites de uso, las cuotas o el pago, por ejemplo creando cuentas adicionales, borrando cookies, rotando claves de API o compartiendo una cuenta entre varias personas.",
+          "Revender, sublicenciar o etiquetar en blanco el Servicio o sus resultados sin permiso por escrito.",
+          "Usar los resultados para entrenar, ajustar o mejorar un modelo o producto de IA competidor.",
+          "Publicar una clave de API en cualquier lugar donde otros puedan leerla, incluido un repositorio."
+        ]
+      },
+      {
+        "heading": "4. Resultados prohibidos",
+        "body": [
+          "No puedes:"
+        ],
+        "bullets": [
+          "Incluir archivos AGENTS.md, CLAUDE.md, reglas de Cursor o instrucciones de Copilot generados en un producto de pago sin comprobar antes su exactitud y seguridad.",
+          "Presentar contenido generado como obra de un autor humano de forma que induzca a error a terceros.",
+          "Usar contenido generado en sistemas automáticos que tomen decisiones sobre personas — contratación, crédito, vivienda — sin revisión humana."
+        ]
+      },
+      {
+        "heading": "5. API y enlaces compartidos",
+        "body": [
+          "Los enlaces compartidos públicos son legibles por cualquiera que tenga la URL. No publiques un enlace compartido que exponga credenciales, secretos o contenido que no estés autorizado a distribuir. Podemos eliminar cualquier enlace compartido que incumpla esta PUA."
+        ]
+      },
+      {
+        "heading": "6. Límites de uso y uso razonable",
+        "body": [
+          "Los visitantes anónimos disponen de una cuota mensual de análisis gratuitos y las claves de API tienen un límite por minuto. Existen para que el Servicio siga respondiendo bien para todos. Podemos limitar, suspender o cerrar cuentas que superen un uso razonable o que, de forma razonable, creamos que incumplen esta PUA."
+        ]
+      },
+      {
+        "heading": "7. Notificar abusos",
+        "body": [
+          "Si un contenido analizado por RepoContext infringe esta PUA, o si otro usuario abusa del Servicio, escribe a jpkowton@gmail.com con un enlace y una breve descripción. Revisamos los informes en un plazo de cinco días hábiles."
+        ]
+      },
+      {
+        "heading": "8. Consecuencias",
+        "body": [
+          "Según la gravedad podemos emitir una advertencia, suspender temporalmente la cuenta, cerrarla sin reembolso, eliminar un enlace compartido o poner el asunto en conocimiento de las autoridades cuando proceda."
+        ]
+      },
+      {
+        "heading": "9. Cambios en esta política",
+        "body": [
+          "Podemos actualizar esta PUA. Los cambios relevantes se anuncian en esta página y por correo a los usuarios con sesión iniciada."
+        ]
+      },
+      {
+        "heading": "10. Contacto",
+        "body": [
+          "¿Preguntas sobre esta política? Escribe a jpkowton@gmail.com."
+        ]
+      }
+    ]
+  },
+  "howto": {
+    "metaTitle": "Cómo usar RepoContext",
+    "metaDescription": "Convierte cualquier repositorio de GitHub en contexto listo para IA en cinco pasos.",
+    "kicker": "Cómo usar",
+    "title": "Convierte tu código en contexto listo para IA.",
+    "subtitle": "RepoContext analiza tus repositorios de GitHub y genera documentación precisa y estructurada para agentes de codificación con IA. Sin instalación ni configuración.",
+    "problemsTitle": "¿Qué problemas resuelve?",
+    "problems": [
+      {
+        "title": "Alucinaciones de la IA",
+        "desc": "Los LLM adivinan la estructura de tu proyecto. RepoContext les da la estructura, dependencias y convenciones reales."
+      },
+      {
+        "title": "Documentación manual",
+        "desc": "Escribir AGENTS.md o reglas de Cursor a mano lleva horas. RepoContext los genera en segundos."
+      },
+      {
+        "title": "Formatos incompatibles",
+        "desc": "Cada herramienta de IA necesita un formato distinto. Exporta a AGENTS.md, CLAUDE.md, reglas de Cursor o instrucciones de Copilot."
+      }
+    ],
+    "stepsTitle": "Tutorial paso a paso",
+    "steps": [
+      {
+        "step": "01",
+        "title": "Copia la URL de tu repositorio de GitHub",
+        "desc": "Abre el repositorio público de GitHub que quieres analizar y copia la URL de la barra de direcciones; tiene el formato github.com/propietario/repositorio. Los repositorios privados se admiten en los planes de pago una vez que conectas tu cuenta de GitHub.",
+        "tip": "Ejemplos: psf/requests, vercel/next.js, gin-gonic/gin"
+      },
+      {
+        "step": "02",
+        "title": "Pégala en RepoContext",
+        "desc": "Vuelve a la página de inicio de RepoContext, pega la URL en el campo de entrada y haz clic en Analyze. El motor obtiene los metadatos del repositorio y empieza a analizarlo.",
+        "tip": "No se necesita tarjeta ni archivo de configuración para los repositorios públicos."
+      },
+      {
+        "step": "03",
+        "title": "Espera al análisis con IA",
+        "desc": "RepoContext detecta frameworks, gestores de paquetes, herramientas de compilación, pipelines de CI/CD, configuraciones de pruebas y convenciones de directorios. Cada conclusión está vinculada a los archivos reales usados como evidencia.",
+        "tip": "El análisis suele tardar unos segundos, según el tamaño del repositorio."
+      },
+      {
+        "step": "04",
+        "title": "Revisa la puntuación de calidad",
+        "desc": "Cada informe incluye una puntuación de calidad que indica la fiabilidad del contexto generado. Una puntuación más alta significa que la IA tuvo más evidencia y menos suposiciones inciertas.",
+        "tip": "Abre la lista de evidencias para ver qué archivos influyeron en cada conclusión."
+      },
+      {
+        "step": "05",
+        "title": "Exporta e integra",
+        "desc": "Elige el formato que prefieras y descarga el archivo. Llévalo a Cursor, Claude Code, GitHub Copilot o cualquier agente de codificación con IA que lea el contexto del proyecto.",
+        "tip": "Formatos admitidos: AGENTS.md, CLAUDE.md, reglas de Cursor e instrucciones de Copilot."
+      }
+    ],
+    "formatsTitle": "Formatos de exportación",
+    "formats": [
+      { "name": "AGENTS.md", "desc": "Un resumen completo del proyecto para agentes de codificación autónomos." },
+      { "name": "CLAUDE.md", "desc": "Optimizado para Claude Code y flujos de trabajo basados en Anthropic." },
+      { "name": "Reglas de Cursor", "desc": "Reglas específicas de Cursor que condicionan los autocompletados y el chat." },
+      { "name": "Instrucciones de Copilot", "desc": "Instrucciones adaptadas al contexto de GitHub Copilot." }
+    ],
+    "ctaTitle": "¿Listo para probarlo?",
+    "ctaDesc": "Analiza tu primer repositorio en segundos. Sin tarjeta de crédito.",
+    "ctaButton": "Empezar a analizar →",
+    "footerCopyright": "© 2026 RepoContext. Todos los derechos reservados.",
+    "footerHome": "Volver al inicio"
   }
 }
