@@ -7,11 +7,38 @@ import Link from "next/link"
 import Image from "next/image"
 import type { AuthChangeEvent, Session } from "@supabase/supabase-js"
 
+/** Recent analysis row used by the dashboard. */
+interface RecentAnalysis {
+  id: string
+  repo_name: string | null
+  repo_url: string | null
+  quality_score: number | null
+  created_at: string
+}
+
+/** Render a timestamp as a short relative time, e.g. "3h ago". */
+function formatRelativeTime(iso: string): string {
+  const diffMs = Date.now() - new Date(iso).getTime()
+  if (diffMs < 0) return "just now"
+  const sec = Math.floor(diffMs / 1000)
+  if (sec < 60) return `${sec}s ago`
+  const min = Math.floor(sec / 60)
+  if (min < 60) return `${min}m ago`
+  const hr = Math.floor(min / 60)
+  if (hr < 24) return `${hr}h ago`
+  const day = Math.floor(hr / 24)
+  if (day < 30) return `${day}d ago`
+  return new Date(iso).toLocaleDateString()
+}
+
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null)
   const [plan, setPlan] = useState<string>("free")
   const [activating, setActivating] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [analysesToday, setAnalysesToday] = useState<number>(0)
+  const [totalAnalyses, setTotalAnalyses] = useState<number>(0)
+  const [recentAnalyses, setRecentAnalyses] = useState<RecentAnalysis[]>([])
   const router = useRouter()
 
   // Supabase 未配置时显示提示
@@ -174,6 +201,33 @@ SUPABASE_SERVICE_ROLE_KEY=...`}
 
       let currentPlan = await fetchPlan(session.user.id)
       setPlan(currentPlan)
+
+      // Load usage stats and the recent analyses list in parallel.
+      // RLS on `analyses` limits results to the signed-in user, so we can
+      // safely use the regular user client (no service role needed).
+      const todayStart = new Date()
+      todayStart.setHours(0, 0, 0, 0)
+      const [todayRes, totalRes, recentRes] = await Promise.all([
+        supabase!
+          .from("analyses")
+          .select("*", { count: "exact", head: true })
+          .eq("user_id", session.user.id)
+          .gte("created_at", todayStart.toISOString()),
+        supabase!
+          .from("analyses")
+          .select("*", { count: "exact", head: true })
+          .eq("user_id", session.user.id),
+        supabase!
+          .from("analyses")
+          .select("id, repo_name, repo_url, quality_score, created_at")
+          .eq("user_id", session.user.id)
+          .order("created_at", { ascending: false })
+          .limit(10),
+      ])
+      setAnalysesToday(todayRes.count ?? 0)
+      setTotalAnalyses(totalRes.count ?? 0)
+      setRecentAnalyses((recentRes.data ?? []) as RecentAnalysis[])
+
       setLoading(false)
 
       // 2. 后台静默校验 token；只有完全无法刷新时才强制退出。
@@ -257,20 +311,20 @@ SUPABASE_SERVICE_ROLE_KEY=...`}
     {
       label: "Plan",
       value: planLabel,
-      sub: plan === "free" ? "3 analyses / day" : "Unlimited analyses",
+      sub: plan === "free" ? "Monthly quota applies" : "Unlimited analyses",
       link: plan === "free" ? "/pricing" : null,
       linkText: plan === "free" ? "Upgrade →" : null,
     },
     {
       label: "Analyses today",
-      value: "0",
-      sub: "of 3 daily limit",
+      value: String(analysesToday),
+      sub: "since midnight (UTC)",
       link: null,
-      linkText: "Resets daily",
+      linkText: null,
     },
     {
       label: "Total analyses",
-      value: "0",
+      value: String(totalAnalyses),
       sub: "All time",
       link: null,
       linkText: null,
@@ -624,56 +678,126 @@ SUPABASE_SERVICE_ROLE_KEY=...`}
             }}>
               Recent analyses
             </div>
-            <div style={{
-              background: "white",
-              border: "1px solid var(--rule)",
-              padding: "48px 32px",
-              textAlign: "center",
-            }}>
+            {recentAnalyses.length === 0 ? (
               <div style={{
-                width: "48px",
-                height: "48px",
-                margin: "0 auto 20px",
-                background: "var(--bg-cool)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "24px",
+                background: "white",
+                border: "1px solid var(--rule)",
+                padding: "48px 32px",
+                textAlign: "center",
               }}>
-                📂
-              </div>
-              <div style={{
-                fontSize: "16px",
-                fontWeight: 500,
-                color: "var(--ink)",
-                marginBottom: "8px",
-              }}>
-                No analyses yet
-              </div>
-              <div style={{
-                fontSize: "13px",
-                color: "var(--muted)",
-                marginBottom: "20px",
-              }}>
-                Your analysis history will appear here.
-              </div>
-              <Link
-                href="/"
-                style={{
-                  display: "inline-flex",
+                <div style={{
+                  width: "48px",
+                  height: "48px",
+                  margin: "0 auto 20px",
+                  background: "var(--bg-cool)",
+                  display: "flex",
                   alignItems: "center",
-                  padding: "10px 20px",
-                  background: "var(--blue-60)",
-                  color: "white",
+                  justifyContent: "center",
+                  fontSize: "24px",
+                }}>
+                  📂
+                </div>
+                <div style={{
+                  fontSize: "16px",
                   fontWeight: 500,
-                  fontSize: "14px",
-                  textDecoration: "none",
-                  letterSpacing: "0.02em",
-                }}
-              >
-                Analyze your first repo
-              </Link>
-            </div>
+                  color: "var(--ink)",
+                  marginBottom: "8px",
+                }}>
+                  No analyses yet
+                </div>
+                <div style={{
+                  fontSize: "13px",
+                  color: "var(--muted)",
+                  marginBottom: "20px",
+                }}>
+                  Your analysis history will appear here.
+                </div>
+                <Link
+                  href="/"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    padding: "10px 20px",
+                    background: "var(--blue-60)",
+                    color: "white",
+                    fontWeight: 500,
+                    fontSize: "14px",
+                    textDecoration: "none",
+                    letterSpacing: "0.02em",
+                  }}
+                >
+                  Analyze your first repo
+                </Link>
+              </div>
+            ) : (
+              <div style={{
+                background: "white",
+                border: "1px solid var(--rule)",
+              }}>
+                {recentAnalyses.map((a, i) => (
+                  <div
+                    key={a.id}
+                    style={{
+                      padding: "16px 20px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      gap: "16px",
+                      borderBottom: i < recentAnalyses.length - 1 ? "1px solid var(--rule-2)" : "none",
+                    }}
+                  >
+                    <div style={{ minWidth: 0, flex: 1 }}>
+                      <div style={{
+                        fontSize: "14px",
+                        fontWeight: 500,
+                        color: "var(--ink)",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}>
+                        {a.repo_name || "Unknown repository"}
+                      </div>
+                      <div style={{
+                        fontSize: "12px",
+                        color: "var(--muted)",
+                        fontFamily: "'IBM Plex Mono', monospace",
+                        marginTop: "2px",
+                      }}>
+                        {formatRelativeTime(a.created_at)}
+                      </div>
+                    </div>
+                    {a.quality_score !== null && (
+                      <div style={{
+                        fontFamily: "'IBM Plex Mono', monospace",
+                        fontSize: "13px",
+                        fontWeight: 600,
+                        color: a.quality_score >= 80 ? "#1f9d55" : a.quality_score >= 60 ? "#d97706" : "#dc2626",
+                        minWidth: "32px",
+                        textAlign: "right",
+                      }}>
+                        {a.quality_score}
+                      </div>
+                    )}
+                    {a.repo_url && (
+                      <a
+                        href={a.repo_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          fontSize: "12px",
+                          color: "var(--blue-70)",
+                          textDecoration: "none",
+                          fontWeight: 500,
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        GitHub ↗
+                      </a>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 

@@ -41,6 +41,7 @@ export async function POST(request: Request) {
     // ---- 订阅 / 试用 门控 ----
     // 1) 若携带登录 token，校验是否已是付费用户（Pro / Team）
     let isPaid = false
+    let userId: string | null = null
     const sbUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
     const sbAnon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
     if (userToken && sbUrl && sbAnon) {
@@ -48,12 +49,13 @@ export async function POST(request: Request) {
         const sb = createClient(sbUrl, sbAnon)
         const { data: authData } = await sb.auth.getUser(userToken)
         if (authData.user) {
+          userId = authData.user.id
           const admin = createAdminClient()
           if (admin) {
             const { data: profile } = await admin
               .from('profiles')
               .select('plan')
-              .eq('id', authData.user.id)
+              .eq('id', userId)
               .maybeSingle()
             isPaid = profile?.plan === 'pro' || profile?.plan === 'team'
           }
@@ -111,6 +113,27 @@ export async function POST(request: Request) {
     const evidence = buildEvidence(facts, repoInfo.html_url)
 
     // 试用计数已在请求入口处扣减（付费用户不消耗试用额度）
+
+    // ---- 持久化分析历史（仅登录用户；失败不影响本次返回）----
+    // The RLS policy uses auth.uid(), but we go through the admin client so a
+    // missing session row (e.g. mid-signup) can still be recovered without
+    // failing the analysis result the user is waiting for.
+    if (userId) {
+      try {
+        const admin = createAdminClient()
+        if (admin) {
+          await admin.from('analyses').insert({
+            user_id: userId,
+            repo_url: repoInfo.html_url,
+            repo_name: `${owner}/${repo}`,
+            quality_score: quality.score,
+            agents_md: agentsMd,
+          })
+        }
+      } catch (err) {
+        console.error('Failed to persist analysis history:', err)
+      }
+    }
 
     const res = NextResponse.json({
       repo: {
