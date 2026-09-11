@@ -8,7 +8,8 @@
  *
  * To go live:
  *   1. Sign up at https://resend.com (free tier = 3 000 emails/month).
- *   2. Add and verify your sending domain (e.g. repocontext.com).
+ *   2. Add and verify your sending domain (e.g. repocontext.com) by
+ *      adding the DKIM / SPF records Resend gives you to Cloudflare DNS.
  *   3. Set RESEND_API_KEY and RESEND_FROM in Vercel env, then redeploy.
  *      RESEND_FROM example: "RepoContext <noreply@repocontext.com>".
  */
@@ -20,6 +21,7 @@ const fromAddress =
 
 const resend = apiKey ? new Resend(apiKey) : null
 
+/** True when RESEND_API_KEY is set and Resend calls will actually deliver. */
 export const emailConfigured = !!resend
 
 /** A no-throw wrapper around resend.emails.send so callers can fire-and-forget. */

@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import "./globals.css"
 import { LanguageProvider } from "@/components/LanguageProvider"
 import { CustomerServiceWidget } from "@/components/CustomerServiceWidget"
+import { CookieConsent } from "@/components/CookieConsent"
 import { JsonLd } from "@/components/JsonLd"
 
 const SITE_NAME = "RepoContext"
@@ -84,6 +85,7 @@ export default function RootLayout({
         <LanguageProvider>
           {children}
           <CustomerServiceWidget />
+          <CookieConsent />
         </LanguageProvider>
       </body>
     </html>

@@ -41,6 +41,10 @@ export default function DashboardPage() {
   const [recentAnalyses, setRecentAnalyses] = useState<RecentAnalysis[]>([])
   const [openingPortal, setOpeningPortal] = useState(false)
   const [portalError, setPortalError] = useState<string | null>(null)
+  const [confirmingDelete, setConfirmingDelete] = useState(false)
+  const [deleteConfirmText, setDeleteConfirmText] = useState("")
+  const [deleting, setDeleting] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
   const router = useRouter()
 
   // Supabase 未配置时显示提示
@@ -309,6 +313,36 @@ SUPABASE_SERVICE_ROLE_KEY=...`}
       )
     } finally {
       setOpeningPortal(false)
+    }
+  }
+
+  // Permanently delete the signed-in user's account. Requires the
+  // user to type the literal "DELETE" in the confirmation dialog, and
+  // is rejected with 409 if the user is still on a paid plan.
+  const handleDeleteAccount = async () => {
+    if (deleteConfirmText !== "DELETE") return
+    setDeleteError(null)
+    setDeleting(true)
+    try {
+      const res = await fetch("/api/account/delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ confirm: "DELETE" }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        setDeleteError(data?.error || "Failed to delete account.")
+        return
+      }
+      // Sign out the client and redirect home. The server has already
+      // cascaded the user row out of auth + profiles + analyses.
+      await supabase!.auth.signOut()
+      router.push("/?deleted=1")
+      router.refresh()
+    } catch (err: any) {
+      setDeleteError(err?.message || "Failed to delete account.")
+    } finally {
+      setDeleting(false)
     }
   }
 
@@ -955,6 +989,228 @@ SUPABASE_SERVICE_ROLE_KEY=...`}
           </div>
         </div>
       </section>
+
+      {/* Danger zone — account deletion (GDPR Art.17) */}
+      <section style={{
+        padding: "32px 48px 48px",
+        background: "var(--bg-warm)",
+      }}>
+        <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
+          <div style={{
+            background: "white",
+            border: "1px solid #fecaca",
+            padding: "28px 32px",
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "20px",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}>
+            <div style={{ flex: 1, minWidth: "260px" }}>
+              <div style={{
+                fontSize: "11px",
+                fontWeight: 700,
+                letterSpacing: "0.12em",
+                textTransform: "uppercase",
+                color: "#dc2626",
+                marginBottom: "6px",
+              }}>
+                Danger zone
+              </div>
+              <div style={{
+                fontSize: "15px",
+                fontWeight: 500,
+                color: "var(--ink)",
+                marginBottom: "4px",
+              }}>
+                Delete your account
+              </div>
+              <div style={{ fontSize: "13px", color: "var(--muted)", lineHeight: 1.5 }}>
+                Permanently removes your profile, analysis history and any
+                saved data. This action is irreversible. If you have a paid
+                subscription, cancel it first.
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setDeleteError(null)
+                setDeleteConfirmText("")
+                setConfirmingDelete(true)
+              }}
+              style={{
+                padding: "10px 20px",
+                background: "white",
+                color: "#dc2626",
+                border: "1px solid #dc2626",
+                fontSize: "13px",
+                fontWeight: 500,
+                cursor: "pointer",
+                letterSpacing: "0.02em",
+                whiteSpace: "nowrap",
+              }}
+            >
+              Delete account
+            </button>
+          </div>
+          {deleteError && (
+            <div style={{
+              marginTop: "12px",
+              padding: "12px 16px",
+              border: "1px solid #fecaca",
+              background: "#fef2f2",
+              color: "#991b1b",
+              fontSize: "13px",
+              fontFamily: "'IBM Plex Mono', monospace",
+            }}>
+              {deleteError}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Delete-account confirmation modal */}
+      {confirmingDelete && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="delete-account-title"
+          onClick={() => !deleting && setConfirmingDelete(false)}
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(15, 23, 42, 0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+            padding: "20px",
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: "white",
+              width: "100%",
+              maxWidth: "440px",
+              padding: "28px",
+              border: "1px solid #e6eaf0",
+            }}
+          >
+            <div style={{
+              fontSize: "11px",
+              fontWeight: 700,
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+              color: "#dc2626",
+              marginBottom: "6px",
+            }}>
+              Confirm deletion
+            </div>
+            <h2
+              id="delete-account-title"
+              style={{
+                fontSize: "20px",
+                fontWeight: 600,
+                color: "var(--ink)",
+                margin: "0 0 12px 0",
+                letterSpacing: "-0.01em",
+              }}
+            >
+              Delete your account permanently?
+            </h2>
+            <p style={{ fontSize: "14px", color: "var(--muted)", lineHeight: 1.6, margin: "0 0 20px 0" }}>
+              This will delete your profile, analysis history and all
+              associated data. <strong>This cannot be undone.</strong>
+            </p>
+            <label
+              htmlFor="delete-confirm"
+              style={{
+                display: "block",
+                fontSize: "12px",
+                color: "var(--muted)",
+                marginBottom: "6px",
+              }}
+            >
+              Type <code style={{
+                fontFamily: "'IBM Plex Mono', monospace",
+                background: "#fef2f2",
+                color: "#dc2626",
+                padding: "1px 6px",
+                borderRadius: "3px",
+              }}>DELETE</code> to confirm:
+            </label>
+            <input
+              id="delete-confirm"
+              type="text"
+              value={deleteConfirmText}
+              onChange={(e) => setDeleteConfirmText(e.target.value)}
+              disabled={deleting}
+              autoComplete="off"
+              autoFocus
+              style={{
+                width: "100%",
+                padding: "10px 12px",
+                border: "1px solid var(--rule)",
+                fontSize: "14px",
+                fontFamily: "'IBM Plex Mono', monospace",
+                marginBottom: "20px",
+                boxSizing: "border-box",
+              }}
+            />
+            {deleteError && (
+              <div style={{
+                marginBottom: "16px",
+                padding: "10px 12px",
+                border: "1px solid #fecaca",
+                background: "#fef2f2",
+                color: "#991b1b",
+                fontSize: "12px",
+                fontFamily: "'IBM Plex Mono', monospace",
+              }}>
+                {deleteError}
+              </div>
+            )}
+            <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
+              <button
+                type="button"
+                onClick={() => !deleting && setConfirmingDelete(false)}
+                disabled={deleting}
+                style={{
+                  padding: "10px 18px",
+                  background: "white",
+                  color: "var(--ink)",
+                  border: "1px solid var(--rule)",
+                  fontSize: "13px",
+                  fontWeight: 500,
+                  cursor: deleting ? "wait" : "pointer",
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleDeleteAccount}
+                disabled={deleting || deleteConfirmText !== "DELETE"}
+                style={{
+                  padding: "10px 18px",
+                  background: deleteConfirmText === "DELETE" ? "#dc2626" : "#fecaca",
+                  color: "white",
+                  border: "none",
+                  fontSize: "13px",
+                  fontWeight: 500,
+                  cursor:
+                    deleting || deleteConfirmText !== "DELETE"
+                      ? "not-allowed"
+                      : "pointer",
+                }}
+              >
+                {deleting ? "Deleting…" : "Delete forever"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Footer */}
       <footer style={{
