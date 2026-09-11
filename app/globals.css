@@ -616,15 +616,34 @@ img, svg, video, iframe, table, pre, .code-block {
     width: 100%;
   }
 
-  /* The hero illustration column is purely decorative (a 600x600 logo
-     plus floating cards) and dominates the screen on a phone. Drop it
-     entirely so the headline, form and CTA have the full width. */
+  /* The hero illustration is the main visual on phones, so keep it
+     visible and sized to fill the column instead of shrinking it. */
   .rc-hero-illu {
     display: block !important;
-    height: 600px !important;
-    transform: scale(0.5);
+    height: 460px !important;
+    transform: none;
     transform-origin: top center;
-    margin-bottom: -300px;
+    margin-bottom: 0;
+    margin-top: 20px;
+  }
+
+  .rc-hero-illu > div:first-child {
+    width: 320px !important;
+    height: 320px !important;
+  }
+
+  .rc-hero-illu > div:nth-child(2) {
+    width: 180px !important;
+    top: 20px !important;
+    right: 10px !important;
+    padding: 14px !important;
+  }
+
+  .rc-hero-illu > div:nth-child(3) {
+    width: 200px !important;
+    bottom: 20px !important;
+    left: 10px !important;
+    padding: 14px !important;
   }
 
   /* On phones the 3D illustration is the site’s main visual, so it
