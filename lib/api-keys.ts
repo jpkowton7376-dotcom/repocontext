@@ -154,6 +154,105 @@ export async function revokeApiKey(
   return { ok: true }
 }
 
+/* ────────────────────────────────────────────────────────────────────────────
+ * Rate limiting
+ * ──────────────────────────────────────────────────────────────────────────── */
+
+export type RateLimitResult = {
+  /** Requests counted in the current minute, including this one. */
+  count: number
+  /** The per-minute ceiling that was applied. */
+  limit: number
+  /** Requests left in the current minute. */
+  remaining: number
+  /** False when this request pushed the key over its limit. */
+  allowed: boolean
+  /** True when the counter couldn't be reached — callers must fail open. */
+  unavailable: boolean
+  /** Seconds until the current minute rolls over (for Retry-After). */
+  resetInSeconds: number
+}
+
+/** Start of the current wall-clock minute, as an ISO string. */
+function currentMinute(): { start: string; resetInSeconds: number } {
+  const now = Date.now()
+  const startMs = Math.floor(now / 60_000) * 60_000
+  return {
+    start: new Date(startMs).toISOString(),
+    resetInSeconds: Math.max(1, Math.ceil((startMs + 60_000 - now) / 1000)),
+  }
+}
+
+/**
+ * Counts one request against a key's `rate_limit_per_minute` and reports
+ * whether it fits.
+ *
+ * The increment runs inside Postgres (`increment_api_key_usage`) because a
+ * read-then-write from the edge would let concurrent requests both see the
+ * same count and both slip through. If that function or its table is missing
+ * we fail OPEN — a missing migration should slow nothing down, and the
+ * alternative (failing closed) would take the whole API down for everyone.
+ */
+export async function consumeRateLimit(
+  admin: SupabaseClient,
+  keyId: string,
+  limitPerMinute: number,
+): Promise<RateLimitResult> {
+  const limit = limitPerMinute > 0 ? limitPerMinute : DEFAULT_RATE_LIMIT
+  const { start, resetInSeconds } = currentMinute()
+
+  try {
+    const { data, error } = await admin.rpc("increment_api_key_usage", {
+      p_key_id: keyId,
+      p_window_start: start,
+      p_max: limit,
+    })
+
+    if (error || !data) {
+      console.warn(
+        "[api-keys] rate limit unavailable (run supabase/api_key_rate_buckets.sql):",
+        error?.message,
+      )
+      return {
+        count: 0,
+        limit,
+        remaining: limit,
+        allowed: true,
+        unavailable: true,
+        resetInSeconds,
+      }
+    }
+
+    const row = data as {
+      count?: number
+      limit?: number
+      remaining?: number
+      allowed?: boolean
+    }
+    const count = Number(row.count ?? 0)
+    const allowed = row.allowed !== false
+
+    return {
+      count,
+      limit: Number(row.limit ?? limit),
+      remaining: Number(row.remaining ?? Math.max(limit - count, 0)),
+      allowed,
+      unavailable: false,
+      resetInSeconds,
+    }
+  } catch (err) {
+    console.error("[api-keys] rate limit threw:", err)
+    return {
+      count: 0,
+      limit,
+      remaining: limit,
+      allowed: true,
+      unavailable: true,
+      resetInSeconds,
+    }
+  }
+}
+
 /** Touches last_used_at. Best-effort; never throws. */
 export async function touchApiKey(
   admin: SupabaseClient,

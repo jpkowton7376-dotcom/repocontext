@@ -192,6 +192,9 @@ console.log(analysis.agentsMd); // write to AGENTS.md`
               {[
                 [401, "Missing, malformed, or revoked API key."],
                 [400, "Body did not include { repoUrl: string }."],
+                [402, "Free tier exhausted for this account — upgrade to continue."],
+                [429, "Per-minute rate limit for this key exceeded. Wait for Retry-After, then retry."],
+                [503, "Server not configured (Supabase/GitHub credentials missing)."],
                 [500, "Upstream failure (GitHub unavailable, scanner error)."],
               ].map(([code, msg]) => (
                 <tr key={code} style={{ borderBottom: "1px solid var(--rule-2)" }}>
@@ -215,8 +218,16 @@ console.log(analysis.agentsMd); // write to AGENTS.md`
           </h2>
           <p style={{ fontSize: "15px", color: "var(--ink-2)", lineHeight: 1.7, margin: "0 0 12px 0" }}>
             Every API key carries a per-minute rate limit (default 30
-            requests/min). Keys on Pro and Team plans will get higher
-            limits as we ship tiered quotas.
+            requests/min), and it is enforced: the 31st request in a minute
+            returns <code style={{ fontFamily: "'IBM Plex Mono', monospace" }}>429</code> with a
+            {" "}<code style={{ fontFamily: "'IBM Plex Mono', monospace" }}>Retry-After</code> header.
+            Successful responses carry{" "}
+            <code style={{ fontFamily: "'IBM Plex Mono', monospace" }}>X-RateLimit-Limit</code>,{" "}
+            <code style={{ fontFamily: "'IBM Plex Mono', monospace" }}>X-RateLimit-Remaining</code> and{" "}
+            <code style={{ fontFamily: "'IBM Plex Mono', monospace" }}>X-RateLimit-Reset</code>; the same numbers are in{" "}
+            <code style={{ fontFamily: "'IBM Plex Mono', monospace" }}>meta.rateLimit</code>.
+            Keys on Pro and Team plans will get higher limits as we ship
+            tiered quotas.
           </p>
           <p style={{ fontSize: "15px", color: "var(--ink-2)", lineHeight: 1.7, margin: 0 }}>
             API calls count against your normal plan quota (5 free / month

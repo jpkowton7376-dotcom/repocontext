@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server"
 import { createAdminClient } from "@/lib/supabase"
 import {
+  DEFAULT_RATE_LIMIT,
+  consumeRateLimit,
   extractBearer,
   verifyApiKey,
   touchApiKey,
@@ -89,14 +91,35 @@ export async function POST(request: Request) {
     )
   }
 
-  // ── 5. Run the analysis ────────────────────────────────────────────────
-  try {
-    // Note: the v1 API does not yet honour the per-key rate_limit_per_minute
-    // value because rate-limiting needs the request count, not just the
-    // moment of the call. Until that ships we treat every call as
-    // consuming one of the user's monthly analyses, which matches the
-    // web behaviour. Paid users remain unlimited.
+  // ── 5. Enforce the per-key rate limit ─────────────────────────────────
+  // Counted before the analysis runs so a rejected call costs no GitHub
+  // quota and no LLM tokens. If the counter table is missing this fails
+  // open (see consumeRateLimit).
+  const rate = await consumeRateLimit(
+    admin,
+    apiKey.id,
+    apiKey.rate_limit_per_minute || DEFAULT_RATE_LIMIT,
+  )
+  if (!rate.allowed) {
+    return NextResponse.json(
+      {
+        error: `Rate limit exceeded: ${rate.limit} requests per minute for this API key.`,
+        retryAfterSeconds: rate.resetInSeconds,
+      },
+      {
+        status: 429,
+        headers: {
+          "Retry-After": String(rate.resetInSeconds),
+          "X-RateLimit-Limit": String(rate.limit),
+          "X-RateLimit-Remaining": "0",
+          "X-RateLimit-Reset": String(rate.resetInSeconds),
+        },
+      },
+    )
+  }
 
+  // ── 6. Run the analysis ────────────────────────────────────────────────
+  try {
     const result = await runAnalysis({
       repoUrl,
       githubToken: null,
@@ -118,13 +141,27 @@ export async function POST(request: Request) {
     }
     void touchApiKey(admin, apiKey.id)
 
-    return NextResponse.json({
-      ...result,
-      meta: {
-        apiKey: { id: apiKey.id, prefix: apiKey.key_prefix },
-        plan: profile?.plan || "free",
+    return NextResponse.json(
+      {
+        ...result,
+        meta: {
+          apiKey: { id: apiKey.id, prefix: apiKey.key_prefix },
+          plan: profile?.plan || "free",
+          rateLimit: {
+            limit: rate.limit,
+            remaining: rate.remaining,
+            resetInSeconds: rate.resetInSeconds,
+          },
+        },
       },
-    })
+      {
+        headers: {
+          "X-RateLimit-Limit": String(rate.limit),
+          "X-RateLimit-Remaining": String(rate.remaining),
+          "X-RateLimit-Reset": String(rate.resetInSeconds),
+        },
+      },
+    )
   } catch (err: any) {
     console.error("[v1/analyze] failed:", err)
     return NextResponse.json(

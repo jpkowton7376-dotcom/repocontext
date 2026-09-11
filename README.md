@@ -39,7 +39,6 @@ CREEM_PRODUCT_TEAM=prod_xxx
 
 # 应用配置
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
-FREE_DAILY_LIMIT=3
 ```
 
 ### 3. 启动
@@ -58,32 +57,55 @@ npm run dev
 repocontext-app/
 ├── app/
 │   ├── page.tsx                  # 首页
-│   ├── result/page.tsx           # 分析结果页
+│   ├── result/page.tsx           # 分析结果页（本地历史恢复）
+│   ├── result/[id]/page.tsx      # 公开分享结果页
 │   ├── pricing/page.tsx          # 定价页
 │   ├── login/page.tsx            # 登录页
 │   ├── signup/page.tsx           # 注册页
-│   ├── dashboard/page.tsx        # 用户控制台
-│   ├── terms/page.tsx            # 服务条款
-│   ├── privacy/page.tsx          # 隐私政策
-│   ├── refund/page.tsx           # 退款政策
+│   ├── dashboard/page.tsx        # 用户控制台（用量 / API key / 订阅）
+│   ├── docs/page.tsx             # 产品文档
+│   ├── developers/page.tsx       # 公开 API 文档
+│   ├── templates/page.tsx        # 提示词与模板库
+│   ├── ai-tools/page.tsx         # AI 工具目录（SEO）
+│   ├── changelog/page.tsx        # 更新日志 + RSS
+│   ├── terms/ privacy/ refund/ acceptable-use/   # 法务页
 │   ├── api/
-│   │   ├── analyze/route.ts      # 仓库分析 API
-│   │   └── creem/
-│   │       ├── checkout/route.ts # Creem Checkout
-│   │       └── webhook/route.ts  # Creem Webhook
+│   │   ├── analyze/route.ts      # 浏览器端分析入口
+│   │   ├── v1/analyze/route.ts   # 公开 REST API（API key + 限流）
+│   │   ├── api-keys/             # API key 增删
+│   │   ├── share/route.ts        # 分享链接读写
+│   │   ├── support/route.ts      # 客服消息
+│   │   ├── waitlist/route.ts     # waitlist 邮箱收集
+│   │   ├── trial/route.ts        # 匿名试用计数
+│   │   ├── creem/                # checkout / webhook / portal
+│   │   ├── account/delete/       # GDPR 删号
+│   │   └── email/welcome/        # 欢迎邮件
+│   ├── i18n/                     # en / es / ja / zh-Hant 词典
 │   ├── layout.tsx
 │   └── globals.css
+├── components/
+│   ├── SiteNav.tsx               # 全站导航
+│   ├── CustomerServiceWidget.tsx # 客服浮窗（真实发信）
+│   ├── CookieConsent.tsx         # Cookie 同意
+│   └── LanguageProvider.tsx      # 多语言
 ├── lib/
 │   ├── github.ts                 # GitHub API 工具
 │   ├── scanner.ts                # 仓库扫描器
-│   ├── generator.ts              # AGENTS.md 模板生成
+│   ├── generator.ts              # AGENTS.md / CLAUDE.md / Cursor / Copilot 生成
+│   ├── analyze-pipeline.ts       # 扫描 → 生成 → LLM 编排
 │   ├── llm.ts                    # LLM 优化
-│   ├── supabase.ts               # Supabase 客户端
-│   └── creem.ts                  # Creem 配置
+│   ├── api-keys.ts               # key 生成/校验 + 每分钟限流
+│   ├── recent-analyses.ts        # 未登录用户的本地分析历史
+│   ├── trial.ts                  # 试用额度
+│   ├── supabase.ts / supabase-server.ts
+│   ├── creem.ts                  # Creem 配置
+│   ├── email.ts                  # Resend 事务邮件
+│   └── templates.ts / ai-tools.ts / changelog-data.ts
+├── supabase/                     # 建表 SQL（逐个在 SQL Editor 执行）
 ├── package.json
 ├── tailwind.config.ts
 ├── tsconfig.json
-└── .env.local.example
+└── .env.example
 ```
 
 ---
@@ -171,6 +193,21 @@ create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function public.handle_new_user();
 ```
+
+上面的 SQL 也可以用 `supabase/01_init.sql`（同一份内容）。
+
+**其余表**都在 `supabase/` 下，各自是一个独立文件，用到哪个功能就跑哪个
+（所有相关代码都会在这些表缺失时优雅降级，不会出现 500）：
+
+| 文件 | 用途 | 不跑会怎样 |
+| --- | --- | --- |
+| `01_init.sql` | profiles / analyses + 触发器 | 登录与历史记录不可用 |
+| `add_creem_columns.sql` | 订阅相关字段 | 支付回调无法升级套餐 |
+| `api_keys.sql` | 公开 API 的 key | Dashboard 无法创建 API key |
+| `shared_analyses.sql` | 分享链接 | 分享按钮返回 503 |
+| `api_key_rate_buckets.sql` | API 每分钟限流 | 限流不生效（fail open，只告警） |
+| `support_messages.sql` | 客服消息留档 | 客服消息仍能发邮件，只是不入库 |
+| `waitlist.sql` | waitlist 邮箱 | 邮箱只能进日志，不入库 |
 
 ### 🔴 第三阶段：支付系统（上线前 1 周）
 
@@ -329,7 +366,7 @@ A: 能。首页和分析功能不需要登录，直接就能用。用户系统�
 A: 能。定价页可正常显示；本地开发点支付会直接跳成功页演示流程，生产环境才需要配置 Creem 才能真实收款。
 
 **Q: 怎么改价格？**
-A: 改 `app/pricing/page.tsx` 里的数字，然后在 Creem Dashboard 里创建对应价格的产品，把 Product ID 填到环境变量里。
+A: 分两步，顺序不能反：先在 Creem Dashboard 里改产品实际收费（真正扣款金额由 Creem 后台的 product 决定，代码里定义不了），再把 `app/pricing/page.tsx` 的展示数字改成一致。只改页面数字会造成"页面显示 \$9、实际扣 \$19"。
 
 **Q: 怎么加新的输出格式（比如 CLAUDE.md）？**
 A: 在 `lib/generator.ts` 里加一个生成函数，然后在结果页加一个切换 Tab。

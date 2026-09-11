@@ -80,11 +80,15 @@ function AwayIcon() {
 }
 
 export function CustomerServiceWidget() {
-  const { t } = useTranslation()
+  const { t, locale } = useTranslation()
   const [open, setOpen] = useState(false)
   const [draft, setDraft] = useState("")
+  const [emailDraft, setEmailDraft] = useState("")
   const [history, setHistory] = useState<SupportMessage[]>([])
   const [hydrated, setHydrated] = useState(false)
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">(
+    "idle",
+  )
 
   useEffect(() => {
     setHistory(loadHistory())
@@ -96,22 +100,58 @@ export function CustomerServiceWidget() {
     saveHistory(history)
   }, [history, hydrated])
 
-  const handleSend = useCallback(() => {
+  /**
+   * Sends the message to /api/support, which emails it to the support
+   * inbox and stores it in `support_messages`. The local copy is only
+   * kept so the conversation survives a page reload — the source of
+   * truth for support staff is the email/table, not localStorage.
+   */
+  const handleSend = useCallback(async () => {
     const text = draft.trim()
-    if (!text) return
-    const now = new Date()
-    const entry: SupportMessage = {
-      id: `${now.getTime()}-${Math.random().toString(36).slice(2, 7)}`,
-      role: "user",
-      text,
-      time: now.toLocaleString(),
+    if (!text || status === "sending") return
+
+    setStatus("sending")
+
+    try {
+      const res = await fetch("/api/support", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: text,
+          email: emailDraft.trim() || undefined,
+          page: window.location.pathname,
+          locale,
+        }),
+      })
+      const json = await res.json().catch(() => ({}))
+
+      if (!res.ok) {
+        console.error("[support] send failed:", json?.error)
+        setStatus("error")
+        return
+      }
+
+      const now = new Date()
+      setHistory((items) => [
+        ...items,
+        {
+          id: `${now.getTime()}-${Math.random().toString(36).slice(2, 7)}`,
+          role: "user",
+          text,
+          time: now.toLocaleString(),
+        },
+      ])
+      setDraft("")
+      setStatus("sent")
+    } catch (err) {
+      console.error("[support] network error:", err)
+      setStatus("error")
     }
-    setHistory((items) => [...items, entry])
-    setDraft("")
-  }, [draft])
+  }, [draft, emailDraft, locale, status])
 
   const handleReset = useCallback(() => {
     setHistory([])
+    setStatus("idle")
   }, [])
 
   const justSent = history.length > 0 && history[history.length - 1]?.role === "user"
@@ -242,7 +282,7 @@ export function CustomerServiceWidget() {
               </div>
             ))}
 
-            {justSent && (
+            {(justSent || status === "error") && (
               <div
                 style={{
                   marginTop: "4px",
@@ -264,7 +304,11 @@ export function CustomerServiceWidget() {
                     margin: "0 0 4px",
                   }}
                 >
-                  {t("support.away")}
+                  {status === "error"
+                    ? t("support.sendFailed")
+                    : status === "sending"
+                      ? t("support.sending")
+                      : t("support.sent")}
                 </p>
                 <p
                   style={{
@@ -274,8 +318,30 @@ export function CustomerServiceWidget() {
                     lineHeight: 1.5,
                   }}
                 >
-                  {t("support.awayMessage")}
+                  {status === "error"
+                    ? t("support.sendFailedNote")
+                    : status === "sending"
+                      ? t("support.sending")
+                      : emailDraft.trim()
+                        ? t("support.sentNoteEmail")
+                        : t("support.sentNote")}
                 </p>
+                {status === "error" && (
+                  <a
+                    href={`mailto:jpkowton@gmail.com?subject=${encodeURIComponent(
+                      "RepoContext support",
+                    )}&body=${encodeURIComponent(draft)}`}
+                    style={{
+                      display: "block",
+                      fontSize: "13px",
+                      fontWeight: 500,
+                      color: "var(--blue-50)",
+                      margin: "0 0 10px",
+                    }}
+                  >
+                    {t("support.emailDirectly")}
+                  </a>
+                )}
                 <button
                   type="button"
                   onClick={handleReset}
@@ -290,7 +356,7 @@ export function CustomerServiceWidget() {
                     cursor: "pointer",
                   }}
                 >
-                  {t("support.sendAnother")}
+                  {status === "error" ? t("support.tryAgain") : t("support.sendAnother")}
                 </button>
               </div>
             )}
@@ -305,10 +371,31 @@ export function CustomerServiceWidget() {
               borderTop: "1px solid var(--rule)",
               padding: "10px 12px",
               display: "flex",
+              flexDirection: "column",
               gap: "8px",
-              alignItems: "flex-end",
             }}
           >
+            {/* Optional, but without it we can only shout into the void —
+                there is no way to reply to an anonymous message. */}
+            <input
+              type="email"
+              value={emailDraft}
+              onChange={(e) => setEmailDraft(e.target.value)}
+              placeholder={t("support.emailPlaceholder")}
+              aria-label={t("support.emailPlaceholder")}
+              style={{
+                width: "100%",
+                border: "1px solid var(--rule)",
+                borderRadius: "6px",
+                padding: "8px 10px",
+                fontSize: "13px",
+                fontFamily: "inherit",
+                color: "var(--ink)",
+                outline: "none",
+                boxSizing: "border-box",
+              }}
+            />
+            <div style={{ display: "flex", gap: "8px", alignItems: "flex-end" }}>
             <textarea
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
@@ -337,9 +424,12 @@ export function CustomerServiceWidget() {
             />
             <button
               type="submit"
-              disabled={!draft.trim()}
+              disabled={!draft.trim() || status === "sending"}
               style={{
-                background: draft.trim() ? "var(--blue-50)" : "#c7cfdb",
+                background:
+                  !draft.trim() || status === "sending"
+                    ? "#c7cfdb"
+                    : "var(--blue-50)",
                 color: "white",
                 border: "none",
                 borderRadius: "6px",
@@ -347,12 +437,16 @@ export function CustomerServiceWidget() {
                 height: "40px",
                 fontSize: "13px",
                 fontWeight: 500,
-                cursor: draft.trim() ? "pointer" : "not-allowed",
+                cursor:
+                  !draft.trim() || status === "sending"
+                    ? "not-allowed"
+                    : "pointer",
                 whiteSpace: "nowrap",
               }}
             >
-              {t("support.send")}
+              {status === "sending" ? t("support.sending") : t("support.send")}
             </button>
+            </div>
           </form>
         </div>
       )}

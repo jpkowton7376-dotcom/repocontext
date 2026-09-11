@@ -3,7 +3,8 @@
 import { createServerClient } from "@supabase/ssr"
 import { cookies } from "next/headers"
 
-export function createServerSupabaseClient() {
+// Not exported: only getCurrentUser below needs it.
+function createServerSupabaseClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
   if (!url || !anonKey) return null

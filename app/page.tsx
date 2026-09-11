@@ -9,11 +9,12 @@ import { GlowLink } from "@/components/GlowLink"
 import { SiteNav } from "@/components/SiteNav"
 import { JsonLd } from "@/components/JsonLd"
 import { supabase, isSupabaseConfigured } from "@/lib/supabase"
+import { saveRecent } from "@/lib/recent-analyses"
 import { useTranslation } from "@/components/LanguageProvider"
 import type { AuthChangeEvent, Session } from "@supabase/supabase-js"
 
 export default function HomePage() {
-  const { t, dict } = useTranslation()
+  const { t, dict, locale } = useTranslation()
   const [url, setUrl] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
@@ -21,6 +22,10 @@ export default function HomePage() {
   const [plan, setPlan] = useState<string>("free")
   const [analyzeHover, setAnalyzeHover] = useState(false)
   const [waitlistHover, setWaitlistHover] = useState(false)
+  const [waitlistEmail, setWaitlistEmail] = useState("")
+  const [waitlistState, setWaitlistState] = useState<
+    "idle" | "sending" | "done" | "error"
+  >("idle")
   const [userToken, setUserToken] = useState<string | null>(null)
   const [trial, setTrial] = useState<{
     freeRemaining: number
@@ -101,16 +106,46 @@ export default function HomePage() {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || "Analysis failed")
       // Persist full payload (including formats / audit / evidence) for the result page
+      // sessionStorage covers the current tab; localStorage keeps the result
+      // available after a refresh or in another tab, and feeds the "recent
+      // analyses" list for visitors who aren't signed in.
       try {
         sessionStorage.setItem("repoResult", JSON.stringify(data))
       } catch {
         // sessionStorage may be full or unavailable; the result page will redirect home
       }
+      saveRecent(target, data)
       router.push(`/result?repo=${encodeURIComponent(target)}`)
     } catch (err: any) {
       setError(err.message || "Something went wrong")
     } finally {
       setLoading(false)
+    }
+  }
+
+  /**
+   * Waitlist signup. Previously this just opened a mailto: link, which
+   * meant we never actually learned who wanted early access.
+   */
+  async function joinWaitlist() {
+    const email = waitlistEmail.trim()
+    if (!email || waitlistState === "sending") return
+
+    setWaitlistState("sending")
+    try {
+      const res = await fetch("/api/waitlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, source: "homepage-roadmap", locale }),
+      })
+      if (!res.ok) {
+        setWaitlistState("error")
+        return
+      }
+      setWaitlistEmail("")
+      setWaitlistState("done")
+    } catch {
+      setWaitlistState("error")
     }
   }
 
@@ -172,7 +207,7 @@ export default function HomePage() {
             <circle cx="12" cy="12" r="10" />
             <polyline points="12 6 12 12 16 14" />
           </svg>
-          Coming soon
+          {t("home.roadmapComingSoon")}
         </div>
       </div>
     )
@@ -795,33 +830,87 @@ export default function HomePage() {
                 {t("home.waitlistSubtitle")}
               </p>
             </div>
-            <button
-              onClick={() => {
-                window.location.href =
-                  "mailto:jpkowton@gmail.com?subject=" +
-                  encodeURIComponent("RepoContext waitlist")
-              }}
-              onMouseEnter={() => setWaitlistHover(true)}
-              onMouseLeave={() => setWaitlistHover(false)}
-              style={{
-                padding: "12px 24px",
-                background: waitlistHover ? "#2a2a2a" : "var(--ink)",
-                color: "white",
-                border: "none",
-                fontSize: "14px",
-                fontWeight: 500,
-                cursor: "pointer",
-                whiteSpace: "nowrap",
-                transition: "all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
-                boxShadow: waitlistHover
-                  ? "0 0 28px rgba(255,255,255,0.35), 0 0 12px rgba(255,255,255,0.2)"
-                  : "0 0 0 rgba(255,255,255,0)",
-                transform: waitlistHover ? "translateY(-1px)" : "translateY(0)",
-              }}
-            >
-              {t("home.waitlistCta")}
-            </button>
+            {waitlistState === "done" ? (
+              <p
+                style={{
+                  fontSize: "14px",
+                  fontWeight: 500,
+                  color: "var(--ink)",
+                  margin: 0,
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {t("home.waitlistDone")}
+              </p>
+            ) : (
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault()
+                  void joinWaitlist()
+                }}
+                style={{
+                  display: "flex",
+                  gap: "10px",
+                  alignItems: "center",
+                  flexWrap: "wrap",
+                }}
+              >
+                <input
+                  type="email"
+                  required
+                  value={waitlistEmail}
+                  onChange={(e) => {
+                    setWaitlistEmail(e.target.value)
+                    if (waitlistState === "error") setWaitlistState("idle")
+                  }}
+                  placeholder={t("home.waitlistPlaceholder")}
+                  aria-label={t("home.waitlistPlaceholder")}
+                  style={{
+                    padding: "11px 14px",
+                    border: `1px solid ${waitlistState === "error" ? "#da1e28" : "var(--rule)"}`,
+                    fontSize: "14px",
+                    fontFamily: "inherit",
+                    color: "var(--ink)",
+                    outline: "none",
+                    minWidth: "240px",
+                    flex: "1 1 240px",
+                    background: "white",
+                  }}
+                />
+                <button
+                  type="submit"
+                  disabled={waitlistState === "sending"}
+                  onMouseEnter={() => setWaitlistHover(true)}
+                  onMouseLeave={() => setWaitlistHover(false)}
+                  style={{
+                    padding: "12px 24px",
+                    background: waitlistHover ? "#2a2a2a" : "var(--ink)",
+                    color: "white",
+                    border: "none",
+                    fontSize: "14px",
+                    fontWeight: 500,
+                    cursor: waitlistState === "sending" ? "not-allowed" : "pointer",
+                    opacity: waitlistState === "sending" ? 0.7 : 1,
+                    whiteSpace: "nowrap",
+                    transition: "all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                    boxShadow: waitlistHover
+                      ? "0 0 28px rgba(255,255,255,0.35), 0 0 12px rgba(255,255,255,0.2)"
+                      : "0 0 0 rgba(255,255,255,0)",
+                    transform: waitlistHover ? "translateY(-1px)" : "translateY(0)",
+                  }}
+                >
+                  {waitlistState === "sending"
+                    ? t("home.waitlistSending")
+                    : t("home.waitlistCta")}
+                </button>
+              </form>
+            )}
           </div>
+          {waitlistState === "error" && (
+            <p style={{ fontSize: "13px", color: "#da1e28", margin: "8px 0 0" }}>
+              {t("home.waitlistError")}
+            </p>
+          )}
         </div>
       </section>
 

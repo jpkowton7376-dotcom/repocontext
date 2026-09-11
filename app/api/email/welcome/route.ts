@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { sendWelcomeEmail } from "@/lib/email"
+import { emailConfigured, sendWelcomeEmail } from "@/lib/email"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
@@ -39,9 +39,12 @@ export async function POST(request: Request) {
       // Do not surface "not configured" as a 500 — that's an expected
       // dev-mode state, not a failure to handle.
       const status = result.error === "email service not configured" ? 200 : 500
-      return NextResponse.json({ ok: false, error: result.error }, { status })
+      return NextResponse.json(
+        { ok: false, error: result.error, configured: emailConfigured },
+        { status },
+      )
     }
-    return NextResponse.json({ ok: true })
+    return NextResponse.json({ ok: true, configured: emailConfigured })
   } catch (err: any) {
     return NextResponse.json(
       { error: err?.message || "unexpected error" },

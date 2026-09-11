@@ -198,13 +198,3 @@ export async function getRepoStats(
     return { totalIssues: 0, openIssues: 0, closedIssues: 0, pullRequests: 0 }
   }
 }
-
-// 判断仓库默认分支
-export async function getDefaultBranch(
-  owner: string,
-  repo: string,
-  userToken?: string | null,
-): Promise<string> {
-  const info = await getRepoInfo(owner, repo, userToken)
-  return info.default_branch || "main"
-}

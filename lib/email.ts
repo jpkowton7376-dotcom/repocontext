@@ -216,3 +216,108 @@ export async function sendPaymentFailedEmail(email: string): Promise<{ ok: boole
     text: `Your RepoContext payment didn't go through. Update your payment method at ${siteUrl}/dashboard`,
   })
 }
+
+/* ────────────────────────────────────────────────────────────────────────────
+ * Support inbox
+ * ──────────────────────────────────────────────────────────────────────────── */
+
+/** Where inbound customer-service messages are delivered. */
+export const SUPPORT_INBOX = "jpkowton@gmail.com"
+
+/** Escapes user-controlled text so it cannot break out of the HTML body. */
+function esc(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+}
+
+/**
+ * Delivers a message typed into the on-site support widget to the support
+ * inbox. `replyTo` is the visitor's address so a plain "reply" in any mail
+ * client goes straight back to them.
+ */
+export async function sendSupportNotificationEmail(args: {
+  message: string
+  replyTo?: string
+  page?: string
+}): Promise<{ ok: boolean; error?: string }> {
+  const { message, replyTo, page } = args
+  const html = layout(
+    `
+      <h1 style="margin:0 0 12px;font-size:20px;font-weight:600;line-height:1.3;">New support message</h1>
+      <table role="presentation" cellpadding="0" cellspacing="0" style="font-size:14px;line-height:1.6;color:#1a2230;">
+        <tr><td style="padding:2px 12px 2px 0;color:#64707f;">From</td><td>${esc(replyTo || "anonymous visitor")}</td></tr>
+        <tr><td style="padding:2px 12px 2px 0;color:#64707f;">Page</td><td>${esc(page || "/")}</td></tr>
+        <tr><td style="padding:2px 12px 2px 0;color:#64707f;">Received</td><td>${new Date().toUTCString()}</td></tr>
+      </table>
+      <div style="margin:20px 0 0;padding:16px;background:#f5f6f8;border:1px solid #e6eaf0;font-size:14px;line-height:1.6;white-space:pre-wrap;word-break:break-word;">${esc(message)}</div>
+    `,
+    "New RepoContext support message",
+  )
+  return send({
+    to: SUPPORT_INBOX,
+    subject: `[RepoContext support] ${(message || "").slice(0, 60)}`,
+    html,
+    text: `New support message from ${replyTo || "anonymous visitor"}:\n\n${message}`,
+  })
+}
+
+/**
+ * Acknowledges a support message so the visitor knows it was actually
+ * delivered rather than swallowed by the widget.
+ */
+export async function sendSupportAckEmail(email: string): Promise<{ ok: boolean; error?: string }> {
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL || "https://repocontext.vercel.app"
+  const html = layout(
+    `
+      <h1 style="margin:0 0 12px;font-size:22px;font-weight:600;line-height:1.3;">We got your message</h1>
+      <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#1a2230;">
+        Thanks for reaching out. Your message reached the RepoContext support inbox and we'll reply
+        to this address, usually within one business day.
+      </p>
+      <p style="margin:0;font-size:13px;line-height:1.6;color:#64707f;">
+        In the meantime the <a href="${siteUrl}/docs" style="color:#2b3be0;text-decoration:underline;">docs</a>
+        and <a href="${siteUrl}/how-to-use" style="color:#2b3be0;text-decoration:underline;">how-to guide</a>
+        answer most questions.
+      </p>
+    `,
+    "We received your RepoContext support message.",
+  )
+  return send({
+    to: email,
+    subject: "We got your message — RepoContext support",
+    html,
+    text: `We received your support message and will reply within one business day. Docs: ${siteUrl}/docs`,
+  })
+}
+
+/** Confirms a waitlist signup and tells the user what happens next. */
+export async function sendWaitlistConfirmEmail(email: string): Promise<{ ok: boolean; error?: string }> {
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL || "https://repocontext.vercel.app"
+  const html = layout(
+    `
+      <h1 style="margin:0 0 12px;font-size:22px;font-weight:600;line-height:1.3;">You're on the list</h1>
+      <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#1a2230;">
+        Thanks for joining the RepoContext waitlist. You'll be the first to hear when
+        monorepo support, custom AI agents, GitLab &amp; Bitbucket, and team collaboration ship.
+      </p>
+      <p style="margin:0 0 24px;">
+        <a href="${siteUrl}" style="display:inline-block;padding:12px 22px;background:#2b3be0;color:#ffffff;font-size:14px;font-weight:600;text-decoration:none;letter-spacing:0.02em;">Keep exploring RepoContext →</a>
+      </p>
+      <p style="margin:0;font-size:13px;line-height:1.6;color:#64707f;">
+        You can unsubscribe at any time by replying to this email.
+      </p>
+    `,
+    "You're on the RepoContext waitlist.",
+  )
+  return send({
+    to: email,
+    subject: "You're on the RepoContext waitlist",
+    html,
+    text: `You're on the RepoContext waitlist. We'll email you when new features ship. ${siteUrl}`,
+  })
+}

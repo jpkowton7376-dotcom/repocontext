@@ -5,7 +5,6 @@ import {
   generateApiKey,
   MAX_KEYS_PER_USER,
   DEFAULT_RATE_LIMIT,
-  isWellFormed,
 } from "@/lib/api-keys"
 
 export const runtime = "nodejs"
@@ -106,6 +105,3 @@ export async function POST(request: Request) {
     warning: "Copy this key now. For security, it will never be shown again.",
   })
 }
-
-// Silence unused-import warning in build if isWellFormed isn't used.
-void isWellFormed
