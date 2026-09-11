@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<title>RepoContext 域名 + Cloudflare 配置步骤</title>
+<style>
+  @page { size: A4; margin: 18mm 16mm; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC",
+                 "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+    color: #1a2230;
+    line-height: 1.65;
+    font-size: 11pt;
+    margin: 0;
+  }
+  h1 {
+    font-size: 22pt;
+    border-bottom: 3px solid #2b3be0;
+    padding-bottom: 8px;
+    margin: 0 0 6px;
+    color: #2b3be0;
+  }
+  .subtitle {
+    color: #64707f;
+    font-size: 10pt;
+    margin: 0 0 24px;
+  }
+  h2 {
+    font-size: 14pt;
+    color: #2b3be0;
+    margin: 28px 0 10px;
+    padding-left: 12px;
+    border-left: 4px solid #2b3be0;
+  }
+  h3 {
+    font-size: 12pt;
+    color: #1a2230;
+    margin: 18px 0 8px;
+  }
+  p { margin: 6px 0 10px; }
+  ul, ol { margin: 6px 0 12px 22px; padding: 0; }
+  li { margin: 4px 0; }
+  code, .mono {
+    font-family: "SF Mono", "Consolas", "Menlo", monospace;
+    background: #f0f2f5;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 10pt;
+    color: #2b3be0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8px 0 14px;
+    font-size: 10pt;
+  }
+  th, td {
+    border: 1px solid #d0d4dc;
+    padding: 6px 10px;
+    text-align: left;
+  }
+  th { background: #f5f6f8; font-weight: 600; }
+  .callout {
+    background: #fff8e1;
+    border-left: 4px solid #f59e0b;
+    padding: 10px 14px;
+    margin: 12px 0;
+    border-radius: 0 4px 4px 0;
+    font-size: 10pt;
+  }
+  .danger {
+    background: #fee2e2;
+    border-left: 4px solid #dc2626;
+    padding: 10px 14px;
+    margin: 12px 0;
+    border-radius: 0 4px 4px 0;
+    font-size: 10pt;
+  }
+  .success {
+    background: #dcfce7;
+    border-left: 4px solid #16a34a;
+    padding: 10px 14px;
+    margin: 12px 0;
+    border-radius: 0 4px 4px 0;
+    font-size: 10pt;
+  }
+  .step-no {
+    display: inline-block;
+    background: #2b3be0;
+    color: white;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 26px;
+    font-weight: 700;
+    margin-right: 8px;
+    font-size: 10pt;
+  }
+  .checklist li {
+    list-style: none;
+    margin-left: -22px;
+  }
+  .checklist li::before {
+    content: "☐ ";
+    color: #2b3be0;
+    font-weight: 700;
+    margin-right: 4px;
+  }
+  .footer {
+    margin-top: 32px;
+    padding-top: 12px;
+    border-top: 1px solid #d0d4dc;
+    color: #64707f;
+    font-size: 9pt;
+    text-align: center;
+  }
+  .pill {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 9pt;
+    font-weight: 600;
+    margin-right: 4px;
+  }
+  .pill-time { background: #e0e7ff; color: #2b3be0; }
+  .pill-you  { background: #fef3c7; color: #b45309; }
+  .pill-me   { background: #dcfce7; color: #166534; }
+</style>
+</head>
+<body>
+
+<h1>RepoContext — 自定义域名 + Cloudflare 配置步骤</h1>
+<p class="subtitle">给站长 列粤湘 / jpkowton — 配合 Creem 账户审核与品牌邮箱需求<br/>
+最后更新：2026-09-11</p>
+
+<div class="callout">
+<strong>背景：</strong>Creem 审核要求网站部署在<strong>自定义域名</strong>（不能用 <code>repocontext.vercel.app</code>），
+且支持邮箱必须是<strong>品牌邮箱</strong>（<code>@repocontext.com</code>）。
+本文档分 7 步搞定域名 + 邮箱转发 + Vercel 接入 + Resend 验证 + Creem 改邮箱。
+</div>
+
+<h2><span class="step-no">1</span>注册 Cloudflare 账号</h2>
+<p><span class="pill pill-time">2 分钟</span><span class="pill pill-you">你做</span></p>
+<ol>
+  <li>打开 <code>https://dash.cloudflare.com/sign-up</code></li>
+  <li>用 <strong>163 邮箱</strong>或 <strong>QQ 邮箱</strong>注册（暂不要用 Gmail，刚改的 repocontext.com 还没生效）</li>
+  <li>收验证邮件 → 点链接激活</li>
+  <li>登录后会自动跳到 "Add your first site" 页面</li>
+</ol>
+
+<h2><span class="step-no">2</span>购买 <code>repocontext.com</code> 域名</h2>
+<p><span class="pill pill-time">5 分钟</span><span class="pill pill-you">你做</span></p>
+<ol>
+  <li>Cloudflare Dashboard 顶部 → <strong>Domain Registration</strong> → <strong>Register Domains</strong></li>
+  <li>搜索框输入 <code>repocontext.com</code></li>
+  <li>如果显示 <code>$9.15/year</code> 旁边有 <strong>Purchase</strong> 按钮 → 可买</li>
+</ol>
+<div class="danger">
+<strong>如果显示 "Already registered"：</strong>立即告诉我，我们改用：
+<ul style="margin-bottom: 0;">
+  <li><code>repocontext.app</code>（$11/年）</li>
+  <li><code>repocontext.dev</code>（$12/年）</li>
+  <li><code>repocontext.io</code>（$30/年）</li>
+</ul>
+</div>
+<ol start="4">
+  <li>加购物车 → <strong>Continue</strong> → 选 <strong>1 year</strong></li>
+  <li>填 <strong>Contact Information</strong>（Cloudflare 不严，简化即可）：
+    <table>
+      <tr><th>字段</th><th>填什么</th></tr>
+      <tr><td>First name</td><td><code>Yuexiang</code> 或 <code>Kowton</code></td></tr>
+      <tr><td>Last name</td><td><code>Lie</code></td></tr>
+      <tr><td>Organization</td><td>留空</td></tr>
+      <tr><td>Address 1</td><td><code>Longgang District, Shenzhen</code></td></tr>
+      <tr><td>City</td><td><code>Shenzhen</code></td></tr>
+      <tr><td>State</td><td><code>Guangdong</code></td></tr>
+      <tr><td>Postal code</td><td><code>518000</code></td></tr>
+      <tr><td>Country</td><td><code>China</code></td></tr>
+      <tr><td>Phone</td><td><code>+86 138 xxxx xxxx</code></td></tr>
+    </table>
+  </li>
+  <li>付款方式选 <strong>Credit Card</strong> → 输入<strong>招行 Visa 卡</strong>号（16 位）</li>
+  <li>招行 App 弹 3DS 验证 → 点确认</li>
+  <li>扣款 $9.15（约 ¥66）</li>
+</ol>
+<div class="success">✅ 购买完成。域名所有权立即生效。</div>
+
+<h2><span class="step-no">3</span>把域名绑到 Vercel</h2>
+<p><span class="pill pill-time">3 分钟</span><span class="pill pill-you">你做</span></p>
+<ol>
+  <li>新标签页打开 Vercel：<code>https://vercel.com/dashboard</code> → 选 <code>repocontext-git</code> 项目</li>
+  <li><strong>Settings</strong> → <strong>Domains</strong> → 输入 <code>repocontext.com</code> → <strong>Add</strong></li>
+  <li>Vercel 可能提示 "Invalid Configuration"，先不管（DNS 还没配）</li>
+  <li>回到 Cloudflare → 左侧 <strong>DNS</strong> → <strong>Records</strong> → <strong>Add record</strong>，加 2 条：
+    <table>
+      <tr><th>Type</th><th>Name</th><th>Target</th><th>Proxy</th></tr>
+      <tr><td>CNAME</td><td><code>@</code></td><td><code>cname.vercel-dns.com</code></td><td><strong>DNS only（灰色云朵）⚠️</strong></td></tr>
+      <tr><td>CNAME</td><td><code>www</code></td><td><code>cname.vercel-dns.com</code></td><td><strong>DNS only（灰色云朵）⚠️</strong></td></tr>
+    </table>
+  </li>
+</ol>
+<div class="danger">
+<strong>⚠️ Proxy 必须关（灰色云朵）！</strong>开了橙色 Proxy 会破坏 Vercel 的 SSL 验证，域名永远 Invalid。
+</div>
+<ol start="5">
+  <li>回到 Vercel → 等 1-2 分钟，状态从 "Invalid" 变 "Valid"</li>
+</ol>
+<div class="success">✅ Vercel 自动签发 SSL。访问 <code>https://repocontext.com</code> 应能看到你的网站。</div>
+
+<h2><span class="step-no">4</span>配 Cloudflare Email Routing（品牌邮箱转发）</h2>
+<p><span class="pill pill-time">5 分钟</span><span class="pill pill-you">你做</span></p>
+<ol>
+  <li>Cloudflare 左侧 → <strong>Email</strong> → <strong>Email Routing</strong> → <strong>Get started</strong></li>
+  <li>同意让 Cloudflare 管理你的 MX 记录（自动加）</li>
+  <li><strong>Add new rule</strong>：
+    <ul>
+      <li><strong>Custom address</strong>: <code>support</code></li>
+      <li><strong>Destination</strong>: <code>jpkowton@gmail.com</code></li>
+    </ul>
+  </li>
+  <li>点 <strong>Save</strong></li>
+  <li>Cloudflare 给 <code>jpkowton@gmail.com</code> 发验证邮件 → 登录 Gmail 找 → 点 <strong>Confirm</strong> 链接</li>
+  <li>回到 Cloudflare 状态变成 "Verified"</li>
+</ol>
+<div class="success">✅ 邮箱转发生效。让朋友发邮件到 <code>support@repocontext.com</code>，你的 Gmail 能收到。</div>
+
+<h3>回信时显示品牌邮箱（推荐开启）</h3>
+<p>在 Cloudflare Email Routing 的 <strong>Settings</strong> 里开启 <strong>"Send emails from your custom address"</strong>。
+这样你在 Gmail 回复时，对方看到的 From 是 <code>support@repocontext.com</code>（不是你个人 Gmail）。</p>
+
+<h2><span class="step-no">5</span>Resend 验证域名（让通知邮件用品牌 From）</h2>
+<p><span class="pill pill-time">10 分钟</span><span class="pill pill-you">你做</span> <span style="color:#64707f;">— 可选但推荐</span></p>
+<p>不做的后果：RepoContext 给客户发的通知邮件 From 是 <code>onboarding@resend.dev</code>（带 via resend.dev 字样，不专业）。<br/>
+做了之后：From 是 <code>RepoContext &lt;noreply@repocontext.com&gt;</code>，看起来是你自己发的。</p>
+<ol>
+  <li>打开 <code>https://resend.com/domains</code> → <strong>Add Domain</strong> → 输入 <code>repocontext.com</code></li>
+  <li>Resend 给你 DNS 记录，3 条加到 Cloudflare DNS：
+    <table>
+      <tr><th>Type</th><th>Name</th><th>Value</th></tr>
+      <tr><td>TXT</td><td><code>@</code></td><td><code>v=spf1 include:_spf.resend.com ~all</code></td></tr>
+      <tr><td>TXT</td><td><code>resend._domainkey</code></td><td>（Resend 给的一长串 DKIM）</td></tr>
+      <tr><td>TXT</td><td><code>_dmarc</code></td><td><code>v=DMARC1; p=none;</code></td></tr>
+    </table>
+  </li>
+  <li>回 Resend → 点 <strong>Verify</strong> → 等 1-2 分钟通过</li>
+  <li>告诉我已验证，我把 <code>RESEND_FROM=RepoContext &lt;noreply@repocontext.com&gt;</code> 加到 Vercel env</li>
+</ol>
+
+<h2><span class="step-no">6</span>改 Creem 后台邮箱 + 触发复审</h2>
+<p><span class="pill pill-time">3 分钟</span><span class="pill pill-you">你做</span></p>
+<ol>
+  <li>登录 <code>https://creem.io</code> → 右上角头像 → <strong>Settings</strong> → <strong>Account</strong> / <strong>Business</strong></li>
+  <li>找 <strong>Support email</strong> 字段（也可能在 Payout Account 页面）</li>
+  <li>改成 <code>support@repocontext.com</code></li>
+  <li>保存</li>
+  <li>进入 <strong>Payout Account</strong> → 找 <strong>Request re-review</strong> 按钮 → 点击</li>
+</ol>
+<div class="callout">
+<strong>关于 Gmail vs 品牌邮箱：</strong>Creem 偏好品牌邮箱（自定义域名），gmail.com 可能仍被接受。
+但<strong>用了 repocontext.com 之后</strong>，你用真品牌邮箱，Creem 一次性过审没争议。
+</div>
+
+<h2><span class="step-no">7</span>告诉我，我做最后一步</h2>
+<p><span class="pill pill-time">5 分钟</span><span class="pill pill-me">我做</span></p>
+<p>前 6 步配好后跟我说，我会：</p>
+<ol>
+  <li>改 Vercel 环境变量 <code>NEXT_PUBLIC_SITE_URL = https://repocontext.com</code></li>
+  <li>重新部署（OG 元数据 / sitemap / robots / 分享链接全部跟着变）</li>
+  <li>把 Creem webhook URL 改成 <code>https://repocontext.com/api/creem/webhook</code></li>
+  <li>（如果你已完成第 5 步）把 <code>RESEND_FROM</code> 加到 Vercel env 并重部署</li>
+</ol>
+
+<hr style="margin: 28px 0; border: 0; border-top: 1px solid #d0d4dc;" />
+
+<h2>📋 完整清单</h2>
+<ul class="checklist">
+  <li>注册 Cloudflare 账号（2 分钟）</li>
+  <li>招行 Visa 卡买 repocontext.com（5 分钟）</li>
+  <li>Vercel 域名绑定 + 2 条 CNAME（3 分钟）</li>
+  <li>Email Routing 配转发 + 验证 Gmail（5 分钟）</li>
+  <li>Resend 验证域名（10 分钟，可选）</li>
+  <li>Creem 改邮箱 + Request re-review（3 分钟）</li>
+  <li>告诉 AI 已完成（我做最后一步）</li>
+</ul>
+
+<h2>⏱ 总时长</h2>
+<table>
+  <tr><th>最小方案</th><td>20 分钟（前 4 步 + 第 6 步）</td></tr>
+  <tr><th>完整方案</th><td>30 分钟（全部 6 步）</td></tr>
+  <tr><th>等待生效</th><td>DNS 通常 5-30 分钟，最长 24 小时</td></tr>
+</table>
+
+<h2>🆘 常见卡点</h2>
+<table>
+  <tr><th>问题</th><th>解决</th></tr>
+  <tr><td>"Already registered" 域名被抢</td><td>立即告诉我，换 .app / .dev / .io</td></tr>
+  <tr><td>招行 App 没弹 3DS</td><td>招行 App → 信用卡 → 支付管理 → 在线支付打开</td></tr>
+  <tr><td>Vercel 一直 Invalid</td><td>检查 Cloudflare CNAME Proxy 是否关（灰色云朵）</td></tr>
+  <tr><td>Email Routing 验证邮件在垃圾箱</td><td>看 Gmail Spam 文件夹</td></tr>
+  <tr><td>Creem 找不到 Support email 字段</td><td>截图发我，我帮你定位</td></tr>
+  <tr><td>Resend 验证一直 Pending</td><td>等 5 分钟，DNS 生效有延迟</td></tr>
+</table>
+
+<div class="footer">
+  RepoContext 域名配置指南 · 2026-09-11 · 由 AI 助手自动生成<br/>
+  任何步骤卡住 → 截图给 AI 助手
+</div>
+
+</body>
+</html>

@@ -2,58 +2,9 @@
 
 import Link from "next/link"
 import Image from "next/image"
+import { changelog } from "@/lib/changelog-data"
 
 export default function ChangelogPage() {
-  const releases = [
-    {
-      date: "September 2, 2026",
-      tag: "New",
-      title: "Multi-format export is here",
-      summary:
-        "Generate documentation in four formats from a single analysis: AGENTS.md, CLAUDE.md, Cursor Rules, and Copilot Instructions.",
-      items: [
-        { kind: "added", text: "Export to AGENTS.md, CLAUDE.md, Cursor Rules, and GitHub Copilot Instructions" },
-        { kind: "added", text: "Format-specific fine-tuning so each export is idiomatic to its target" },
-        { kind: "improved", text: "Re-runs of an analysis now produce byte-stable output" },
-      ],
-    },
-    {
-      date: "August 19, 2026",
-      tag: "Improvement",
-      title: "Evidence panel & AGENTS.md Audit",
-      summary:
-        "Every claim is now traceable to the source file that produced it, and existing AGENTS.md files can be audited for accuracy and freshness.",
-      items: [
-        { kind: "added", text: "Evidence panel showing the exact file behind every generated statement" },
-        { kind: "added", text: "AGENTS.md audit with a quality score and a checklist of concrete fixes" },
-        { kind: "fixed", text: "False-positive detection of monorepo workspaces" },
-      ],
-    },
-    {
-      date: "August 5, 2026",
-      tag: "Improvement",
-      title: "Private repository support & dashboard",
-      summary:
-        "Connect private GitHub repositories securely. Your code never leaves your control.",
-      items: [
-        { kind: "added", text: "GitHub OAuth for private repositories" },
-        { kind: "added", text: "Dashboard with analysis history and quality trends" },
-        { kind: "improved", text: "Scan latency reduced by ~40% for large repositories" },
-      ],
-    },
-    {
-      date: "July 21, 2026",
-      tag: "Launch",
-      title: "RepoContext public beta",
-      summary:
-        "RepoContext is live. Paste any GitHub URL and get accurate, structured documentation for AI coding agents in seconds.",
-      items: [
-        { kind: "added", text: "Public repository analysis with intelligent framework detection" },
-        { kind: "added", text: "Quality score so you know how much you can trust the result" },
-      ],
-    },
-  ]
-
   const tagColor: Record<string, { bg: string; fg: string }> = {
     New: { bg: "rgba(64, 128, 255, 0.12)", fg: "#1d4ed8" },
     Improvement: { bg: "rgba(34, 197, 94, 0.14)", fg: "#15803d" },
@@ -111,16 +62,28 @@ export default function ChangelogPage() {
           <p style={{ fontSize: "18px", color: "var(--ink-2)", lineHeight: 1.6, margin: 0 }}>
             Every release, improvement, and fix. We ship continuously and post notes here so you always know what changed.
           </p>
+          <p style={{ marginTop: "20px", fontSize: "13px", color: "var(--muted)" }}>
+            <Link
+              href="/changelog/rss.xml"
+              style={{ color: "var(--blue-60)", textDecoration: "underline" }}
+            >
+              Subscribe via RSS
+            </Link>
+            {" · "}
+            <span style={{ fontFamily: "'IBM Plex Mono', monospace" }}>
+              /changelog/rss.xml
+            </span>
+          </p>
         </div>
       </header>
 
       {/* Releases */}
       <section style={{ padding: "64px 48px 96px" }}>
         <div style={{ maxWidth: "760px", margin: "0 auto", display: "flex", flexDirection: "column", gap: "40px" }}>
-          {releases.map((rel, idx) => {
+          {changelog.map((rel, idx) => {
             const tc = tagColor[rel.tag] ?? { bg: "rgba(0,0,0,0.08)", fg: "var(--ink)" }
             return (
-              <article key={idx} style={{
+              <article key={rel.slug} id={rel.slug} style={{
                 border: "1px solid var(--rule)",
                 background: "white",
                 padding: "32px",
@@ -132,7 +95,7 @@ export default function ChangelogPage() {
                     textTransform: "uppercase", padding: "4px 10px",
                     background: tc.bg, color: tc.fg, borderRadius: "3px",
                   }}>{rel.tag}</span>
-                  <span style={{ fontSize: "13px", color: "var(--muted)" }}>{rel.date}</span>
+                  <span style={{ fontSize: "13px", color: "var(--muted)" }}>{rel.displayDate}</span>
                 </div>
                 <h2 style={{
                   fontFamily: "'IBM Plex Serif', Georgia, serif",

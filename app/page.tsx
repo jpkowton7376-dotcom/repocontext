@@ -7,6 +7,7 @@ import Image from "next/image"
 import { MaskedIllustration } from "@/components/MaskedIllustration"
 import { GlowLink } from "@/components/GlowLink"
 import { SiteNav } from "@/components/SiteNav"
+import { JsonLd } from "@/components/JsonLd"
 import { supabase, isSupabaseConfigured } from "@/lib/supabase"
 import { useTranslation } from "@/components/LanguageProvider"
 import type { AuthChangeEvent, Session } from "@supabase/supabase-js"
@@ -179,6 +180,68 @@ export default function HomePage() {
 
   return (
     <main style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "SoftwareApplication",
+          name: "RepoContext",
+          applicationCategory: "DeveloperApplication",
+          operatingSystem: "Web",
+          description:
+            "Generate accurate AGENTS.md, CLAUDE.md, .cursorrules and GitHub Copilot instructions for any GitHub repository in under a minute.",
+          url: process.env.NEXT_PUBLIC_SITE_URL || "https://repocontext.vercel.app",
+          offers: [
+            {
+              "@type": "Offer",
+              name: "Free",
+              price: "0",
+              priceCurrency: "USD",
+              description: "5 free analyses per month",
+            },
+            {
+              "@type": "Offer",
+              name: "Pro Monthly",
+              price: "19",
+              priceCurrency: "USD",
+              priceSpecification: {
+                "@type": "UnitPriceSpecification",
+                price: "19",
+                priceCurrency: "USD",
+                referenceQuantity: { "@type": "Duration", value: 1, unitCode: "MON" },
+              },
+            },
+            {
+              "@type": "Offer",
+              name: "Pro Yearly",
+              price: "149",
+              priceCurrency: "USD",
+              priceSpecification: {
+                "@type": "UnitPriceSpecification",
+                price: "149",
+                priceCurrency: "USD",
+                referenceQuantity: { "@type": "Duration", value: 1, unitCode: "ANN" },
+              },
+            },
+            {
+              "@type": "Offer",
+              name: "Lifetime",
+              price: "299",
+              priceCurrency: "USD",
+              description: "One-time payment",
+            },
+          ],
+          featureList: [
+            "AGENTS.md generation",
+            "CLAUDE.md generation",
+            ".cursorrules generation",
+            "GitHub Copilot instructions",
+            "Repository quality scoring",
+            "Support for 20+ tech stacks",
+            "Public and private repositories (Pro+)",
+            "AI-enhanced LLM analysis (Pro+)",
+          ],
+        }}
+      />
       <style>{`
         @keyframes breathe-glow {
           0%, 100% {
