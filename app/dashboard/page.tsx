@@ -45,6 +45,21 @@ export default function DashboardPage() {
   const [deleteConfirmText, setDeleteConfirmText] = useState("")
   const [deleting, setDeleting] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
+  const [apiKeys, setApiKeys] = useState<
+    Array<{
+      id: string
+      key_prefix: string
+      name: string
+      revoked_at: string | null
+      last_used_at: string | null
+      rate_limit_per_minute: number
+      created_at: string
+    }>
+  >([])
+  const [creatingKey, setCreatingKey] = useState(false)
+  const [newKeyPlaintext, setNewKeyPlaintext] = useState<string | null>(null)
+  const [keyError, setKeyError] = useState<string | null>(null)
+  const [copied, setCopied] = useState(false)
   const router = useRouter()
 
   // Supabase 未配置时显示提示
@@ -234,6 +249,10 @@ SUPABASE_SERVICE_ROLE_KEY=...`}
       setTotalAnalyses(totalRes.count ?? 0)
       setRecentAnalyses((recentRes.data ?? []) as RecentAnalysis[])
 
+      // Fire-and-forget the API keys list — if it errors (e.g. the new
+      // table hasn't been created yet) we just leave the section empty.
+      loadApiKeys()
+
       setLoading(false)
 
       // 2. 后台静默校验 token；只有完全无法刷新时才强制退出。
@@ -313,6 +332,55 @@ SUPABASE_SERVICE_ROLE_KEY=...`}
       )
     } finally {
       setOpeningPortal(false)
+    }
+  }
+
+  const loadApiKeys = async () => {
+    try {
+      const res = await fetch("/api/api-keys")
+      if (!res.ok) return
+      const data = await res.json()
+      setApiKeys(Array.isArray(data?.keys) ? data.keys : [])
+    } catch {
+      // ignore — empty list is fine
+    }
+  }
+
+  const handleCreateApiKey = async () => {
+    setKeyError(null)
+    setCreatingKey(true)
+    try {
+      const res = await fetch("/api/api-keys", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: "API key" }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        setKeyError(data?.error || "Failed to create API key.")
+        return
+      }
+      setNewKeyPlaintext(data.plaintext)
+      await loadApiKeys()
+    } catch (err: any) {
+      setKeyError(err?.message || "Failed to create API key.")
+    } finally {
+      setCreatingKey(false)
+    }
+  }
+
+  const handleRevokeApiKey = async (id: string) => {
+    if (!confirm("Revoke this API key? Requests using it will start failing immediately.")) return
+    try {
+      const res = await fetch(`/api/api-keys/${id}`, { method: "DELETE" })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        alert(data?.error || "Failed to revoke key.")
+        return
+      }
+      await loadApiKeys()
+    } catch {
+      alert("Failed to revoke key.")
     }
   }
 
@@ -780,7 +848,193 @@ SUPABASE_SERVICE_ROLE_KEY=...`}
             </div>
           </div>
 
-          {/* Recent activity */}
+          {/* Developer API */}
+          <div style={{ marginTop: "48px" }}>
+            <div style={{
+            fontSize: "11px",
+            fontWeight: 600,
+            letterSpacing: "0.12em",
+            textTransform: "uppercase",
+            color: "var(--muted)",
+            marginBottom: "20px",
+          }}>
+            Developer API
+          </div>
+          <div style={{
+            background: "white",
+            border: "1px solid var(--rule)",
+          }}>
+            <div style={{
+              padding: "20px 24px",
+              borderBottom: "1px solid var(--rule)",
+              display: "flex",
+              flexWrap: "wrap",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: "16px",
+            }}>
+              <div>
+                <div style={{
+                  fontSize: "15px",
+                  fontWeight: 500,
+                  color: "var(--ink)",
+                  marginBottom: "4px",
+                }}>
+                  API keys
+                </div>
+                <div style={{ fontSize: "13px", color: "var(--muted)" }}>
+                  Use these to call <code style={{
+                    fontFamily: "'IBM Plex Mono', monospace",
+                    background: "var(--bg-cool)",
+                    padding: "1px 6px",
+                    borderRadius: "3px",
+                  }}>POST /api/v1/analyze</code> from your CI, scripts or IDE plugins. See <Link href="/developers" style={{ color: "var(--blue-60)", textDecoration: "underline" }}>developer docs</Link>.
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={handleCreateApiKey}
+                disabled={creatingKey}
+                style={{
+                  padding: "10px 20px",
+                  background: "var(--blue-60)",
+                  color: "white",
+                  border: "none",
+                  fontSize: "13px",
+                  fontWeight: 500,
+                  cursor: creatingKey ? "wait" : "pointer",
+                  letterSpacing: "0.02em",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {creatingKey ? "Creating…" : "Create new key"}
+              </button>
+            </div>
+
+            {keyError && (
+              <div style={{
+                margin: "12px 24px 0",
+                padding: "10px 12px",
+                border: "1px solid #fecaca",
+                background: "#fef2f2",
+                color: "#991b1b",
+                fontSize: "12px",
+                fontFamily: "'IBM Plex Mono', monospace",
+              }}>
+                {keyError}
+              </div>
+            )}
+
+            <div>
+                {apiKeys.length === 0 ? (
+                  <div style={{
+                    padding: "28px 24px",
+                    fontSize: "13px",
+                    color: "var(--muted)",
+                    textAlign: "center",
+                  }}>
+                    No API keys yet. Create one above to start calling the public API.
+                  </div>
+                ) : (
+                  apiKeys.map((k, i) => (
+                    <div
+                      key={k.id}
+                      style={{
+                        padding: "16px 24px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        gap: "16px",
+                        borderTop: i === 0 ? "none" : "1px solid var(--rule-2)",
+                      }}
+                    >
+                      <div style={{ minWidth: 0, flex: 1 }}>
+                        <div style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "10px",
+                          marginBottom: "4px",
+                          flexWrap: "wrap",
+                        }}>
+                          <span style={{
+                            fontSize: "13px",
+                            fontWeight: 500,
+                            color: "var(--ink)",
+                          }}>
+                            {k.name}
+                          </span>
+                          <code style={{
+                            fontFamily: "'IBM Plex Mono', monospace",
+                            fontSize: "12px",
+                            color: "var(--muted)",
+                          }}>
+                            {k.key_prefix}…
+                          </code>
+                          {k.revoked_at ? (
+                            <span style={{
+                              fontSize: "11px",
+                              fontWeight: 600,
+                              letterSpacing: "0.05em",
+                              textTransform: "uppercase",
+                              color: "#dc2626",
+                              background: "#fef2f2",
+                              padding: "2px 8px",
+                              borderRadius: "999px",
+                            }}>
+                              Revoked
+                            </span>
+                          ) : (
+                            <span style={{
+                              fontSize: "11px",
+                              fontWeight: 600,
+                              letterSpacing: "0.05em",
+                              textTransform: "uppercase",
+                              color: "#1f9d55",
+                              background: "#f0fdf4",
+                              padding: "2px 8px",
+                              borderRadius: "999px",
+                            }}>
+                              Active
+                            </span>
+                          )}
+                        </div>
+                        <div style={{
+                          fontSize: "12px",
+                          color: "var(--muted)",
+                          fontFamily: "'IBM Plex Mono', monospace",
+                        }}>
+                          {k.last_used_at
+                            ? `Last used ${formatRelativeTime(k.last_used_at)}`
+                            : "Never used"}
+                          {" · "}
+                          {k.rate_limit_per_minute}/min limit
+                        </div>
+                      </div>
+                      {!k.revoked_at && (
+                        <button
+                          type="button"
+                          onClick={() => handleRevokeApiKey(k.id)}
+                          style={{
+                            padding: "6px 12px",
+                            background: "white",
+                            color: "#dc2626",
+                            border: "1px solid var(--rule)",
+                            fontSize: "12px",
+                            fontWeight: 500,
+                            cursor: "pointer",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          Revoke
+                        </button>
+                      )}
+                    </div>
+                  ))
+                )}
+              </div>
+        </div>
+
+        {/* Recent activity */}
           <div>
             <div style={{
               fontSize: "11px",
@@ -987,6 +1241,7 @@ SUPABASE_SERVICE_ROLE_KEY=...`}
               </div>
             </div>
           </div>
+        </div>
         </div>
       </section>
 
@@ -1206,6 +1461,133 @@ SUPABASE_SERVICE_ROLE_KEY=...`}
                 }}
               >
                 {deleting ? "Deleting…" : "Delete forever"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Newly-created API key modal — plaintext is only ever shown once */}
+      {newKeyPlaintext && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="new-key-title"
+          onClick={() => {
+            setNewKeyPlaintext(null)
+            setCopied(false)
+          }}
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(15, 23, 42, 0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1000,
+            padding: "20px",
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: "white",
+              width: "100%",
+              maxWidth: "560px",
+              padding: "28px",
+              border: "1px solid #e6eaf0",
+            }}
+          >
+            <div style={{
+              fontSize: "11px",
+              fontWeight: 700,
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+              color: "#b45309",
+              marginBottom: "6px",
+            }}>
+              Save this key now
+            </div>
+            <h2
+              id="new-key-title"
+              style={{
+                fontSize: "20px",
+                fontWeight: 600,
+                color: "var(--ink)",
+                margin: "0 0 12px 0",
+                letterSpacing: "-0.01em",
+              }}
+            >
+              Your new API key
+            </h2>
+            <p style={{ fontSize: "14px", color: "var(--muted)", lineHeight: 1.6, margin: "0 0 16px 0" }}>
+              This is the only time we will show this plaintext. Copy it to
+              your password manager or CI secrets store — once you close
+              this dialog, only the first 12 characters remain in our
+              database.
+            </p>
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              background: "#fafbfc",
+              border: "1px solid var(--rule)",
+              padding: "10px 12px",
+              marginBottom: "20px",
+            }}>
+              <code
+                style={{
+                  flex: 1,
+                  fontFamily: "'IBM Plex Mono', monospace",
+                  fontSize: "13px",
+                  color: "var(--ink)",
+                  wordBreak: "break-all",
+                }}
+              >
+                {newKeyPlaintext}
+              </code>
+              <button
+                type="button"
+                onClick={() => {
+                  if (typeof navigator !== "undefined" && navigator.clipboard) {
+                    navigator.clipboard.writeText(newKeyPlaintext).then(() => {
+                      setCopied(true)
+                      setTimeout(() => setCopied(false), 1500)
+                    })
+                  }
+                }}
+                style={{
+                  padding: "6px 12px",
+                  background: "var(--blue-60)",
+                  color: "white",
+                  border: "none",
+                  fontSize: "12px",
+                  fontWeight: 500,
+                  cursor: "pointer",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {copied ? "Copied" : "Copy"}
+              </button>
+            </div>
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              <button
+                type="button"
+                onClick={() => {
+                  setNewKeyPlaintext(null)
+                  setCopied(false)
+                }}
+                style={{
+                  padding: "10px 18px",
+                  background: "white",
+                  color: "var(--ink)",
+                  border: "1px solid var(--rule)",
+                  fontSize: "13px",
+                  fontWeight: 500,
+                  cursor: "pointer",
+                }}
+              >
+                I have saved it
               </button>
             </div>
           </div>
