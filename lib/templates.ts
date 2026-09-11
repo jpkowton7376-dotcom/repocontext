@@ -207,6 +207,204 @@ export const SAMPLES: Sample[] = [
 - build dependsOn ^build; test/test dependOn build.
 - Cache is content-addressed; don't disable it for CI speed wins.`,
   },
+  {
+    id: "java",
+    stack: "Java · Spring Boot",
+    format: "AGENTS.md",
+    accent: "#ee4c2c",
+    tags: ["Spring Boot", "Maven", "JPA"],
+    desc: {
+      en: "AGENTS.md for a Spring Boot service: layered packages, JPA repositories vs services, and the Maven layout agents should respect.",
+      es: "AGENTS.md para un servicio Spring Boot: paquetes por capas, repositorios JPA vs servicios y la estructura Maven que debe respetar tu agente.",
+      "zh-Hant": "為 Spring Boot 服務準備的 AGENTS.md：分層套件、JPA 倉儲與服務的分工，以及代理應遵循的 Maven 結構。",
+      ja: "Spring Boot サービス向け AGENTS.md：レイヤードパッケージ、JPA リポジトリとサービスの分離、Maven 構成。",
+    },
+    code: `# AGENTS.md — Java Spring Boot service
+
+## Stack
+- Java 21, Spring Boot 3.2, Maven, JPA/Hibernate, PostgreSQL
+
+## Package layout
+- controller/: HTTP adapters, request/response DTOs only.
+- service/: business logic; never expose repositories here.
+- domain/: entities, value objects, and repository interfaces.
+- infrastructure/: JPA implementations, config, and clients.
+
+## Rules
+- Use constructor injection; avoid field injection.
+- Return ResponseEntity<T> from controllers; keep HTTP concerns out of services.
+- Use Bean Validation on DTOs, never on entities.
+- Run tests with \`./mvnw test\`; integration tests end in *IT.java.`,
+  },
+  {
+    id: "htmlcssjs",
+    stack: "HTML · CSS · JS",
+    format: "Cursor Rules",
+    accent: "#e44d26",
+    tags: ["Vanilla", "DOM", "ES modules"],
+    desc: {
+      en: "Cursor Rules for a vanilla frontend project: progressive enhancement, file naming, and keeping DOM manipulations predictable.",
+      es: "Cursor Rules para un frontend vanilla: mejora progresiva, nomenclatura de archivos y manipulaciones DOM predecibles.",
+      "zh-Hant": "純前端專案的 Cursor Rules：漸進增強、檔案命名，以及讓 DOM 操作保持可預測。",
+      ja: "バニラフロントエンド向け Cursor Rules：プログレッシブエンハンスメント、ファイル命名、DOM 操作の予測可能性。",
+    },
+    code: `// Cursor Rules — Vanilla HTML/CSS/JS
+
+- Prefer semantic HTML over div soup; use <template> for repeated
+  markup.
+- CSS lives next to its component (component.css) or in a shared
+  styles/ folder. No inline styles.
+- JS is modular: one file per component, imported as ES modules.
+- Select elements with data-* attributes, not CSS classes meant
+  for styling.
+- Keep DOM reads/writes batched; never read layout inside a loop.
+- Accessibility: every interactive element must be focusable and
+  have an aria-label when the label isn't visible.`,
+  },
+  {
+    id: "nodejs",
+    stack: "Node.js",
+    format: "AGENTS.md",
+    accent: "#339933",
+    tags: ["Express", "CommonJS/ESM", "npm"],
+    desc: {
+      en: "AGENTS.md for a Node.js/Express backend: middleware ordering, route handlers, error boundaries, and the ESM/CJS boundary.",
+      es: "AGENTS.md para un backend Node.js/Express: orden de middleware, manejadores de rutas, límites de error y el límite ESM/CJS.",
+      "zh-Hant": "Node.js/Express 後端的 AGENTS.md：中介件順序、路由處理、錯誤邊界，以及 ESM/CJS 的界線。",
+      ja: "Node.js/Express バックエンド向け AGENTS.md：ミドルウェア順序、ルートハンドラ、エラーバウンダリ、ESM/CJS 境界。",
+    },
+    code: `# AGENTS.md — Node.js + Express backend
+
+## Stack
+- Node.js 20 LTS, Express 4, esm module system
+
+## Structure
+- routes/: route definitions only, no business logic.
+- controllers/: thin HTTP layer that calls services.
+- services/: pure async business logic, fully unit-tested.
+- middleware/: reusable Express middleware (auth, validation, errors).
+
+## Rules
+- Always pass errors to next(err); never swallow async errors.
+- Validate request bodies with zod or joi before controllers.
+- Environment config lives in config/ and is read once at startup.
+- Use npm scripts (start, test, lint); pin Node version in .nvmrc.`,
+  },
+  {
+    id: "phpweb",
+    stack: "PHP · Web Server",
+    format: "CLAUDE.md",
+    accent: "#777bb4",
+    tags: ["Apache/nginx", "Composer", "PDO"],
+    desc: {
+      en: "CLAUDE.md for a traditional PHP web app: request lifecycle, Composer autoloading, PDO usage, and keeping logic out of the document root.",
+      es: "CLAUDE.md para una app web PHP tradicional: ciclo de vida de la petición, autoloading de Composer, uso de PDO y lógica fuera del document root.",
+      "zh-Hant": "傳統 PHP 網頁應用的 CLAUDE.md：請求生命週期、Composer 自動載入、PDO 用法，以及把邏輯移出文件根目錄。",
+      ja: "従来の PHP Web アプリ向け CLAUDE.md：リクエストライフサイクル、Composer オートロード、PDO 使用、ドキュメントルート外へのロジック分離。",
+    },
+    code: `# CLAUDE.md — PHP web application
+
+## Stack
+- PHP 8.3, Composer (PSR-4), Apache/nginx, MariaDB, PDO
+
+## Layout
+- public/: entry point (index.php) and static assets only.
+- src/: application code (Controllers, Services, Models).
+- config/: environment and service configuration.
+- templates/: view templates; escape every output with htmlspecialchars.
+
+## Rules
+- Use Composer autoloading; no manual requires.
+- All database access goes through PDO with prepared statements.
+- Never commit vendor/ or .env; keep secrets outside document root.
+- Routing is centralized in public/index.php or a dedicated router.`,
+  },
+  {
+    id: "markdown",
+    stack: "Markdown",
+    format: "AGENTS.md",
+    accent: "#4b5563",
+    tags: ["Docs", "GFM", "Frontmatter"],
+    desc: {
+      en: "AGENTS.md for a documentation-first repo: Markdown flavor, frontmatter schema, asset paths, and review conventions.",
+      es: "AGENTS.md para un repo centrado en documentación: sabor Markdown, esquema de frontmatter, rutas de assets y convenciones de revisión.",
+      "zh-Hant": "文件優先倉庫的 AGENTS.md：Markdown 語法、frontmatter 結構、資源路徑與審閱慣例。",
+      ja: "ドキュメント優先リポ向け AGENTS.md：Markdown 方言、frontmatter スキーマ、アセットパス、レビュー規約。",
+    },
+    code: `# AGENTS.md — Markdown documentation repo
+
+## Flavor
+- GitHub Flavored Markdown with YAML frontmatter.
+- frontmatter keys: title, description, order, tags, status.
+
+## File layout
+- docs/: user-facing guides organized by product area.
+- api/: OpenAPI-generated reference (do not edit by hand).
+- assets/: images and diagrams referenced with relative paths.
+
+## Rules
+- One sentence per line for easier diff reviews.
+- Use semantic line breaks; no hard wraps in the middle of a sentence.
+- Status values are: draft | review | published | deprecated.
+- Images must include alt text and be under 500 KB.`,
+  },
+  {
+    id: "typescript",
+    stack: "TypeScript",
+    format: "Cursor Rules",
+    accent: "#3178c6",
+    tags: ["tsc", "strict", "types"],
+    desc: {
+      en: "Cursor Rules for a TypeScript library or app: strict compiler flags, type inference, explicit return types, and how to avoid any.",
+      es: "Cursor Rules para una librería o app TypeScript: flags estrictos del compilador, inferencia de tipos, tipos de retorno explícitos y cómo evitar any.",
+      "zh-Hant": "TypeScript 函式庫或應用的 Cursor Rules：嚴格編譯器標記、型別推斷、明確回傳型別，以及如何避免 any。",
+      ja: "TypeScript ライブラリ/アプリ向け Cursor Rules：strict コンパイラフラグ、型推論、明示的な戻り値型、any の回避。",
+    },
+    code: `// Cursor Rules — TypeScript project
+
+- Enable strict, noImplicitAny, exactOptionalPropertyTypes and
+  noUncheckedIndexedAccess in tsconfig.json.
+- Prefer interfaces for object shapes; use type for unions and
+  mapped types.
+- Export public APIs with explicit return types so tsc errors
+  surface where consumers see them.
+- Avoid \`any\`; use \`unknown\` with runtime validation at system
+  boundaries.
+- Keep types co-located with the code they describe; shared types
+  live in src/types.ts with a barrel export.
+- Run \`tsc --noEmit\` and the test suite before every PR.`,
+  },
+  {
+    id: "phpcli",
+    stack: "PHP · CLI",
+    format: "CLAUDE.md",
+    accent: "#8892bf",
+    tags: ["Composer", "Symfony Console", "CLI"],
+    desc: {
+      en: "CLAUDE.md for a PHP command-line tool: Symfony Console commands, exit codes, stdin/stdout conventions, and the Composer bin setup.",
+      es: "CLAUDE.md para una herramienta de línea de comandos en PHP: comandos de Symfony Console, códigos de salida, convenciones de stdin/stdout y el bin de Composer.",
+      "zh-Hant": "PHP 命令列工具的 CLAUDE.md：Symfony Console 指令、退出碼、stdin/stdout 慣例，以及 Composer bin 設定。",
+      ja: "PHP コマンドラインツール向け CLAUDE.md：Symfony Console コマンド、終了コード、stdin/stdout 規約、Composer bin 設定。",
+    },
+    code: `# CLAUDE.md — PHP CLI tool
+
+## Stack
+- PHP 8.3 CLI, Symfony Console 7, Composer, PSR-4 autoloading
+
+## Layout
+- bin/: executable entry script (e.g., bin/myapp).
+- src/Command/: one Symfony Console command per class.
+- src/Service/: reusable business logic with no CLI coupling.
+
+## Rules
+- Return proper exit codes: 0 success, 1 general error, 2 usage
+  error; avoid arbitrary magic numbers.
+- Read stdin with stream_get_contents(STDIN); never assume argv
+  is the only input source.
+- Output must be testable: inject a SymfonyStyle or OutputInterface.
+- Register the command class in bin/myapp and add it to composer.json
+  bin array.`,
+  },
 ]
 
 // ---------------------------------------------------------------------------
@@ -539,10 +737,10 @@ export const UI = {
     ja: "テンプレートと実践集",
   },
   subtitle: {
-    en: "Copy-paste context files, the prompts we use to build them, and the practices that keep them accurate — for Next.js, Python, Rust, Go, React Native and monorepos.",
-    es: "Archivos de contexto listos para usar, los prompts que usamos para crearlos y las prácticas que los mantienen precisos — para Next.js, Python, Rust, Go, React Native y monorepos.",
-    "zh-Hant": "可直接複製的上下文檔案、我們用來生成的提示詞，以及讓它們保持準確的實踐——適用於 Next.js、Python、Rust、Go、React Native 與 monorepo。",
-    ja: "そのまま使えるコンテキストファイル、それを作るためのプロンプト、正確性を保つ実践——Next.js、Python、Rust、Go、React Native、モノレポ対応。",
+    en: "Copy-paste context files, the prompts we use to build them, and the practices that keep them accurate — for Next.js, Python, Java, Node.js, TypeScript, PHP, Rust, Go, React Native, Markdown and monorepos.",
+    es: "Archivos de contexto listos para usar, los prompts que usamos para crearlos y las prácticas que los mantienen precisos — para Next.js, Python, Java, Node.js, TypeScript, PHP, Rust, Go, React Native, Markdown y monorepos.",
+    "zh-Hant": "可直接複製的上下文檔案、我們用來生成的提示詞，以及讓它們保持準確的實踐——適用於 Next.js、Python、Java、Node.js、TypeScript、PHP、Rust、Go、React Native、Markdown 與 monorepo。",
+    ja: "そのまま使えるコンテキストファイル、それを作るためのプロンプト、正確性を保つ実践——Next.js、Python、Java、Node.js、TypeScript、PHP、Rust、Go、React Native、Markdown、モノレポ対応。",
   },
   tabSamples: {
     en: "Sample library",

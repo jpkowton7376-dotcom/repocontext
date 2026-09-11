@@ -23,6 +23,13 @@ import {
   Copy,
   Check,
   Boxes,
+  Coffee,
+  Code2,
+  Server,
+  Database,
+  BookOpen,
+  Braces,
+  Terminal,
   type LucideIcon,
 } from "lucide-react"
 import { SiteNav } from "@/components/SiteNav"
@@ -43,6 +50,11 @@ const GRADIENTS = {
   indigo: "linear-gradient(135deg, #4f46e5 0%, #818cf8 100%)",
   emerald: "linear-gradient(135deg, #059669 0%, #34d399 100%)",
   amber: "linear-gradient(135deg, #d97706 0%, #fbbf24 100%)",
+  slate: "linear-gradient(135deg, #475569 0%, #94a3b8 100%)",
+  php: "linear-gradient(135deg, #777bb4 0%, #a8acd8 100%)",
+  java: "linear-gradient(135deg, #ee4c2c 0%, #ff7b58 100%)",
+  node: "linear-gradient(135deg, #339933 0%, #5cb85c 100%)",
+  ts: "linear-gradient(135deg, #3178c6 0%, #6aa6e2 100%)",
 }
 
 const SAMPLE_META: Record<string, { icon: LucideIcon; gradient: string }> = {
@@ -52,6 +64,13 @@ const SAMPLE_META: Record<string, { icon: LucideIcon; gradient: string }> = {
   go: { icon: Zap, gradient: GRADIENTS.cyan },
   reactnative: { icon: Smartphone, gradient: GRADIENTS.violet },
   monorepo: { icon: Layers, gradient: GRADIENTS.sky },
+  java: { icon: Coffee, gradient: GRADIENTS.java },
+  htmlcssjs: { icon: Code2, gradient: GRADIENTS.amber },
+  nodejs: { icon: Server, gradient: GRADIENTS.node },
+  phpweb: { icon: Database, gradient: GRADIENTS.php },
+  markdown: { icon: BookOpen, gradient: GRADIENTS.slate },
+  typescript: { icon: Braces, gradient: GRADIENTS.ts },
+  phpcli: { icon: Terminal, gradient: GRADIENTS.indigo },
 }
 
 const PROMPT_META: Record<string, { icon: LucideIcon; gradient: string }> = {
@@ -77,6 +96,13 @@ const SAMPLE_IMG: Record<string, string> = {
   go: "/templates/sample-go.jpg",
   reactnative: "/templates/sample-reactnative.jpg",
   monorepo: "/templates/sample-monorepo.jpg",
+  java: "/templates/sample-java.jpg",
+  htmlcssjs: "/templates/sample-htmlcssjs.jpg",
+  nodejs: "/templates/sample-nodejs.jpg",
+  phpweb: "/templates/sample-phpweb.jpg",
+  markdown: "/templates/sample-markdown.jpg",
+  typescript: "/templates/sample-typescript.jpg",
+  phpcli: "/templates/sample-phpcli.jpg",
 }
 
 const PROMPT_IMG: Record<string, string> = {
