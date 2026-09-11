@@ -5,9 +5,9 @@ import { legalMetadata } from "@/lib/legal-meta"
 // The body is client-rendered so the language switcher applies instantly;
 // metadata is resolved from the locale cookie instead of being hard-coded.
 //
-// force-dynamic is required for that cookie read to survive: a statically
-// generated (or CDN-cached) response would serve one language's title to
-// everybody. These pages get little traffic, so the cost is negligible.
+// Reading the locale cookie already makes the route dynamic; force-dynamic
+// states that explicitly so nobody "optimises" it back into a prerendered
+// page and silently pins one language for everybody.
 export const dynamic = "force-dynamic"
 
 export function generateMetadata(): Metadata {
