@@ -70,6 +70,52 @@ const BEST_META: Record<string, { icon: LucideIcon; gradient: string }> = {
   fresh: { icon: RefreshCw, gradient: GRADIENTS.teal },
 }
 
+const SAMPLE_IMG: Record<string, string> = {
+  nextjs: "/templates/sample-nextjs.jpg",
+  python: "/templates/sample-python.jpg",
+  rust: "/templates/sample-rust.jpg",
+  go: "/templates/sample-go.jpg",
+  reactnative: "/templates/sample-reactnative.jpg",
+  monorepo: "/templates/sample-monorepo.jpg",
+}
+
+const PROMPT_IMG: Record<string, string> = {
+  analyze: "/templates/prompt-analyze.jpg",
+  generate: "/templates/prompt-generate.jpg",
+  evidence: "/templates/prompt-evidence.jpg",
+  score: "/templates/prompt-score.jpg",
+  translate: "/templates/prompt-translate.jpg",
+}
+
+const BEST_IMG: Record<string, string> = {
+  monorepo: "/templates/best-monorepo.jpg",
+  private: "/templates/best-private.jpg",
+  multilingual: "/templates/best-multilingual.jpg",
+  cicd: "/templates/best-cicd.jpg",
+  fresh: "/templates/best-fresh.jpg",
+}
+
+function CardBanner({ src, alt }: { src: string; alt: string }) {
+  return (
+    <div
+      style={{
+        height: "190px",
+        borderRadius: "10px",
+        overflow: "hidden",
+        marginBottom: "18px",
+        background: "linear-gradient(135deg, #eaf1ff 0%, #f3f7ff 100%)",
+      }}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={src}
+        alt={alt}
+        style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+      />
+    </div>
+  )
+}
+
 function IconBadge({ icon: Icon, gradient }: { icon: LucideIcon; gradient: string }) {
   return (
     <div
@@ -197,6 +243,7 @@ function PromptCard({
       onMouseEnter={(e) => (e.currentTarget.style.boxShadow = "0 8px 28px rgba(15,98,254,0.08)")}
       onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}
     >
+      <CardBanner src={PROMPT_IMG[p.id]} alt={p.badge} />
       <div style={{ display: "flex", gap: "14px", alignItems: "flex-start" }}>
         <IconBadge icon={meta.icon} gradient={meta.gradient} />
         <div style={{ flex: 1, minWidth: 0 }}>
@@ -449,18 +496,22 @@ export default function TemplatesPage() {
                 <div
                   key={s.id}
                   style={{
-                    display: "grid",
-                    gridTemplateColumns: "minmax(0, 280px) minmax(0, 1fr)",
-                    gap: "24px",
-                    padding: "24px",
+                    padding: "16px",
                     border: "1px solid var(--rule)",
                     borderRadius: "14px",
                     background: "white",
-                    alignItems: "start",
                   }}
-                  className="templates-sample-grid"
                 >
-                  <div>
+                  <CardBanner src={SAMPLE_IMG[s.id]} alt={s.stack} />
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "minmax(0, 280px) minmax(0, 1fr)",
+                      gap: "24px",
+                      alignItems: "start",
+                    }}
+                    className="templates-sample-grid"
+                  >
                     <div style={{ display: "flex", alignItems: "center", gap: "14px", marginBottom: "16px" }}>
                       <IconBadge icon={meta.icon} gradient={meta.gradient} />
                       <div>
@@ -568,12 +619,13 @@ export default function TemplatesPage() {
                     display: "flex",
                     flexDirection: "column",
                     gap: "14px",
-                    padding: "24px",
+                    padding: "16px",
                     border: "1px solid var(--rule)",
                     borderRadius: "14px",
                     background: "white",
                   }}
                 >
+                  <CardBanner src={BEST_IMG[b.id]} alt={b.title[L]} />
                   <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
                     <IconBadge icon={meta.icon} gradient={meta.gradient} />
                     <h3 style={{ fontSize: "18px", fontWeight: 600, margin: 0, letterSpacing: "-0.01em" }}>
