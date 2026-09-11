@@ -38,6 +38,7 @@
     "terms": "Términos",
     "privacy": "Privacidad",
     "refund": "Política de reembolso",
+    "aup": "Uso aceptable",
     "contact": "Contacto"
   },
   "home": {
@@ -60,11 +61,11 @@
       "gin-gonic/gin"
     ],
     "linkHint": "¿Cómo obtengo este enlace? →",
-    "trustedBy": "Confiado por equipos de ingeniería de empresas líderes",
-    "statRepos": "Repositorios analizados",
-    "statAccuracy": "Precisión de comandos",
-    "statOnboarding": "Integración de IA más rápida",
-    "statStacks": "Stacks tecnológicos soportados",
+    "trustedBy": "En números",
+    "statRepos": "Formatos de salida",
+    "statAccuracy": "Tiempo medio de análisis",
+    "statOnboarding": "Análisis gratis / mes",
+    "statStacks": "Stacks tecnológicos detectados",
     "featuresEyebrow": "Capacidades",
     "featuresTitle": "Todo lo que necesitas para que la IA trabaje con tu código.",
     "featuresSubtitle": "Desde la detección hasta la documentación, RepoContext proporciona análisis de nivel empresarial de tus repositorios con evidencia verificable.",

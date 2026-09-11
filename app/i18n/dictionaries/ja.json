@@ -38,6 +38,7 @@
     "terms": "利用規約",
     "privacy": "プライバシー",
     "refund": "返金ポリシー",
+    "aup": "許容される利用",
     "contact": "お問い合わせ"
   },
   "home": {
@@ -60,11 +61,11 @@
       "gin-gonic/gin"
     ],
     "linkHint": "このリンクの取得方法 →",
-    "trustedBy": "最先端企業のエンジニアリングチームに信頼されています",
-    "statRepos": "分析されたリポジトリ",
-    "statAccuracy": "コマンド精度",
-    "statOnboarding": "より速い AI オンボーディング",
-    "statStacks": "対応技術スタック",
+    "trustedBy": "数字で見る",
+    "statRepos": "種類の出力形式",
+    "statAccuracy": "平均分析時間",
+    "statOnboarding": "毎月の無料回数",
+    "statStacks": "検出対応技術スタック",
     "featuresEyebrow": "機能",
     "featuresTitle": "AI をコードベースで動かすために必要なすべて。",
     "featuresSubtitle": "検出からドキュメント化まで、RepoContext は検証可能な証拠を伴うエンタープライズ級のリポジトリ分析を提供します。",

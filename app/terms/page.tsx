@@ -140,8 +140,8 @@ export default function TermsPage() {
         <h2 className="text-xl font-bold mt-8 mb-3">11. Contact</h2>
         <p>
           Questions about these Terms? Contact us at{" "}
-          <a href="mailto:legal@repocontext.com" className="text-accent2 hover:underline">
-            legal@repocontext.com
+          <a href="mailto:support@repocontext.com" className="text-accent2 hover:underline">
+            support@repocontext.com
           </a>
           .
         </p>

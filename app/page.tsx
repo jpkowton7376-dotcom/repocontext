@@ -518,19 +518,19 @@ export default function HomePage() {
             textAlign: "center",
           }}>
             <div>
-              <div style={{ fontFamily: "'IBM Plex Serif', serif", fontSize: "48px", fontWeight: 300, color: "var(--blue-70)", lineHeight: 1 }}>10K+</div>
+              <div style={{ fontFamily: "'IBM Plex Serif', serif", fontSize: "48px", fontWeight: 300, color: "var(--blue-70)", lineHeight: 1 }}>4</div>
               <div style={{ fontSize: "14px", color: "var(--muted)", marginTop: "8px" }}>{t("home.statRepos")}</div>
             </div>
             <div>
-              <div style={{ fontFamily: "'IBM Plex Serif', serif", fontSize: "48px", fontWeight: 300, color: "var(--blue-70)", lineHeight: 1 }}>94%</div>
+              <div style={{ fontFamily: "'IBM Plex Serif', serif", fontSize: "48px", fontWeight: 300, color: "var(--blue-70)", lineHeight: 1 }}>60s</div>
               <div style={{ fontSize: "14px", color: "var(--muted)", marginTop: "8px" }}>{t("home.statAccuracy")}</div>
             </div>
             <div>
-              <div style={{ fontFamily: "'IBM Plex Serif', serif", fontSize: "48px", fontWeight: 300, color: "var(--blue-70)", lineHeight: 1 }}>2.5x</div>
+              <div style={{ fontFamily: "'IBM Plex Serif', serif", fontSize: "48px", fontWeight: 300, color: "var(--blue-70)", lineHeight: 1 }}>5/mo</div>
               <div style={{ fontSize: "14px", color: "var(--muted)", marginTop: "8px" }}>{t("home.statOnboarding")}</div>
             </div>
             <div>
-              <div style={{ fontFamily: "'IBM Plex Serif', serif", fontSize: "48px", fontWeight: 300, color: "var(--blue-70)", lineHeight: 1 }}>50+</div>
+              <div style={{ fontFamily: "'IBM Plex Serif', serif", fontSize: "48px", fontWeight: 300, color: "var(--blue-70)", lineHeight: 1 }}>20+</div>
               <div style={{ fontSize: "14px", color: "var(--muted)", marginTop: "8px" }}>{t("home.statStacks")}</div>
             </div>
           </div>
@@ -735,7 +735,7 @@ export default function HomePage() {
             <button
               onClick={() => {
                 window.location.href =
-                  "mailto:kowton@163.com?subject=" +
+                  "mailto:support@repocontext.com?subject=" +
                   encodeURIComponent("RepoContext waitlist")
               }}
               onMouseEnter={() => setWaitlistHover(true)}
@@ -1009,7 +1009,8 @@ export default function HomePage() {
                 <GlowLink href="/terms" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.terms")}</GlowLink>
                 <GlowLink href="/privacy" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.privacy")}</GlowLink>
                 <GlowLink href="/refund" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.refund")}</GlowLink>
-                <GlowLink href="mailto:kowton@163.com" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.contact")}</GlowLink>
+                <GlowLink href="/acceptable-use" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.aup")}</GlowLink>
+                <GlowLink href="mailto:support@repocontext.com" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.contact")}</GlowLink>
               </div>
             </div>
           </div>

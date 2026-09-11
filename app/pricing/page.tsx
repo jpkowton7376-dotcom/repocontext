@@ -736,7 +736,8 @@ export default function PricingPage() {
                 <Link href="/terms" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.terms")}</Link>
                 <Link href="/privacy" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.privacy")}</Link>
                 <Link href="/refund" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.refund")}</Link>
-                <a href="mailto:kowton@163.com" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.contact")}</a>
+                <Link href="/acceptable-use" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.aup")}</Link>
+                <a href="mailto:support@repocontext.com" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.contact")}</a>
               </div>
             </div>
           </div>

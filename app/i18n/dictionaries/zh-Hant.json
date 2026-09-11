@@ -38,6 +38,7 @@
     "terms": "服務條款",
     "privacy": "隱私政策",
     "refund": "退款政策",
+    "aup": "可接受使用",
     "contact": "聯絡我們"
   },
   "home": {
@@ -60,11 +61,11 @@
       "gin-gonic/gin"
     ],
     "linkHint": "如何取得這個連結？ →",
-    "trustedBy": "深受領先企業工程團隊信賴",
-    "statRepos": "已分析儲存庫",
-    "statAccuracy": "指令準確率",
-    "statOnboarding": "更快的 AI 上線速度",
-    "statStacks": "支援技術堆疊",
+    "trustedBy": "用數字說話",
+    "statRepos": "種輸出格式",
+    "statAccuracy": "平均分析時間",
+    "statOnboarding": "每月免費次數",
+    "statStacks": "支援偵測的技術棧",
     "featuresEyebrow": "功能",
     "featuresTitle": "讓 AI 與你的程式碼庫協作所需的一切。",
     "featuresSubtitle": "從偵測到文件，RepoContext 提供企業級的儲存庫分析，並附帶可驗證的證據。",
