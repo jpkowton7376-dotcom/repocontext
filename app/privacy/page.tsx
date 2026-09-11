@@ -142,8 +142,8 @@ export default function PrivacyPage() {
         </ul>
         <p className="mt-3">
           To exercise these rights, contact us at{" "}
-          <a href="mailto:support@repocontext.com" className="text-accent2 hover:underline">
-            support@repocontext.com
+          <a href="mailto:jpkowton@gmail.com" className="text-accent2 hover:underline">
+            jpkowton@gmail.com
           </a>
           .
         </p>
@@ -173,8 +173,8 @@ export default function PrivacyPage() {
         <h2 className="text-xl font-bold mt-8 mb-3">11. Contact</h2>
         <p>
           Questions about this policy? Reach out at{" "}
-          <a href="mailto:support@repocontext.com" className="text-accent2 hover:underline">
-            support@repocontext.com
+          <a href="mailto:jpkowton@gmail.com" className="text-accent2 hover:underline">
+            jpkowton@gmail.com
           </a>
           .
         </p>

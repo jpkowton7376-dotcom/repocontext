@@ -143,10 +143,10 @@ export default function AcceptableUsePage() {
           If you believe content analysed by RepoContext violates this AUP,
           or that another user is abusing the Service, please report it to{" "}
           <a
-            href="mailto:support@repocontext.com?subject=AUP%20report"
+            href="mailto:jpkowton@gmail.com?subject=AUP%20report"
             className="text-accent2 hover:underline"
           >
-            support@repocontext.com
+            jpkowton@gmail.com
           </a>{" "}
           with a link and a short description. We review reports within five
           business days.
@@ -174,10 +174,10 @@ export default function AcceptableUsePage() {
         <p>
           Questions about this policy? Contact us at{" "}
           <a
-            href="mailto:support@repocontext.com"
+            href="mailto:jpkowton@gmail.com"
             className="text-accent2 hover:underline"
           >
-            support@repocontext.com
+            jpkowton@gmail.com
           </a>
           .
         </p>

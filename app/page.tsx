@@ -735,7 +735,7 @@ export default function HomePage() {
             <button
               onClick={() => {
                 window.location.href =
-                  "mailto:support@repocontext.com?subject=" +
+                  "mailto:jpkowton@gmail.com?subject=" +
                   encodeURIComponent("RepoContext waitlist")
               }}
               onMouseEnter={() => setWaitlistHover(true)}
@@ -1010,7 +1010,7 @@ export default function HomePage() {
                 <GlowLink href="/privacy" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.privacy")}</GlowLink>
                 <GlowLink href="/refund" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.refund")}</GlowLink>
                 <GlowLink href="/acceptable-use" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.aup")}</GlowLink>
-                <GlowLink href="mailto:support@repocontext.com" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.contact")}</GlowLink>
+                <GlowLink href="mailto:jpkowton@gmail.com" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.contact")}</GlowLink>
               </div>
             </div>
           </div>

@@ -64,7 +64,7 @@ async function send(args: {
 function layout(contentHtml: string, preheader?: string): string {
   const siteUrl =
     process.env.NEXT_PUBLIC_SITE_URL || "https://repocontext.vercel.app"
-  const supportEmail = "support@repocontext.com"
+  const supportEmail = "jpkowton@gmail.com"
   return `<!doctype html>
 <html lang="en">
 <head>
