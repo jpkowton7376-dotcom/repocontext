@@ -271,7 +271,7 @@ export default function HomePage() {
       <SiteNav variant="dark" />
 
       {/* Hero Section — IBM style */}
-      <section style={{
+      <section className="rc-hero-section" style={{
         padding: "80px 48px",
         background: "#000000",
         position: "relative",
