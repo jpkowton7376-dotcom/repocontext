@@ -15,7 +15,7 @@ export const maxDuration = 60
 /**
  * Public REST API entry point. Use an API key created in the dashboard:
  *
- *   curl -X POST https://repocontext.com/api/v1/analyze \
+ *   curl -X POST https://repocontext.dev/api/v1/analyze \
  *     -H "Authorization: Bearer rc_live_xxx" \
  *     -H "Content-Type: application/json" \
  *     -d '{"repoUrl":"https://github.com/octocat/Hello-World"}'

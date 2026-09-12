@@ -4,13 +4,12 @@ import { LanguageProvider } from "@/components/LanguageProvider"
 import { CustomerServiceWidget } from "@/components/CustomerServiceWidget"
 import { CookieConsent } from "@/components/CookieConsent"
 import { JsonLd } from "@/components/JsonLd"
+import { SITE_URL } from "@/lib/site-url"
 
 const SITE_NAME = "RepoContext"
 const DEFAULT_TITLE = "RepoContext — Turn your codebase into AI-ready context"
 const DEFAULT_DESCRIPTION =
   "Enterprise-grade repository analysis. Generate accurate AGENTS.md, CLAUDE.md, and Cursor rules for AI coding agents in seconds."
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://repocontext.vercel.app"
 
 export const metadata: Metadata = {
   // Required so relative openGraph images / urls resolve to absolute ones.

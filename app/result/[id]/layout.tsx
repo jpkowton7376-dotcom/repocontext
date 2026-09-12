@@ -1,8 +1,6 @@
 import type { Metadata } from "next"
 import { createAdminClient } from "@/lib/supabase"
-
-const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://repocontext.vercel.app"
+import { SITE_URL } from "@/lib/site-url"
 
 const FALLBACK_TITLE = "Shared analysis — RepoContext"
 const FALLBACK_DESCRIPTION =

@@ -4,6 +4,7 @@ import Link from "next/link"
 import type { ReactNode } from "react"
 import { useTranslation } from "@/components/LanguageProvider"
 import { LanguageSwitcher } from "@/components/LanguageSwitcher"
+import { SITE_HOST } from "@/lib/site-url"
 
 /* ---------- Illustrations (inline SVG, no external assets) ---------- */
 
@@ -80,7 +81,7 @@ function IlluBranch() {
 
 function IlluPaste() {
   return (
-    <BrowserMock url="repocontext.vercel.app">
+    <BrowserMock url={SITE_HOST}>
       <rect x="20" y="70" width="244" height="40" rx="8" fill="#0e1420" stroke="#5c9aff" />
       <text x="34" y="95" fontFamily="'IBM Plex Mono', monospace" fontSize="10" fill="#ffffff">https://github.com/psf/requests</text>
       <rect x="272" y="70" width="68" height="40" rx="8" fill="#2f6bff" />

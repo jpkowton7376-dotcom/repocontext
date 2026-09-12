@@ -235,7 +235,7 @@ create trigger on_auth_user_created
 ### 🟣 第四阶段：域名 & 部署（上线前 3 天）
 
 **域名购买：**
-- [ ] 购买域名（推荐 repocontext.com 或 getrepocontext.com）
+- [ ] 购买域名 `repocontext.dev`（repocontext.com 已被第三方持有，勿再尝试）
 - [ ] 在 Namecheap / GoDaddy / Cloudflare 购买
 - [ ] 配置 DNS 解析
 

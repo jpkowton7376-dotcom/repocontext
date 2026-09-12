@@ -137,7 +137,7 @@
 
 <div class="callout">
 <strong>背景：</strong>Creem 审核要求网站部署在<strong>自定义域名</strong>（不能用 <code>repocontext.vercel.app</code>），
-且支持邮箱必须是<strong>品牌邮箱</strong>（<code>@repocontext.com</code>）。
+且支持邮箱必须是<strong>品牌邮箱</strong>（<code>@repocontext.dev</code>）。
 本文档分 7 步搞定域名 + 邮箱转发 + Vercel 接入 + Resend 验证 + Creem 改邮箱。
 </div>
 
@@ -145,17 +145,17 @@
 <p><span class="pill pill-time">2 分钟</span><span class="pill pill-you">你做</span></p>
 <ol>
   <li>打开 <code>https://dash.cloudflare.com/sign-up</code></li>
-  <li>用 <strong>163 邮箱</strong>或 <strong>QQ 邮箱</strong>注册（暂不要用 Gmail，刚改的 repocontext.com 还没生效）</li>
+  <li>用 <strong>163 邮箱</strong>或 <strong>QQ 邮箱</strong>注册（暂不要用 Gmail，刚改的 repocontext.dev 还没生效）</li>
   <li>收验证邮件 → 点链接激活</li>
   <li>登录后会自动跳到 "Add your first site" 页面</li>
 </ol>
 
-<h2><span class="step-no">2</span>购买 <code>repocontext.com</code> 域名</h2>
+<h2><span class="step-no">2</span>购买 <code>repocontext.dev</code> 域名</h2>
 <p><span class="pill pill-time">5 分钟</span><span class="pill pill-you">你做</span></p>
 <ol>
   <li>Cloudflare Dashboard 顶部 → <strong>Domain Registration</strong> → <strong>Register Domains</strong></li>
-  <li>搜索框输入 <code>repocontext.com</code></li>
-  <li>如果显示 <code>$9.15/year</code> 旁边有 <strong>Purchase</strong> 按钮 → 可买</li>
+  <li>搜索框输入 <code>repocontext.dev</code></li>
+  <li>如果显示 <code>$12/year</code> 左右（.dev 的成本价，Cloudflare 不溢价）旁边有 <strong>Purchase</strong> 按钮 → 可买</li>
 </ol>
 <div class="danger">
 <strong>如果显示 "Already registered"：</strong>立即告诉我，我们改用：
@@ -183,7 +183,7 @@
   </li>
   <li>付款方式选 <strong>Credit Card</strong> → 输入<strong>招行 Visa 卡</strong>号（16 位）</li>
   <li>招行 App 弹 3DS 验证 → 点确认</li>
-  <li>扣款 $9.15（约 ¥66）</li>
+  <li>扣款约 $12（约 ¥87）</li>
 </ol>
 <div class="success">✅ 购买完成。域名所有权立即生效。</div>
 
@@ -191,7 +191,7 @@
 <p><span class="pill pill-time">3 分钟</span><span class="pill pill-you">你做</span></p>
 <ol>
   <li>新标签页打开 Vercel：<code>https://vercel.com/dashboard</code> → 选 <code>repocontext-git</code> 项目</li>
-  <li><strong>Settings</strong> → <strong>Domains</strong> → 输入 <code>repocontext.com</code> → <strong>Add</strong></li>
+  <li><strong>Settings</strong> → <strong>Domains</strong> → 输入 <code>repocontext.dev</code> → <strong>Add</strong></li>
   <li>Vercel 可能提示 "Invalid Configuration"，先不管（DNS 还没配）</li>
   <li>回到 Cloudflare → 左侧 <strong>DNS</strong> → <strong>Records</strong> → <strong>Add record</strong>，加 2 条：
     <table>
@@ -207,7 +207,7 @@
 <ol start="5">
   <li>回到 Vercel → 等 1-2 分钟，状态从 "Invalid" 变 "Valid"</li>
 </ol>
-<div class="success">✅ Vercel 自动签发 SSL。访问 <code>https://repocontext.com</code> 应能看到你的网站。</div>
+<div class="success">✅ Vercel 自动签发 SSL。访问 <code>https://repocontext.dev</code> 应能看到你的网站。</div>
 
 <h2><span class="step-no">4</span>配 Cloudflare Email Routing（品牌邮箱转发）</h2>
 <p><span class="pill pill-time">5 分钟</span><span class="pill pill-you">你做</span></p>
@@ -224,18 +224,18 @@
   <li>Cloudflare 给 <code>jpkowton@gmail.com</code> 发验证邮件 → 登录 Gmail 找 → 点 <strong>Confirm</strong> 链接</li>
   <li>回到 Cloudflare 状态变成 "Verified"</li>
 </ol>
-<div class="success">✅ 邮箱转发生效。让朋友发邮件到 <code>support@repocontext.com</code>，你的 Gmail 能收到。</div>
+<div class="success">✅ 邮箱转发生效。让朋友发邮件到 <code>support@repocontext.dev</code>，你的 Gmail 能收到。</div>
 
 <h3>回信时显示品牌邮箱（推荐开启）</h3>
 <p>在 Cloudflare Email Routing 的 <strong>Settings</strong> 里开启 <strong>"Send emails from your custom address"</strong>。
-这样你在 Gmail 回复时，对方看到的 From 是 <code>support@repocontext.com</code>（不是你个人 Gmail）。</p>
+这样你在 Gmail 回复时，对方看到的 From 是 <code>support@repocontext.dev</code>（不是你个人 Gmail）。</p>
 
 <h2><span class="step-no">5</span>Resend 验证域名（让通知邮件用品牌 From）</h2>
 <p><span class="pill pill-time">10 分钟</span><span class="pill pill-you">你做</span> <span style="color:#64707f;">— 可选但推荐</span></p>
 <p>不做的后果：RepoContext 给客户发的通知邮件 From 是 <code>onboarding@resend.dev</code>（带 via resend.dev 字样，不专业）。<br/>
-做了之后：From 是 <code>RepoContext &lt;noreply@repocontext.com&gt;</code>，看起来是你自己发的。</p>
+做了之后：From 是 <code>RepoContext &lt;noreply@repocontext.dev&gt;</code>，看起来是你自己发的。</p>
 <ol>
-  <li>打开 <code>https://resend.com/domains</code> → <strong>Add Domain</strong> → 输入 <code>repocontext.com</code></li>
+  <li>打开 <code>https://resend.com/domains</code> → <strong>Add Domain</strong> → 输入 <code>repocontext.dev</code></li>
   <li>Resend 给你 DNS 记录，3 条加到 Cloudflare DNS：
     <table>
       <tr><th>Type</th><th>Name</th><th>Value</th></tr>
@@ -245,7 +245,7 @@
     </table>
   </li>
   <li>回 Resend → 点 <strong>Verify</strong> → 等 1-2 分钟通过</li>
-  <li>告诉我已验证，我把 <code>RESEND_FROM=RepoContext &lt;noreply@repocontext.com&gt;</code> 加到 Vercel env</li>
+  <li>告诉我已验证，我把 <code>RESEND_FROM=RepoContext &lt;noreply@repocontext.dev&gt;</code> 加到 Vercel env</li>
 </ol>
 
 <h2><span class="step-no">6</span>改 Creem 后台邮箱 + 触发复审</h2>
@@ -253,22 +253,22 @@
 <ol>
   <li>登录 <code>https://creem.io</code> → 右上角头像 → <strong>Settings</strong> → <strong>Account</strong> / <strong>Business</strong></li>
   <li>找 <strong>Support email</strong> 字段（也可能在 Payout Account 页面）</li>
-  <li>改成 <code>support@repocontext.com</code></li>
+  <li>改成 <code>support@repocontext.dev</code></li>
   <li>保存</li>
   <li>进入 <strong>Payout Account</strong> → 找 <strong>Request re-review</strong> 按钮 → 点击</li>
 </ol>
 <div class="callout">
 <strong>关于 Gmail vs 品牌邮箱：</strong>Creem 偏好品牌邮箱（自定义域名），gmail.com 可能仍被接受。
-但<strong>用了 repocontext.com 之后</strong>，你用真品牌邮箱，Creem 一次性过审没争议。
+但<strong>用了 repocontext.dev 之后</strong>，你用真品牌邮箱，Creem 一次性过审没争议。
 </div>
 
 <h2><span class="step-no">7</span>告诉我，我做最后一步</h2>
 <p><span class="pill pill-time">5 分钟</span><span class="pill pill-me">我做</span></p>
 <p>前 6 步配好后跟我说，我会：</p>
 <ol>
-  <li>改 Vercel 环境变量 <code>NEXT_PUBLIC_SITE_URL = https://repocontext.com</code></li>
+  <li>改 Vercel 环境变量 <code>NEXT_PUBLIC_SITE_URL = https://repocontext.dev</code></li>
   <li>重新部署（OG 元数据 / sitemap / robots / 分享链接全部跟着变）</li>
-  <li>把 Creem webhook URL 改成 <code>https://repocontext.com/api/creem/webhook</code></li>
+  <li>把 Creem webhook URL 改成 <code>https://repocontext.dev/api/creem/webhook</code></li>
   <li>（如果你已完成第 5 步）把 <code>RESEND_FROM</code> 加到 Vercel env 并重部署</li>
 </ol>
 
@@ -277,7 +277,7 @@
 <h2>📋 完整清单</h2>
 <ul class="checklist">
   <li>注册 Cloudflare 账号（2 分钟）</li>
-  <li>招行 Visa 卡买 repocontext.com（5 分钟）</li>
+  <li>招行 Visa 卡买 repocontext.dev（5 分钟）</li>
   <li>Vercel 域名绑定 + 2 条 CNAME（3 分钟）</li>
   <li>Email Routing 配转发 + 验证 Gmail（5 分钟）</li>
   <li>Resend 验证域名（10 分钟，可选）</li>

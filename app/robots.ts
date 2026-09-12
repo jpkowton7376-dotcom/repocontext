@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next"
+import { SITE_URL } from "@/lib/site-url"
 
-const base = process.env.NEXT_PUBLIC_SITE_URL || "https://repocontext.vercel.app"
+const base = SITE_URL
 
 export default function robots(): MetadataRoute.Robots {
   return {

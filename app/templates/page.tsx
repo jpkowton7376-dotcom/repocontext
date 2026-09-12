@@ -36,6 +36,7 @@ import { SiteNav } from "@/components/SiteNav"
 import { JsonLd } from "@/components/JsonLd"
 import { useTranslation } from "@/components/LanguageProvider"
 import { SAMPLES, PROMPTS, BEST_PRACTICES, UI } from "@/lib/templates"
+import { SITE_URL } from "@/lib/site-url"
 import type { Locale } from "@/app/i18n/config"
 
 type Tab = "samples" | "prompts" | "best"
@@ -383,8 +384,8 @@ export default function TemplatesPage() {
           "@type": "CollectionPage",
           name: UI.title[L],
           description: UI.subtitle[L],
-          url: "https://repocontext.vercel.app/templates",
-          isPartOf: { "@type": "WebSite", name: "RepoContext", url: "https://repocontext.vercel.app" },
+          url: `${SITE_URL}/templates`,
+          isPartOf: { "@type": "WebSite", name: "RepoContext", url: SITE_URL },
         }}
       />
 

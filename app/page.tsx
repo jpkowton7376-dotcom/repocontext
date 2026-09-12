@@ -10,6 +10,7 @@ import { SiteNav } from "@/components/SiteNav"
 import { JsonLd } from "@/components/JsonLd"
 import { supabase, isSupabaseConfigured } from "@/lib/supabase"
 import { saveRecent } from "@/lib/recent-analyses"
+import { SITE_URL } from "@/lib/site-url"
 import { useTranslation } from "@/components/LanguageProvider"
 import type { AuthChangeEvent, Session } from "@supabase/supabase-js"
 
@@ -224,7 +225,7 @@ export default function HomePage() {
           operatingSystem: "Web",
           description:
             "Generate accurate AGENTS.md, CLAUDE.md, .cursorrules and GitHub Copilot instructions for any GitHub repository in under a minute.",
-          url: process.env.NEXT_PUBLIC_SITE_URL || "https://repocontext.vercel.app",
+          url: SITE_URL,
           offers: [
             {
               "@type": "Offer",

@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og"
+import { SITE_HOST } from "@/lib/site-url"
 
 export const runtime = "edge"
 export const dynamic = "force-dynamic"
@@ -125,7 +126,7 @@ export async function GET(request: Request) {
               fontWeight: 500,
             }}
           >
-            repocontext.com
+            {SITE_HOST}
           </span>
           <span>From any repo → AI-ready context in 60 seconds</span>
         </div>

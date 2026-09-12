@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { useState } from "react"
 import { SiteNav } from "@/components/SiteNav"
+import { SITE_URL } from "@/lib/site-url"
 
 function CodeBlock({ children, copyKey }: { children: string; copyKey: string }) {
   const [copied, setCopied] = useState(false)
@@ -51,7 +52,7 @@ function CodeBlock({ children, copyKey }: { children: string; copyKey: string })
 }
 
 export default function DevelopersPage() {
-  const apiUrl = "https://repocontext.com/api/v1/analyze"
+  const apiUrl = `${SITE_URL}/api/v1/analyze`
   const exampleCurl = `curl -X POST ${apiUrl} \\
   -H "Authorization: Bearer rc_live_xxxxxxxxxxxxxxxxxxxxx" \\
   -H "Content-Type: application/json" \\
@@ -76,7 +77,7 @@ export default function DevelopersPage() {
 
   const exampleJs = `import { RepoContext } from "@repocontext/sdk"; // coming soon
 // or use the raw HTTP client
-const res = await fetch("https://repocontext.com/api/v1/analyze", {
+const res = await fetch("${SITE_URL}/api/v1/analyze", {
   method: "POST",
   headers: {
     "Authorization": \`Bearer \${process.env.REPOCONTEXT_API_KEY}\`,

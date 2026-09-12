@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { emailConfigured, sendWelcomeEmail } from "@/lib/email"
+import { SITE_URL } from "@/lib/site-url"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
@@ -17,8 +18,7 @@ export const dynamic = "force-dynamic"
 export async function POST(request: Request) {
   try {
     const origin = request.headers.get("origin") || ""
-    const expectedOrigin =
-      process.env.NEXT_PUBLIC_SITE_URL || "https://repocontext.vercel.app"
+    const expectedOrigin = SITE_URL
     // Allow same-origin (browser fetch) and direct server-to-server calls
     // (Vercel preview / production). Block everything else.
     if (origin && !origin.startsWith(expectedOrigin)) {

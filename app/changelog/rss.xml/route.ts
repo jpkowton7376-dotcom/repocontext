@@ -1,11 +1,12 @@
 import { changelog } from "@/lib/changelog-data"
+import { SITE_URL } from "@/lib/site-url"
 
 export const runtime = "nodejs"
 export const dynamic = "force-static"
 
 /**
  * RSS 2.0 feed of the changelog. Users can paste
- * https://repocontext.com/changelog/rss.xml into any reader to be
+ * <site>/changelog/rss.xml into any reader to be
  * notified when a new release ships.
  *
  * Output is hand-rolled XML (no library) so it has no extra
@@ -13,8 +14,7 @@ export const dynamic = "force-static"
  * needed for valid RSS 2.0.
  */
 export async function GET() {
-  const siteUrl =
-    process.env.NEXT_PUBLIC_SITE_URL || "https://repocontext.vercel.app"
+  const siteUrl = SITE_URL
   const feedUrl = `${siteUrl}/changelog/rss.xml`
   const pageUrl = `${siteUrl}/changelog`
   const now = new Date().toUTCString()

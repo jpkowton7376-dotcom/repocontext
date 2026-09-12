@@ -8,12 +8,13 @@
  *
  * To go live:
  *   1. Sign up at https://resend.com (free tier = 3 000 emails/month).
- *   2. Add and verify your sending domain (e.g. repocontext.com) by
+ *   2. Add and verify your sending domain (e.g. repocontext.dev) by
  *      adding the DKIM / SPF records Resend gives you to Cloudflare DNS.
  *   3. Set RESEND_API_KEY and RESEND_FROM in Vercel env, then redeploy.
- *      RESEND_FROM example: "RepoContext <noreply@repocontext.com>".
+ *      RESEND_FROM example: "RepoContext <noreply@repocontext.dev>".
  */
 import { Resend } from "resend"
+import { SITE_URL } from "./site-url"
 
 const apiKey = process.env.RESEND_API_KEY?.trim() || ""
 const fromAddress =
@@ -65,7 +66,7 @@ async function send(args: {
  * ──────────────────────────────────────────────────────────────────────────── */
 function layout(contentHtml: string, preheader?: string): string {
   const siteUrl =
-    process.env.NEXT_PUBLIC_SITE_URL || "https://repocontext.vercel.app"
+    SITE_URL
   const supportEmail = "jpkowton@gmail.com"
   return `<!doctype html>
 <html lang="en">
@@ -115,7 +116,7 @@ ${
 
 export async function sendWelcomeEmail(email: string): Promise<{ ok: boolean; error?: string }> {
   const siteUrl =
-    process.env.NEXT_PUBLIC_SITE_URL || "https://repocontext.vercel.app"
+    SITE_URL
   const html = layout(
     `
       <h1 style="margin:0 0 12px;font-size:22px;font-weight:600;line-height:1.3;">Welcome to RepoContext</h1>
@@ -153,7 +154,7 @@ export async function sendPaymentReceiptEmail(args: {
 }): Promise<{ ok: boolean; error?: string }> {
   const { email, productName, amount, currency, invoiceUrl } = args
   const siteUrl =
-    process.env.NEXT_PUBLIC_SITE_URL || "https://repocontext.vercel.app"
+    SITE_URL
   const amountLine = currency
     ? `${currency} ${amount}`
     : amount
@@ -193,7 +194,7 @@ export async function sendPaymentReceiptEmail(args: {
 
 export async function sendPaymentFailedEmail(email: string): Promise<{ ok: boolean; error?: string }> {
   const siteUrl =
-    process.env.NEXT_PUBLIC_SITE_URL || "https://repocontext.vercel.app"
+    SITE_URL
   const html = layout(
     `
       <h1 style="margin:0 0 12px;font-size:22px;font-weight:600;line-height:1.3;">We couldn't process your latest payment</h1>
@@ -270,7 +271,7 @@ export async function sendSupportNotificationEmail(args: {
  */
 export async function sendSupportAckEmail(email: string): Promise<{ ok: boolean; error?: string }> {
   const siteUrl =
-    process.env.NEXT_PUBLIC_SITE_URL || "https://repocontext.vercel.app"
+    SITE_URL
   const html = layout(
     `
       <h1 style="margin:0 0 12px;font-size:22px;font-weight:600;line-height:1.3;">We got your message</h1>
@@ -297,7 +298,7 @@ export async function sendSupportAckEmail(email: string): Promise<{ ok: boolean;
 /** Confirms a waitlist signup and tells the user what happens next. */
 export async function sendWaitlistConfirmEmail(email: string): Promise<{ ok: boolean; error?: string }> {
   const siteUrl =
-    process.env.NEXT_PUBLIC_SITE_URL || "https://repocontext.vercel.app"
+    SITE_URL
   const html = layout(
     `
       <h1 style="margin:0 0 12px;font-size:22px;font-weight:600;line-height:1.3;">You're on the list</h1>
