@@ -155,7 +155,7 @@
 <ol>
   <li>Cloudflare Dashboard 顶部 → <strong>Domain Registration</strong> → <strong>Register Domains</strong></li>
   <li>搜索框输入 <code>repocontext.dev</code></li>
-  <li>如果显示 <code>$12/year</code> 左右（.dev 的成本价，Cloudflare 不溢价）旁边有 <strong>Purchase</strong> 按钮 → 可买</li>
+  <li>如果显示 <code>$12.20/year</code> 旁边有 <strong>Purchase</strong> 按钮 → 可买（.dev 成本价，注册与续费同价，不玩首年低价续费暴涨的套路）</li>
 </ol>
 <div class="danger">
 <strong>如果显示 "Already registered"：</strong>立即告诉我，我们改用：
@@ -183,9 +183,24 @@
   </li>
   <li>付款方式选 <strong>Credit Card</strong> → 输入<strong>招行 Visa 卡</strong>号（16 位）</li>
   <li>招行 App 弹 3DS 验证 → 点确认</li>
-  <li>扣款约 $12（约 ¥87）</li>
+  <li>扣款 $12.20（约 ¥88）</li>
 </ol>
 <div class="success">✅ 购买完成。域名所有权立即生效。</div>
+
+<div class="callout">
+<strong>这 $12.20 包含什么、不包含什么：</strong>
+<table>
+  <tr><th>功能</th><th>是否包含</th><th>说明</th></tr>
+  <tr><td>DNS 托管</td><td>✅ 免费</td><td>域名自动由 Cloudflare 管理 DNS，免费计划够用</td></tr>
+  <tr><td>WHOIS 隐私</td><td>✅ 免费</td><td>Cloudflare 默认 redact 你的个人信息，不加价（很多注册商要单独买）</td></tr>
+  <tr><td>DNSSEC</td><td>✅ 免费</td><td>一键开启</td></tr>
+  <tr><td>域名锁定</td><td>✅ 免费</td><td>防止未授权转移</td></tr>
+  <tr><td>Email Routing</td><td>⚠️ 免费但需另配</td><td>不是注册服务的一部分，是 Cloudflare 的独立免费功能，见第 4 步</td></tr>
+  <tr><td>SSL 证书</td><td>由 Vercel 签发</td><td>Vercel 自动签发，Cloudflare 这边不用管</td></tr>
+</table>
+<strong>一个限制：</strong>在 Cloudflare Registrar 注册的域名，DNS 必须交给 Cloudflare（不能改 NS 到别家）。
+对你没影响——后面 Email Routing 和 Resend 验证本来就要改 DNS。
+</div>
 
 <h2><span class="step-no">3</span>把域名绑到 Vercel</h2>
 <p><span class="pill pill-time">3 分钟</span><span class="pill pill-you">你做</span></p>
@@ -196,9 +211,14 @@
   <li>回到 Cloudflare → 左侧 <strong>DNS</strong> → <strong>Records</strong> → <strong>Add record</strong>，加 2 条：
     <table>
       <tr><th>Type</th><th>Name</th><th>Target</th><th>Proxy</th></tr>
-      <tr><td>CNAME</td><td><code>@</code></td><td><code>cname.vercel-dns.com</code></td><td><strong>DNS only（灰色云朵）⚠️</strong></td></tr>
+      <tr><td>A</td><td><code>@</code></td><td><code>76.76.21.21</code></td><td><strong>DNS only（灰色云朵）⚠️</strong></td></tr>
       <tr><td>CNAME</td><td><code>www</code></td><td><code>cname.vercel-dns.com</code></td><td><strong>DNS only（灰色云朵）⚠️</strong></td></tr>
     </table>
+    <div class="callout" style="margin-top:10px">
+      根域名 <code>@</code> 用 <strong>A 记录</strong>而不是 CNAME。Cloudflare 虽然有 CNAME flattening 能让
+      <code>CNAME @</code> 工作，但后面还要给 Email Routing 加 MX、给 Resend 加 SPF/DKIM，
+      根域名上混用 CNAME flattening 容易踩坑。A 记录更保险。
+    </div>
   </li>
 </ol>
 <div class="danger">
@@ -211,6 +231,14 @@
 
 <h2><span class="step-no">4</span>配 Cloudflare Email Routing（品牌邮箱转发）</h2>
 <p><span class="pill pill-time">5 分钟</span><span class="pill pill-you">你做</span></p>
+<div class="callout">
+<strong>先搞清楚它的边界：</strong>Email Routing 是 Cloudflare 的<strong>免费独立功能</strong>（不是买域名附赠的），
+只要 DNS 在 Cloudflare 就能开。它<strong>只转发收到的邮件</strong>，不提供收件箱——你无法登录
+webmail，也没有 IMAP/POP3。发件要走别的方式：<br/>
+① 在 Email Routing 的 Settings 里开 <strong>"Send emails from your custom address"</strong>（免费，借 Gmail SMTP 代发），或<br/>
+② 用 <strong>Resend</strong> 发件（代码里已集成，推荐——事务邮件也走它）。<br/>
+Creem 审核要的是"支持邮箱是品牌邮箱"，<strong>能收信就够</strong>，所以这一步就够了。
+</div>
 <ol>
   <li>Cloudflare 左侧 → <strong>Email</strong> → <strong>Email Routing</strong> → <strong>Get started</strong></li>
   <li>同意让 Cloudflare 管理你的 MX 记录（自动加）</li>
