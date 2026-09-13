@@ -692,4 +692,17 @@ img, svg, video, iframe, table, pre, .code-block {
   h2 { font-size: 21px !important; }
 }
 
+/* ---- Community pages ---- */
+@media (max-width: 900px) {
+  .rc-community-sidebar { display: none !important; }
+  .rc-community-chips { display: flex !important; }
+  .rc-home-community > div { grid-template-columns: 1fr !important; gap: 40px !important; }
+}
+
+@media (max-width: 640px) {
+  /* The hero "New post" button sits next to the title on desktop; on phones
+     it stacks and should span the column for an easy tap target. */
+  .rc-community-new { width: 100%; justifyContent: center; }
+}
+
 

@@ -7,6 +7,8 @@ import Image from "next/image"
 import { MaskedIllustration } from "@/components/MaskedIllustration"
 import { GlowLink } from "@/components/GlowLink"
 import { SiteNav } from "@/components/SiteNav"
+import { CommunityProjectCard } from "@/components/CommunityProjectCard"
+import { SEED_PROJECTS } from "@/lib/community-data"
 import { JsonLd } from "@/components/JsonLd"
 import { supabase, isSupabaseConfigured } from "@/lib/supabase"
 import { saveRecent } from "@/lib/recent-analyses"
@@ -213,6 +215,8 @@ export default function HomePage() {
       </div>
     )
   }
+
+  const topPosts = [...SEED_PROJECTS].sort((a, b) => b.stars - a.stars).slice(0, 3)
 
   return (
     <main style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
@@ -1013,6 +1017,98 @@ export default function HomePage() {
                   {item.desc}
                 </p>
               </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Community teaser */}
+      <section className="rc-home-community" style={{
+        padding: "96px 48px",
+        background: "var(--bg-warm)",
+      }}>
+        <div style={{
+          maxWidth: "1280px",
+          margin: "0 auto",
+          display: "grid",
+          gridTemplateColumns: "1fr 1.25fr",
+          gap: "64px",
+          alignItems: "start",
+        }}>
+          {/* Left: pitch + CTAs */}
+          <div>
+            <div style={{ width: "48px", height: "4px", background: "var(--blue-60)", marginBottom: "24px" }} />
+            <p style={{
+              fontSize: "12px",
+              fontWeight: 600,
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
+              color: "var(--muted)",
+              margin: "0 0 16px 0",
+            }}>
+              {t("community.eyebrow")}
+            </p>
+            <h2 style={{
+              fontFamily: "'IBM Plex Serif', Georgia, serif",
+              fontSize: "42px",
+              fontWeight: 300,
+              letterSpacing: "-0.01em",
+              margin: "0 0 16px 0",
+              maxWidth: "460px",
+            }}>
+              {t("home.communityTitle")}
+            </h2>
+            <p style={{ fontSize: "17px", color: "var(--ink-2)", lineHeight: 1.6, maxWidth: "440px", margin: "0 0 32px" }}>
+              {t("home.communitySubtitle")}
+            </p>
+            <div style={{ display: "flex", gap: "14px", flexWrap: "wrap" }}>
+              <Link
+                href="/community"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  padding: "14px 26px",
+                  background: "var(--blue-60)",
+                  color: "white",
+                  borderRadius: "4px",
+                  textDecoration: "none",
+                  fontWeight: 500,
+                  fontSize: "15px",
+                }}
+              >
+                {t("home.communityCta")} →
+              </Link>
+              <Link
+                href="/community/new"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  padding: "13px 26px",
+                  border: "2px solid var(--rule)",
+                  color: "var(--ink)",
+                  borderRadius: "4px",
+                  textDecoration: "none",
+                  fontWeight: 500,
+                  fontSize: "15px",
+                }}
+              >
+                {t("home.communityNew")}
+              </Link>
+            </div>
+          </div>
+
+          {/* Right: live preview of top projects */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "20px" }}>
+            {topPosts.map((p) => (
+              <CommunityProjectCard
+                key={p.id}
+                project={p}
+                filesLabel={t("community.files")}
+                starsLabel={t("community.stars")}
+                byLabel={t("community.by")}
+              />
             ))}
           </div>
         </div>
