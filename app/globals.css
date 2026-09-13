@@ -637,18 +637,31 @@ img, svg, video, iframe, table, pre, .code-block {
   }
 
   .rc-hero-illu > div:nth-child(2) {
-    width: 150px !important;
-    top: 10px !important;
-    right: 10px !important;
-    padding: 12px !important;
+    width: 130px !important;
+    top: 8px !important;
+    right: 8px !important;
+    padding: 10px !important;
   }
 
   .rc-hero-illu > div:nth-child(3) {
-    width: 170px !important;
-    bottom: 10px !important;
-    left: 10px !important;
-    padding: 12px !important;
+    width: 148px !important;
+    bottom: 8px !important;
+    left: 8px !important;
+    padding: 10px !important;
   }
+
+  /* The floating cards' inline font sizes would otherwise be bumped up by
+     the global 10/11px legibility rule above, which bloats the cards on a
+     phone. Pin them down explicitly here, after that rule. */
+  .rc-hero-label {
+    font-size: 8px !important;
+    margin-bottom: 5px !important;
+    letter-spacing: 0.04em !important;
+  }
+  .rc-hero-value { font-size: 10px !important; }
+  .rc-hero-note { font-size: 8px !important; margin-top: 3px !important; }
+  .rc-hero-num { font-size: 22px !important; }
+  .rc-hero-den { font-size: 9px !important; }
 
   /* On phones the 3D illustration is the site’s main visual, so it
      comes first and the copy follows underneath. The desktop 80px

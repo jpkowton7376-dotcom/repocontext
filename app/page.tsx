@@ -543,7 +543,7 @@ export default function HomePage() {
             </div>
 
             {/* Floating code snippet cards — moved closer to the central logo to wrap around it */}
-            <div style={{
+            <div className="rc-hero-card rc-hero-card-fx" style={{
               position: "absolute",
               top: "60px",
               right: "60px",
@@ -555,21 +555,21 @@ export default function HomePage() {
               width: "240px",
               fontSize: "12px",
             }}>
-              <div style={{ fontSize: "11px", fontWeight: 600, color: "#64707f", marginBottom: "8px", letterSpacing: "0.05em" }}>
+              <div className="rc-hero-label" style={{ fontSize: "11px", fontWeight: 600, color: "#64707f", marginBottom: "8px", letterSpacing: "0.05em" }}>
                 {t("home.detectedFramework")}
               </div>
-              <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: "14px", fontWeight: 600, color: "#1a2230" }}>
+              <div className="rc-hero-value" style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: "14px", fontWeight: 600, color: "#1a2230" }}>
                 {t("home.detectedFrameworkValue")}
               </div>
               <div style={{ marginTop: "8px", height: "4px", width: "100%", background: "#e6eaf0", borderRadius: "2px" }}>
                 <div style={{ height: "100%", width: "95%", background: "#2f6bff", borderRadius: "2px" }} />
               </div>
-              <div style={{ fontSize: "11px", color: "#64707f", marginTop: "4px" }}>
+              <div className="rc-hero-note" style={{ fontSize: "11px", color: "#64707f", marginTop: "4px" }}>
                 {t("home.confidence", { pct: 95 })}
               </div>
             </div>
 
-            <div style={{
+            <div className="rc-hero-card rc-hero-card-qs" style={{
               position: "absolute",
               bottom: "60px",
               left: "60px",
@@ -581,14 +581,14 @@ export default function HomePage() {
               width: "260px",
               fontSize: "12px",
             }}>
-              <div style={{ fontSize: "11px", fontWeight: 600, color: "#64707f", marginBottom: "8px", letterSpacing: "0.05em" }}>
+              <div className="rc-hero-label" style={{ fontSize: "11px", fontWeight: 600, color: "#64707f", marginBottom: "8px", letterSpacing: "0.05em" }}>
                 {t("home.qualityScore")}
               </div>
               <div style={{ display: "flex", alignItems: "baseline", gap: "8px" }}>
-                <span style={{ fontFamily: "'IBM Plex Serif', serif", fontSize: "36px", fontWeight: 300, color: "#1f9d55" }}>92</span>
-                <span style={{ color: "#64707f" }}>/ 100</span>
+                <span className="rc-hero-num" style={{ fontFamily: "'IBM Plex Serif', serif", fontSize: "36px", fontWeight: 300, color: "#1f9d55" }}>92</span>
+                <span className="rc-hero-den" style={{ color: "#64707f" }}>/ 100</span>
               </div>
-              <div style={{ fontSize: "12px", color: "#1f9d55", marginTop: "4px", fontWeight: 500 }}>
+              <div className="rc-hero-note" style={{ fontSize: "12px", color: "#1f9d55", marginTop: "4px", fontWeight: 500 }}>
                 {t("home.excellentContext")}
               </div>
             </div>
