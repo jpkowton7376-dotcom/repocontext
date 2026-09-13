@@ -1,8 +1,8 @@
 import type { Metadata } from "next"
-import { WorkshopFeed } from "./WorkshopFeed"
+import { ForgeFeed } from "./ForgeFeed"
 
 export function generateMetadata(): Metadata {
-  const title = "Workshop — RepoContext"
+  const title = "Forge — RepoContext"
   const description =
     "Browse hardware projects shared by makers — parts lists, wiring, mechanics, and step-by-step build instructions."
   return {
@@ -13,6 +13,6 @@ export function generateMetadata(): Metadata {
   }
 }
 
-export default function WorkshopPage() {
-  return <WorkshopFeed />
+export default function ForgePage() {
+  return <ForgeFeed />
 }

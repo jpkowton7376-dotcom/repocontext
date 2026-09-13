@@ -5,22 +5,22 @@ import Link from "next/link"
 import { Search, Plus, ArrowUpDown } from "lucide-react"
 import { SiteNav } from "@/components/SiteNav"
 import { JsonLd } from "@/components/JsonLd"
-import { WorkshopProjectCard } from "@/components/WorkshopProjectCard"
+import { ForgeProjectCard } from "@/components/ForgeProjectCard"
 import { useTranslation } from "@/components/LanguageProvider"
-import { useWorkshop } from "@/lib/workshop-store"
+import { useForge } from "@/lib/forge-store"
 import {
   CATEGORIES,
   SortKey,
   filterProjects,
   sortProjects,
-} from "@/lib/workshop-data"
+} from "@/lib/forge-data"
 import { SITE_URL } from "@/lib/site-url"
 import type { Locale } from "@/app/i18n/config"
 
-export function WorkshopFeed() {
+export function ForgeFeed() {
   const { t, locale } = useTranslation()
   const L = locale as Locale
-  const { projects, hydrated, star, isStarred } = useWorkshop()
+  const { projects, hydrated, star, isStarred } = useForge()
 
   const [sort, setSort] = useState<SortKey>("trending")
   const [category, setCategory] = useState<string>("All")
@@ -43,9 +43,9 @@ export function WorkshopFeed() {
         data={{
           "@context": "https://schema.org",
           "@type": "CollectionPage",
-          name: t("workshop.title"),
-          description: t("workshop.subtitle"),
-          url: `${SITE_URL}/workshop`,
+          name: t("forge.title"),
+          description: t("forge.subtitle"),
+          url: `${SITE_URL}/forge`,
           isPartOf: { "@type": "WebSite", name: "RepoContext", url: SITE_URL },
         }}
       />
@@ -60,10 +60,10 @@ export function WorkshopFeed() {
         }}
       >
         <h1 style={{ margin: 0, fontSize: 44, fontWeight: 800, letterSpacing: "-.02em" }}>
-          {t("workshop.title")}
+          {t("forge.title")}
         </h1>
         <p style={{ margin: "12px 0 0", fontSize: 18, color: "#475569", maxWidth: 640 }}>
-          {t("workshop.subtitle")}
+          {t("forge.subtitle")}
         </p>
       </header>
 
@@ -92,7 +92,7 @@ export function WorkshopFeed() {
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder={t("workshop.searchPlaceholder")}
+              placeholder={t("forge.searchPlaceholder")}
               style={{
                 width: "100%",
                 padding: "12px 14px 12px 42px",
@@ -106,7 +106,7 @@ export function WorkshopFeed() {
 
           <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
             <span style={{ fontSize: 14, color: "#64748b", fontWeight: 600 }}>
-              {projects.length} {t("workshop.projects").toLowerCase()}
+              {projects.length} {t("forge.projects").toLowerCase()}
             </span>
             <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
               <ArrowUpDown size={15} color="#64748b" style={{ position: "absolute", left: 12 }} />
@@ -125,13 +125,13 @@ export function WorkshopFeed() {
                   cursor: "pointer",
                 }}
               >
-                <option value="trending">{t("workshop.sortBy")}: {t("workshop.trending")}</option>
-                <option value="newest">{t("workshop.sortBy")}: {t("workshop.newest")}</option>
-                <option value="top">{t("workshop.sortBy")}: {t("workshop.top")}</option>
+                <option value="trending">{t("forge.sortBy")}: {t("forge.trending")}</option>
+                <option value="newest">{t("forge.sortBy")}: {t("forge.newest")}</option>
+                <option value="top">{t("forge.sortBy")}: {t("forge.top")}</option>
               </select>
             </div>
             <Link
-              href="/workshop/new"
+              href="/forge/new"
               style={{
                 display: "inline-flex",
                 alignItems: "center",
@@ -145,7 +145,7 @@ export function WorkshopFeed() {
                 textDecoration: "none",
               }}
             >
-              <Plus size={16} /> {t("workshop.newProject")}
+              <Plus size={16} /> {t("forge.newProject")}
             </Link>
           </div>
         </div>
@@ -168,7 +168,7 @@ export function WorkshopFeed() {
                 cursor: "pointer",
               }}
             >
-              {c === "All" ? t("workshop.all") : c}
+              {c === "All" ? t("forge.all") : c}
             </button>
           ))}
         </div>
@@ -176,7 +176,7 @@ export function WorkshopFeed() {
 
       <div style={{ maxWidth: 1160, margin: "0 auto", padding: "24px 24px 80px" }}>
         {visible.length === 0 ? (
-          <p style={{ color: "#64748b", fontSize: 16 }}>{t("workshop.empty")}</p>
+          <p style={{ color: "#64748b", fontSize: 16 }}>{t("forge.empty")}</p>
         ) : (
           <div
             style={{
@@ -186,7 +186,7 @@ export function WorkshopFeed() {
             }}
           >
             {visible.map((p) => (
-              <WorkshopProjectCard
+              <ForgeProjectCard
                 key={p.slug}
                 project={p}
                 starred={isStarred(p.slug)}

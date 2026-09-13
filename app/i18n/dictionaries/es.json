@@ -12,7 +12,7 @@
     "dashboard": "Panel",
     "signOut": "Cerrar sesión",
     "templates": "Plantillas",
-    "workshop": "Taller"
+    "forge": "Forja"
   },
   "aiTools": {
     "eyebrow": "Directorio",
@@ -133,10 +133,10 @@
     "howEyebrow": "Cómo usar",
     "howTitle": "Tres pasos. Cero configuración.",
     "howLink": "Ver guía completa →",
-    "workshopTitle": "Proyectos del Taller",
-    "workshopSubtitle": "Explora proyectos de hardware compartidos por creadores: listas de piezas, cableado, mecánica e instrucciones paso a paso.",
-    "workshopCta": "Explorar proyectos",
-    "workshopNew": "Compartir un proyecto",
+    "forgeTitle": "Proyectos de la Forja",
+    "forgeSubtitle": "Explora proyectos de hardware compartidos por creadores: listas de piezas, cableado, mecánica e instrucciones paso a paso.",
+    "forgeCta": "Explorar proyectos",
+    "forgeNew": "Compartir un proyecto",
     "steps": [
       {
         "title": "Pega la URL de tu repositorio",
@@ -883,12 +883,12 @@
     "footerCopyright": "© 2026 RepoContext. Todos los derechos reservados.",
     "footerHome": "Volver al inicio"
   },
-  "workshop": {
-    "metaTitle": "Taller — RepoContext",
-    "metaDescription": "Explora proyectos de hardware compartidos por el Taller: listas de piezas, cableado, mecánica e instrucciones de montaje. Destaca lo que te inspira, copia lo que quieres construir.",
-    "eyebrow": "Taller",
-    "title": "Taller",
-    "subtitle": "Explora proyectos de hardware creados por el Taller. Abre cualquier proyecto para ver su lista de piezas, cableado, mecánica e instrucciones paso a paso.",
+  "forge": {
+    "metaTitle": "Forja — RepoContext",
+    "metaDescription": "Explora proyectos de hardware compartidos por la Forja: listas de piezas, cableado, mecánica e instrucciones de montaje. Destaca lo que te inspira, copia lo que quieres construir.",
+    "eyebrow": "Forja",
+    "title": "Forja",
+    "subtitle": "Explora proyectos de hardware creados por la Forja. Abre cualquier proyecto para ver su lista de piezas, cableado, mecánica e instrucciones paso a paso.",
     "sortBy": "Ordenar por",
     "trending": "Tendencias",
     "newest": "Más recientes",
@@ -899,7 +899,7 @@
     "by": "por",
     "projects": "proyectos",
     "empty": "No se encontraron proyectos. Prueba otro filtro o comparte el primero.",
-    "backToWorkshop": "Volver al Taller",
+    "backToForge": "Volver a la Forja",
     "projectNotFound": "Proyecto no encontrado",
     "tabInfo": "Información",
     "tabParts": "Piezas",
@@ -913,7 +913,7 @@
     "total": "Total",
     "relatedTitle": "Proyectos relacionados",
     "newProjectTitle": "Compartir un proyecto",
-    "newProjectSubtitle": "Comparte tu proyecto de hardware con el Taller: piezas, cableado, mecánica e instrucciones.",
+    "newProjectSubtitle": "Comparte tu proyecto de hardware con la Forja: piezas, cableado, mecánica e instrucciones.",
     "projectTitle": "Título del proyecto",
     "projectTitlePlaceholder": "Ponle un nombre claro a tu proyecto",
     "projectAuthor": "Tu nombre",

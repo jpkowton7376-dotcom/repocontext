@@ -6,9 +6,9 @@ import {
   type HardwareProject,
   partsCount,
   formatRelativeTime,
-} from "@/lib/workshop-data"
+} from "@/lib/forge-data"
 
-export function WorkshopProjectCard({
+export function ForgeProjectCard({
   project,
   starred,
   onStar,
@@ -40,7 +40,7 @@ export function WorkshopProjectCard({
       }}
     >
       <Link
-        href={`/workshop/${project.slug}`}
+        href={`/forge/${project.slug}`}
         style={{ textDecoration: "none", color: "inherit", display: "block" }}
       >
         <div
@@ -88,7 +88,7 @@ export function WorkshopProjectCard({
 
       <div style={{ padding: "16px 16px 18px", display: "flex", flexDirection: "column", gap: 10, flex: 1 }}>
         <Link
-          href={`/workshop/${project.slug}`}
+          href={`/forge/${project.slug}`}
           style={{ textDecoration: "none", color: "inherit" }}
         >
           <h3 style={{ margin: 0, fontSize: 18, fontWeight: 700, lineHeight: 1.25 }}>

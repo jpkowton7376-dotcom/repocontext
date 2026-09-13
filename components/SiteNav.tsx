@@ -106,7 +106,7 @@ export function SiteNav({ variant = "light" }: { variant?: Variant }) {
     { href: "/docs", key: "nav.docs" },
     { href: "/ai-tools", key: "nav.aiTools" },
     { href: "/templates", key: "nav.templates" },
-    { href: "/workshop", key: "nav.workshop" },
+    { href: "/forge", key: "nav.Forge" },
   ]
 
   const renderCenterLink = (href: string, key: string) => {

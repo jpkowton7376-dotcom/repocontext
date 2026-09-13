@@ -6,12 +6,15 @@ const { withSentryConfig } = require("@sentry/nextjs")
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Existing project config (kept empty here; extend as needed)
-  // "Community" was renamed to "Workshop": keep old links and bookmarks alive.
+  // "Community" was renamed to "Forge": keep old links and bookmarks alive.
   async redirects() {
     return [
-      { source: "/community/new", destination: "/workshop/new", permanent: true },
-      { source: "/community/:slug", destination: "/workshop/:slug", permanent: true },
-      { source: "/community", destination: "/workshop", permanent: true },
+      { source: "/community/new", destination: "/forge/new", permanent: true },
+      { source: "/community/:slug", destination: "/forge/:slug", permanent: true },
+      { source: "/community", destination: "/forge", permanent: true },
+      { source: "/workshop/new", destination: "/forge/new", permanent: true },
+      { source: "/workshop/:slug", destination: "/forge/:slug", permanent: true },
+      { source: "/workshop", destination: "/forge", permanent: true },
     ]
   },
 }

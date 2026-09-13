@@ -96,10 +96,10 @@
     "howEyebrow": "How to use",
     "howTitle": "Three steps. Zero configuration.",
     "howLink": "View full guide →",
-    "workshopTitle": "Builds from the Workshop",
-    "workshopSubtitle": "Browse hardware projects shared by makers — parts lists, wiring, mechanics, and step-by-step build instructions.",
-    "workshopCta": "Explore projects",
-    "workshopNew": "Share a build",
+    "forgeTitle": "Builds from the Forge",
+    "forgeSubtitle": "Browse hardware projects shared by makers — parts lists, wiring, mechanics, and step-by-step build instructions.",
+    "forgeCta": "Explore projects",
+    "forgeNew": "Share a build",
     "steps": [
       {
         "title": "Paste your repository URL",
@@ -132,7 +132,7 @@
     "home": "Home",
     "signOut": "Sign out",
     "templates": "Templates",
-    "workshop": "Workshop"
+    "forge": "Forge"
   },
   "aiTools": {
     "eyebrow": "Directory",
@@ -883,12 +883,12 @@
     "footerCopyright": "© 2026 RepoContext. All rights reserved.",
     "footerHome": "Back to home"
   },
-  "workshop": {
-    "metaTitle": "Workshop — RepoContext",
-    "metaDescription": "Browse hardware projects shared by the Workshop — parts lists, wiring, mechanics, and build instructions. Star what inspires you, copy what you want to build.",
-    "eyebrow": "Workshop",
-    "title": "Workshop",
-    "subtitle": "Browse hardware projects built by the Workshop. Open any project for its parts list, wiring, mechanics, and step-by-step build instructions.",
+  "forge": {
+    "metaTitle": "Forge — RepoContext",
+    "metaDescription": "Browse hardware projects shared by the Forge — parts lists, wiring, mechanics, and build instructions. Star what inspires you, copy what you want to build.",
+    "eyebrow": "Forge",
+    "title": "Forge",
+    "subtitle": "Browse hardware projects built by the Forge. Open any project for its parts list, wiring, mechanics, and step-by-step build instructions.",
     "sortBy": "Sort by",
     "trending": "Trending",
     "newest": "Newest",
@@ -899,7 +899,7 @@
     "by": "by",
     "projects": "projects",
     "empty": "No projects found. Try a different filter or share the first one.",
-    "backToWorkshop": "Back to Workshop",
+    "backToForge": "Back to Forge",
     "projectNotFound": "Project not found",
     "tabInfo": "Info",
     "tabParts": "Parts",
@@ -913,7 +913,7 @@
     "total": "Total",
     "relatedTitle": "Related projects",
     "newProjectTitle": "Share a project",
-    "newProjectSubtitle": "Share your hardware build with the Workshop — parts, wiring, mechanics, and instructions.",
+    "newProjectSubtitle": "Share your hardware build with the Forge — parts, wiring, mechanics, and instructions.",
     "projectTitle": "Project title",
     "projectTitlePlaceholder": "Give your project a clear name",
     "projectAuthor": "Your name",

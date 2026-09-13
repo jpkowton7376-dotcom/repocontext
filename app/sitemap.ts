@@ -14,7 +14,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/changelog",
     "/ai-tools",
     "/templates",
-    "/workshop",
+    "/forge",
     "/terms",
     "/privacy",
     "/refund",

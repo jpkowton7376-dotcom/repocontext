@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react"
 import {
   PROJECTS,
   type HardwareProject,
-} from "@/lib/workshop-data"
+} from "@/lib/forge-data"
 
 const PROJECTS_KEY = "rc_hw_projects_v1"
 const STARS_KEY = "rc_hw_stars_v1"
@@ -33,7 +33,7 @@ function loadStars(): Record<string, boolean> {
   }
 }
 
-export function useWorkshop() {
+export function useForge() {
   const [hydrated, setHydrated] = useState(false)
   const [userProjects, setUserProjects] = useState<HardwareProject[]>([])
   const [stars, setStars] = useState<Record<string, boolean>>({})
