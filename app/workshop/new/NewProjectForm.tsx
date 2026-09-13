@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation"
 import { Plus, Trash2, ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { useTranslation } from "@/components/LanguageProvider"
-import { useCommunity } from "@/lib/community-store"
-import type { HardwareProject, Part, PartCategory } from "@/lib/community-data"
+import { useWorkshop } from "@/lib/workshop-store"
+import type { HardwareProject, Part, PartCategory } from "@/lib/workshop-data"
 
 const COVERS = [
   "/projects/plant-monitor.svg",
@@ -32,7 +32,7 @@ interface PartRow extends Part {}
 export function NewProjectForm() {
   const { t } = useTranslation()
   const router = useRouter()
-  const { addProject } = useCommunity()
+  const { addProject } = useWorkshop()
 
   const [title, setTitle] = useState("")
   const [author, setAuthor] = useState("")
@@ -77,7 +77,7 @@ export function NewProjectForm() {
       stars: 0,
     }
     addProject(project)
-    router.push(`/community/${slug}`)
+    router.push(`/workshop/${slug}`)
   }
 
   const field = (label: string): React.CSSProperties => ({
@@ -100,37 +100,37 @@ export function NewProjectForm() {
   return (
     <main style={{ minHeight: "100vh", background: "#f8fafc" }}>
       <div style={{ maxWidth: 820, margin: "0 auto", padding: "28px 24px 80px" }}>
-        <Link href="/community" style={{ display: "inline-flex", alignItems: "center", gap: 6, color: "#2563eb", textDecoration: "none", fontWeight: 600, fontSize: 14 }}>
-          <ArrowLeft size={16} /> {t("community.backToCommunity")}
+        <Link href="/workshop" style={{ display: "inline-flex", alignItems: "center", gap: 6, color: "#2563eb", textDecoration: "none", fontWeight: 600, fontSize: 14 }}>
+          <ArrowLeft size={16} /> {t("workshop.backToWorkshop")}
         </Link>
 
-        <h1 style={{ fontSize: 32, fontWeight: 800, margin: "18px 0 4px" }}>{t("community.newProjectTitle")}</h1>
-        <p style={{ color: "#475569", fontSize: 16, margin: "0 0 28px" }}>{t("community.newProjectSubtitle")}</p>
+        <h1 style={{ fontSize: 32, fontWeight: 800, margin: "18px 0 4px" }}>{t("workshop.newProjectTitle")}</h1>
+        <p style={{ color: "#475569", fontSize: 16, margin: "0 0 28px" }}>{t("workshop.newProjectSubtitle")}</p>
 
         <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: 22 }}>
           <div>
-            <label style={field(t("community.projectTitle"))}>{t("community.projectTitle")}</label>
-            <input style={input} value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t("community.projectTitlePlaceholder")} required />
+            <label style={field(t("workshop.projectTitle"))}>{t("workshop.projectTitle")}</label>
+            <input style={input} value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t("workshop.projectTitlePlaceholder")} required />
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18 }}>
             <div>
-              <label style={field(t("community.projectAuthor"))}>{t("community.projectAuthor")}</label>
+              <label style={field(t("workshop.projectAuthor"))}>{t("workshop.projectAuthor")}</label>
               <input style={input} value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="your_handle" />
             </div>
             <div>
-              <label style={field(t("community.tags"))}>{t("community.tags")}</label>
+              <label style={field(t("workshop.tags"))}>{t("workshop.tags")}</label>
               <input style={input} value={tags} onChange={(e) => setTags(e.target.value)} placeholder="IoT, Sensors" />
             </div>
           </div>
 
           <div>
-            <label style={field(t("community.projectSummary"))}>{t("community.projectSummary")}</label>
-            <input style={input} value={summary} onChange={(e) => setSummary(e.target.value)} placeholder={t("community.projectSummaryPlaceholder")} />
+            <label style={field(t("workshop.projectSummary"))}>{t("workshop.projectSummary")}</label>
+            <input style={input} value={summary} onChange={(e) => setSummary(e.target.value)} placeholder={t("workshop.projectSummaryPlaceholder")} />
           </div>
 
           <div>
-            <label style={field(t("community.cover"))}>{t("community.cover")}</label>
+            <label style={field(t("workshop.cover"))}>{t("workshop.cover")}</label>
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
               {COVERS.map((c) => (
                 <button
@@ -151,9 +151,9 @@ export function NewProjectForm() {
 
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-              <label style={{ ...field(t("community.parts")), margin: 0 }}>{t("community.parts")}</label>
+              <label style={{ ...field(t("workshop.parts")), margin: 0 }}>{t("workshop.parts")}</label>
               <button type="button" onClick={addRow} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 12px", borderRadius: 10, border: "1px solid #e2e8f0", background: "white", cursor: "pointer", fontWeight: 600, fontSize: 13 }}>
-                <Plus size={14} /> {t("community.addPart")}
+                <Plus size={14} /> {t("workshop.addPart")}
               </button>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -176,15 +176,15 @@ export function NewProjectForm() {
           </div>
 
           <div>
-            <label style={field(t("community.tabWiring"))}>{t("community.tabWiring")}</label>
+            <label style={field(t("workshop.tabWiring"))}>{t("workshop.tabWiring")}</label>
             <textarea style={{ ...input, minHeight: 90, resize: "vertical", fontFamily: "inherit" }} value={wiring} onChange={(e) => setWiring(e.target.value)} />
           </div>
           <div>
-            <label style={field(t("community.tabMech"))}>{t("community.tabMech")}</label>
+            <label style={field(t("workshop.tabMech"))}>{t("workshop.tabMech")}</label>
             <textarea style={{ ...input, minHeight: 90, resize: "vertical", fontFamily: "inherit" }} value={mech} onChange={(e) => setMech(e.target.value)} />
           </div>
           <div>
-            <label style={field(t("community.tabInstructions"))}>{t("community.tabInstructions")}</label>
+            <label style={field(t("workshop.tabInstructions"))}>{t("workshop.tabInstructions")}</label>
             <textarea style={{ ...input, minHeight: 110, resize: "vertical", fontFamily: "inherit" }} value={instructions} onChange={(e) => setInstructions(e.target.value)} placeholder="One step per line" />
           </div>
 
@@ -195,7 +195,7 @@ export function NewProjectForm() {
               background: "#0f172a", color: "white", fontWeight: 700, fontSize: 15, cursor: "pointer",
             }}
           >
-            {t("community.publish")}
+            {t("workshop.publish")}
           </button>
         </form>
       </div>

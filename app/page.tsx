@@ -7,8 +7,8 @@ import Image from "next/image"
 import { MaskedIllustration } from "@/components/MaskedIllustration"
 import { GlowLink } from "@/components/GlowLink"
 import { SiteNav } from "@/components/SiteNav"
-import { CommunityProjectCard } from "@/components/CommunityProjectCard"
-import { PROJECTS } from "@/lib/community-data"
+import { WorkshopProjectCard } from "@/components/WorkshopProjectCard"
+import { PROJECTS } from "@/lib/workshop-data"
 import { JsonLd } from "@/components/JsonLd"
 import { supabase, isSupabaseConfigured } from "@/lib/supabase"
 import { saveRecent } from "@/lib/recent-analyses"
@@ -1046,7 +1046,7 @@ export default function HomePage() {
               color: "var(--muted)",
               margin: "0 0 16px 0",
             }}>
-              {t("community.eyebrow")}
+              {t("workshop.eyebrow")}
             </p>
             <h2 style={{
               fontFamily: "'IBM Plex Serif', Georgia, serif",
@@ -1056,14 +1056,14 @@ export default function HomePage() {
               margin: "0 0 16px 0",
               maxWidth: "460px",
             }}>
-              {t("home.communityTitle")}
+              {t("home.workshopTitle")}
             </h2>
             <p style={{ fontSize: "17px", color: "var(--ink-2)", lineHeight: 1.6, maxWidth: "440px", margin: "0 0 32px" }}>
-              {t("home.communitySubtitle")}
+              {t("home.workshopSubtitle")}
             </p>
             <div style={{ display: "flex", gap: "14px", flexWrap: "wrap" }}>
               <Link
-                href="/community"
+                href="/workshop"
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
@@ -1077,10 +1077,10 @@ export default function HomePage() {
                   fontSize: "15px",
                 }}
               >
-                {t("home.communityCta")} →
+                {t("home.workshopCta")} →
               </Link>
               <Link
-                href="/community/new"
+                href="/workshop/new"
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
@@ -1094,7 +1094,7 @@ export default function HomePage() {
                   fontSize: "15px",
                 }}
               >
-                {t("home.communityNew")}
+                {t("home.workshopNew")}
               </Link>
             </div>
           </div>
@@ -1102,7 +1102,7 @@ export default function HomePage() {
           {/* Right: live preview of top projects */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "20px" }}>
             {topPosts.map((p) => (
-              <CommunityProjectCard
+              <WorkshopProjectCard
                 key={p.slug}
                 project={p}
                 starred={false}

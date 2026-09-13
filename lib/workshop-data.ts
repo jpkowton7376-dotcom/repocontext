@@ -119,7 +119,7 @@ export const PROJECTS: HardwareProject[] = [
     title: "Smart Plant Monitor",
     author: "green_thumb",
     avatarColor: "#10b981",
-    cover: "/projects/plant-monitor.svg",
+    cover: "/projects/plant-monitor.jpg",
     createdAt: "2026-09-11T10:00:00Z",
     tags: ["IoT", "Sensors"],
     featured: true,
@@ -151,7 +151,7 @@ export const PROJECTS: HardwareProject[] = [
     title: "Wearable Heart Rate Badge",
     author: "pawel_s",
     avatarColor: "#f43f5e",
-    cover: "/projects/heart-badge.svg",
+    cover: "/projects/heart-badge.jpg",
     createdAt: "2026-09-12T08:30:00Z",
     tags: ["Wearable", "Sensors"],
     summary:
@@ -182,7 +182,7 @@ export const PROJECTS: HardwareProject[] = [
     title: "RC Drone Flight Controller",
     author: "austro_b140",
     avatarColor: "#0ea5e9",
-    cover: "/projects/drone-controller.svg",
+    cover: "/projects/drone-controller.jpg",
     createdAt: "2026-09-13T06:15:00Z",
     tags: ["Robotics", "IoT"],
     featured: true,
@@ -216,7 +216,7 @@ export const PROJECTS: HardwareProject[] = [
     title: "RFID Smart Door Lock",
     author: "funtoos_fontoos",
     avatarColor: "#f59e0b",
-    cover: "/projects/door-lock.svg",
+    cover: "/projects/door-lock.jpg",
     createdAt: "2026-09-12T14:00:00Z",
     tags: ["Security", "IoT"],
     summary:
@@ -247,7 +247,7 @@ export const PROJECTS: HardwareProject[] = [
     title: "Solar Weather Station",
     author: "slickfoal",
     avatarColor: "#f97316",
-    cover: "/projects/weather-station.svg",
+    cover: "/projects/weather-station.jpg",
     createdAt: "2026-09-10T09:45:00Z",
     tags: ["IoT", "Security"],
     summary:
@@ -279,7 +279,7 @@ export const PROJECTS: HardwareProject[] = [
     title: "Desktop Robotic Arm Kit",
     author: "slick",
     avatarColor: "#8b5cf6",
-    cover: "/projects/robotic-arm.svg",
+    cover: "/projects/robotic-arm.jpg",
     createdAt: "2026-09-12T18:20:00Z",
     tags: ["Robotics", "Security"],
     summary:

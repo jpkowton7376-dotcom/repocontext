@@ -12,7 +12,7 @@
     "dashboard": "ダッシュボード",
     "signOut": "サインアウト",
     "templates": "テンプレート",
-    "community": "コミュニティ"
+    "workshop": "ワークショップ"
   },
   "aiTools": {
     "eyebrow": "ディレクトリ",
@@ -133,10 +133,10 @@
     "howEyebrow": "使い方",
     "howTitle": "3 ステップ。設定不要。",
     "howLink": "完全ガイドを見る →",
-    "communityTitle": "コミュニティの作品",
-    "communitySubtitle": "作り手が共有するハードウェア プロジェクトを覧：部品リスト、配線、機構、段階的な組み立て手順。",
-    "communityCta": "プロジェクトを見る",
-    "communityNew": "作品を共有",
+    "workshopTitle": "ワークショップの作品",
+    "workshopSubtitle": "作り手が共有するハードウェア プロジェクトを覧：部品リスト、配線、機構、段階的な組み立て手順。",
+    "workshopCta": "プロジェクトを見る",
+    "workshopNew": "作品を共有",
     "steps": [
       {
         "title": "リポジトリ URL を貼り付ける",
@@ -883,12 +883,12 @@
     "footerCopyright": "© 2026 RepoContext. All rights reserved.",
     "footerHome": "ホームに戻る"
   },
-  "community": {
-    "metaTitle": "コミュニティ — RepoContext",
-    "metaDescription": "コミュニティで共有されたハードウェア プロジェクトを覧：部品リスト、配線、機構、組み立て手順。気に入ったものをスターし、作りたいものをコピー。",
-    "eyebrow": "コミュニティ",
-    "title": "コミュニティ",
-    "subtitle": "コミュニティが作ったハードウェア プロジェクトを覧できます。各プロジェクトを開くと部品リスト、配線、機構、段階的な組み立て手順が見られます。",
+  "workshop": {
+    "metaTitle": "ワークショップ — RepoContext",
+    "metaDescription": "ワークショップで共有されたハードウェア プロジェクトを覧：部品リスト、配線、機構、組み立て手順。気に入ったものをスターし、作りたいものをコピー。",
+    "eyebrow": "ワークショップ",
+    "title": "ワークショップ",
+    "subtitle": "ワークショップが作ったハードウェア プロジェクトを覧できます。各プロジェクトを開くと部品リスト、配線、機構、段階的な組み立て手順が見られます。",
     "sortBy": "並び替え",
     "trending": "トレンド",
     "newest": "新着",
@@ -899,7 +899,7 @@
     "by": "投稿者",
     "projects": "件のプロジェクト",
     "empty": "プロジェクトが見つかりませんでした。別の絞り込みを試すか、最初のものを共有してください。",
-    "backToCommunity": "コミュニティに戻る",
+    "backToWorkshop": "ワークショップに戻る",
     "projectNotFound": "プロジェクトが見つかりません",
     "tabInfo": "情報",
     "tabParts": "部品",
@@ -913,7 +913,7 @@
     "total": "合計",
     "relatedTitle": "関連プロジェクト",
     "newProjectTitle": "プロジェクトを共有",
-    "newProjectSubtitle": "ハードウェアの作例をコミュニティで共有しましょう。部品、配線、機構、手順を含めます。",
+    "newProjectSubtitle": "ハードウェアの作例をワークショップで共有しましょう。部品、配線、機構、手順を含めます。",
     "projectTitle": "プロジェクト名",
     "projectTitlePlaceholder": "プロジェクトに分かりやすい名前をつけましょう",
     "projectAuthor": "あなたの名前",

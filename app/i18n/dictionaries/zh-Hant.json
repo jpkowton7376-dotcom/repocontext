@@ -12,7 +12,7 @@
     "dashboard": "儀表板",
     "signOut": "登出",
     "templates": "模板",
-    "community": "社群"
+    "workshop": "工作坊"
   },
   "aiTools": {
     "eyebrow": "目錄",
@@ -133,10 +133,10 @@
     "howEyebrow": "使用方式",
     "howTitle": "三步驟。零設定。",
     "howLink": "查看完整指南 →",
-    "communityTitle": "社群的作品",
-    "communitySubtitle": "瀏覽創作者分享的硬體專案：零件清單、接線、機構與逐步組裝說明。",
-    "communityCta": "瀏覽專案",
-    "communityNew": "分享作品",
+    "workshopTitle": "工作坊的作品",
+    "workshopSubtitle": "瀏覽創作者分享的硬體專案：零件清單、接線、機構與逐步組裝說明。",
+    "workshopCta": "瀏覽專案",
+    "workshopNew": "分享作品",
     "steps": [
       {
         "title": "貼上儲存庫網址",
@@ -883,12 +883,12 @@
     "footerCopyright": "© 2026 RepoContext. 保留所有權利。",
     "footerHome": "返回首頁"
   },
-  "community": {
-    "metaTitle": "社群 — RepoContext",
-    "metaDescription": "瀏覽社群分享的硬體專案：零件清單、接線、機構與組裝說明。收藏啟發你的，複製想做的。",
-    "eyebrow": "社群",
-    "title": "社群",
-    "subtitle": "瀏覽社群創作的硬體專案。點開任一專案即可查看零件清單、接線、機構與逐步組裝說明。",
+  "workshop": {
+    "metaTitle": "工作坊 — RepoContext",
+    "metaDescription": "瀏覽工作坊分享的硬體專案：零件清單、接線、機構與組裝說明。收藏啟發你的，複製想做的。",
+    "eyebrow": "工作坊",
+    "title": "工作坊",
+    "subtitle": "瀏覽工作坊創作的硬體專案。點開任一專案即可查看零件清單、接線、機構與逐步組裝說明。",
     "sortBy": "排序",
     "trending": "熱門",
     "newest": "最新",
@@ -899,7 +899,7 @@
     "by": "by",
     "projects": "個專案",
     "empty": "找不到專案。換個篩選條件，或分享第一篇。",
-    "backToCommunity": "返回社群",
+    "backToWorkshop": "返回工作坊",
     "projectNotFound": "找不到專案",
     "tabInfo": "資訊",
     "tabParts": "零件",
@@ -913,7 +913,7 @@
     "total": "總計",
     "relatedTitle": "相關專案",
     "newProjectTitle": "分享一個專案",
-    "newProjectSubtitle": "把你的硬體作品分享給社群——零件、接線、機構與說明。",
+    "newProjectSubtitle": "把你的硬體作品分享給工作坊——零件、接線、機構與說明。",
     "projectTitle": "專案標題",
     "projectTitlePlaceholder": "為你的專案取個清楚的名稱",
     "projectAuthor": "你的名稱",

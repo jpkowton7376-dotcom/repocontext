@@ -5,22 +5,22 @@ import Link from "next/link"
 import { Search, Plus, ArrowUpDown } from "lucide-react"
 import { SiteNav } from "@/components/SiteNav"
 import { JsonLd } from "@/components/JsonLd"
-import { CommunityProjectCard } from "@/components/CommunityProjectCard"
+import { WorkshopProjectCard } from "@/components/WorkshopProjectCard"
 import { useTranslation } from "@/components/LanguageProvider"
-import { useCommunity } from "@/lib/community-store"
+import { useWorkshop } from "@/lib/workshop-store"
 import {
   CATEGORIES,
   SortKey,
   filterProjects,
   sortProjects,
-} from "@/lib/community-data"
+} from "@/lib/workshop-data"
 import { SITE_URL } from "@/lib/site-url"
 import type { Locale } from "@/app/i18n/config"
 
-export function CommunityFeed() {
+export function WorkshopFeed() {
   const { t, locale } = useTranslation()
   const L = locale as Locale
-  const { projects, hydrated, star, isStarred } = useCommunity()
+  const { projects, hydrated, star, isStarred } = useWorkshop()
 
   const [sort, setSort] = useState<SortKey>("trending")
   const [category, setCategory] = useState<string>("All")
@@ -43,9 +43,9 @@ export function CommunityFeed() {
         data={{
           "@context": "https://schema.org",
           "@type": "CollectionPage",
-          name: t("community.title"),
-          description: t("community.subtitle"),
-          url: `${SITE_URL}/community`,
+          name: t("workshop.title"),
+          description: t("workshop.subtitle"),
+          url: `${SITE_URL}/workshop`,
           isPartOf: { "@type": "WebSite", name: "RepoContext", url: SITE_URL },
         }}
       />
@@ -60,10 +60,10 @@ export function CommunityFeed() {
         }}
       >
         <h1 style={{ margin: 0, fontSize: 44, fontWeight: 800, letterSpacing: "-.02em" }}>
-          {t("community.title")}
+          {t("workshop.title")}
         </h1>
         <p style={{ margin: "12px 0 0", fontSize: 18, color: "#475569", maxWidth: 640 }}>
-          {t("community.subtitle")}
+          {t("workshop.subtitle")}
         </p>
       </header>
 
@@ -92,7 +92,7 @@ export function CommunityFeed() {
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder={t("community.searchPlaceholder")}
+              placeholder={t("workshop.searchPlaceholder")}
               style={{
                 width: "100%",
                 padding: "12px 14px 12px 42px",
@@ -106,7 +106,7 @@ export function CommunityFeed() {
 
           <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
             <span style={{ fontSize: 14, color: "#64748b", fontWeight: 600 }}>
-              {projects.length} {t("community.projects").toLowerCase()}
+              {projects.length} {t("workshop.projects").toLowerCase()}
             </span>
             <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
               <ArrowUpDown size={15} color="#64748b" style={{ position: "absolute", left: 12 }} />
@@ -125,13 +125,13 @@ export function CommunityFeed() {
                   cursor: "pointer",
                 }}
               >
-                <option value="trending">{t("community.sortBy")}: {t("community.trending")}</option>
-                <option value="newest">{t("community.sortBy")}: {t("community.newest")}</option>
-                <option value="top">{t("community.sortBy")}: {t("community.top")}</option>
+                <option value="trending">{t("workshop.sortBy")}: {t("workshop.trending")}</option>
+                <option value="newest">{t("workshop.sortBy")}: {t("workshop.newest")}</option>
+                <option value="top">{t("workshop.sortBy")}: {t("workshop.top")}</option>
               </select>
             </div>
             <Link
-              href="/community/new"
+              href="/workshop/new"
               style={{
                 display: "inline-flex",
                 alignItems: "center",
@@ -145,7 +145,7 @@ export function CommunityFeed() {
                 textDecoration: "none",
               }}
             >
-              <Plus size={16} /> {t("community.newProject")}
+              <Plus size={16} /> {t("workshop.newProject")}
             </Link>
           </div>
         </div>
@@ -168,7 +168,7 @@ export function CommunityFeed() {
                 cursor: "pointer",
               }}
             >
-              {c === "All" ? t("community.all") : c}
+              {c === "All" ? t("workshop.all") : c}
             </button>
           ))}
         </div>
@@ -176,7 +176,7 @@ export function CommunityFeed() {
 
       <div style={{ maxWidth: 1160, margin: "0 auto", padding: "24px 24px 80px" }}>
         {visible.length === 0 ? (
-          <p style={{ color: "#64748b", fontSize: 16 }}>{t("community.empty")}</p>
+          <p style={{ color: "#64748b", fontSize: 16 }}>{t("workshop.empty")}</p>
         ) : (
           <div
             style={{
@@ -186,7 +186,7 @@ export function CommunityFeed() {
             }}
           >
             {visible.map((p) => (
-              <CommunityProjectCard
+              <WorkshopProjectCard
                 key={p.slug}
                 project={p}
                 starred={isStarred(p.slug)}

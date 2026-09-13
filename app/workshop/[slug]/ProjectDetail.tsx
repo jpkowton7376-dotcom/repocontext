@@ -4,7 +4,7 @@ import { useMemo, useState } from "react"
 import Link from "next/link"
 import { Star, Copy, Check, ArrowLeft } from "lucide-react"
 import { useTranslation } from "@/components/LanguageProvider"
-import { useCommunity } from "@/lib/community-store"
+import { useWorkshop } from "@/lib/workshop-store"
 import {
   type HardwareProject,
   getProjectBySlug,
@@ -12,14 +12,14 @@ import {
   totalCost,
   relatedProjects,
   formatRelativeTime,
-} from "@/lib/community-data"
-import { CommunityProjectCard } from "@/components/CommunityProjectCard"
+} from "@/lib/workshop-data"
+import { WorkshopProjectCard } from "@/components/WorkshopProjectCard"
 
 type Tab = "info" | "parts" | "wiring" | "mech" | "instructions"
 
 export function ProjectDetail({ slug }: { slug: string }) {
   const { t } = useTranslation()
-  const { projects, hydrated, isStarred, star } = useCommunity()
+  const { projects, hydrated, isStarred, star } = useWorkshop()
   const [tab, setTab] = useState<Tab>("info")
   const [copied, setCopied] = useState(false)
 
@@ -33,11 +33,11 @@ export function ProjectDetail({ slug }: { slug: string }) {
   if (!project) {
     return (
       <main style={{ minHeight: "100vh", background: "white", padding: 48 }}>
-        <Link href="/community" style={{ color: "#2563eb", textDecoration: "none" }}>
-          ← {t("community.backToCommunity")}
+        <Link href="/workshop" style={{ color: "#2563eb", textDecoration: "none" }}>
+          ← {t("workshop.backToWorkshop")}
         </Link>
         <p style={{ marginTop: 24, fontSize: 18, color: "#475569" }}>
-          {hydrated ? t("community.projectNotFound") : "…"}
+          {hydrated ? t("workshop.projectNotFound") : "…"}
         </p>
       </main>
     )
@@ -79,11 +79,11 @@ export function ProjectDetail({ slug }: { slug: string }) {
   }
 
   const tabs: { key: Tab; label: string }[] = [
-    { key: "info", label: t("community.tabInfo") },
-    { key: "parts", label: t("community.tabParts") },
-    { key: "wiring", label: t("community.tabWiring") },
-    { key: "mech", label: t("community.tabMech") },
-    { key: "instructions", label: t("community.tabInstructions") },
+    { key: "info", label: t("workshop.tabInfo") },
+    { key: "parts", label: t("workshop.tabParts") },
+    { key: "wiring", label: t("workshop.tabWiring") },
+    { key: "mech", label: t("workshop.tabMech") },
+    { key: "instructions", label: t("workshop.tabInstructions") },
   ]
 
   const categories = ["Electrical", "Mechanical"] as const
@@ -92,10 +92,10 @@ export function ProjectDetail({ slug }: { slug: string }) {
     <main style={{ minHeight: "100vh", background: "#f8fafc" }}>
       <div style={{ maxWidth: 980, margin: "0 auto", padding: "28px 24px 80px" }}>
         <Link
-          href="/community"
+          href="/workshop"
           style={{ display: "inline-flex", alignItems: "center", gap: 6, color: "#2563eb", textDecoration: "none", fontWeight: 600, fontSize: 14 }}
         >
-          <ArrowLeft size={16} /> {t("community.backToCommunity")}
+          <ArrowLeft size={16} /> {t("workshop.backToWorkshop")}
         </Link>
 
         <div
@@ -131,11 +131,11 @@ export function ProjectDetail({ slug }: { slug: string }) {
                   >
                     {project.author.slice(0, 1)}
                   </span>
-                  <span>{t("community.by")} <strong style={{ color: "#0f172a" }}>{project.author}</strong></span>
+                  <span>{t("workshop.by")} <strong style={{ color: "#0f172a" }}>{project.author}</strong></span>
                   <span>·</span>
                   <span>{formatRelativeTime(project.createdAt)}</span>
                   <span>·</span>
-                  <span>{count} {t("community.parts").toLowerCase()}</span>
+                  <span>{count} {t("workshop.parts").toLowerCase()}</span>
                   <span>·</span>
                   <span>${cost.toFixed(2)} est.</span>
                 </div>
@@ -162,7 +162,7 @@ export function ProjectDetail({ slug }: { slug: string }) {
                     fontWeight: 700, cursor: "pointer", fontSize: 14,
                   }}
                 >
-                  {copied ? <Check size={16} /> : <Copy size={16} />} {copied ? t("community.copied") : t("community.copy")}
+                  {copied ? <Check size={16} /> : <Copy size={16} />} {copied ? t("workshop.copied") : t("workshop.copy")}
                 </button>
               </div>
             </div>
@@ -199,7 +199,7 @@ export function ProjectDetail({ slug }: { slug: string }) {
           {tab === "info" && (
             <section>
               <h2 style={{ fontSize: 14, textTransform: "uppercase", letterSpacing: ".06em", color: "#94a3b8", margin: "0 0 10px" }}>
-                {t("community.aiSummary")}
+                {t("workshop.aiSummary")}
               </h2>
               <p style={{ fontSize: 17, lineHeight: 1.6, color: "#1e293b", margin: 0 }}>{project.summary}</p>
             </section>
@@ -242,18 +242,18 @@ export function ProjectDetail({ slug }: { slug: string }) {
               })}
               <div style={{ display: "flex", justifyContent: "flex-end", fontSize: 16 }}>
                 <span style={{ background: "#0f172a", color: "white", padding: "10px 18px", borderRadius: 12, fontWeight: 700 }}>
-                  {t("community.total")}: ${cost.toFixed(2)}
+                  {t("workshop.total")}: ${cost.toFixed(2)}
                 </span>
               </div>
             </section>
           )}
 
           {tab === "wiring" && (
-            <Panel title={t("community.tabWiring")}>{project.wiring}</Panel>
+            <Panel title={t("workshop.tabWiring")}>{project.wiring}</Panel>
           )}
 
           {tab === "mech" && (
-            <Panel title={t("community.tabMech")}>{project.mech}</Panel>
+            <Panel title={t("workshop.tabMech")}>{project.mech}</Panel>
           )}
 
           {tab === "instructions" && (
@@ -279,10 +279,10 @@ export function ProjectDetail({ slug }: { slug: string }) {
 
         {related.length > 0 && (
           <section style={{ marginTop: 48 }}>
-            <h2 style={{ fontSize: 20, fontWeight: 800, margin: "0 0 18px" }}>{t("community.relatedTitle")}</h2>
+            <h2 style={{ fontSize: 20, fontWeight: 800, margin: "0 0 18px" }}>{t("workshop.relatedTitle")}</h2>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 20 }}>
               {related.map((p) => (
-                <CommunityProjectCard key={p.slug} project={p} starred={isStarred(p.slug)} onStar={() => star(p.slug)} />
+                <WorkshopProjectCard key={p.slug} project={p} starred={isStarred(p.slug)} onStar={() => star(p.slug)} />
               ))}
             </div>
           </section>
