@@ -2,258 +2,203 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, Plus, Trash2 } from "lucide-react"
-import { SiteNav } from "@/components/SiteNav"
+import { Plus, Trash2, ArrowLeft } from "lucide-react"
+import Link from "next/link"
 import { useTranslation } from "@/components/LanguageProvider"
 import { useCommunity } from "@/lib/community-store"
-import { CATEGORIES, CategoryId, ContextFormat, FORMAT_LABELS } from "@/lib/community-data"
+import type { HardwareProject, Part, PartCategory } from "@/lib/community-data"
+
+const COVERS = [
+  "/projects/plant-monitor.svg",
+  "/projects/heart-badge.svg",
+  "/projects/drone-controller.svg",
+  "/projects/door-lock.svg",
+  "/projects/weather-station.svg",
+  "/projects/robotic-arm.svg",
+]
+const COLORS = ["#10b981", "#f43f5e", "#0ea5e9", "#f59e0b", "#f97316", "#8b5cf6"]
+
+function slugify(s: string): string {
+  return s
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 60)
+}
+
+interface PartRow extends Part {}
 
 export function NewProjectForm() {
   const { t } = useTranslation()
   const router = useRouter()
-  const { addProject, hydrated } = useCommunity()
+  const { addProject } = useCommunity()
 
   const [title, setTitle] = useState("")
-  const [summary, setSummary] = useState("")
-  const [description, setDescription] = useState("")
-  const [repoUrl, setRepoUrl] = useState("")
-  const [category, setCategory] = useState<CategoryId>("showcase")
+  const [author, setAuthor] = useState("")
   const [tags, setTags] = useState("")
-  const [authorName, setAuthorName] = useState("")
-  const [structure, setStructure] = useState("README.md\nsrc/\n")
-  const [instructions, setInstructions] = useState("Copy the files\nPlace them at the repo root\n\nCustomize\nEdit names and URLs to match your project")
-  const [files, setFiles] = useState<{ name: string; format: ContextFormat; content: string }[]>([
-    { name: "AGENTS.md", format: "agents", content: "" },
+  const [summary, setSummary] = useState("")
+  const [cover, setCover] = useState(COVERS[0])
+  const [parts, setParts] = useState<PartRow[]>([
+    { name: "", category: "Electrical", subcategory: "MCU", quantity: 1, unitCost: 0 },
   ])
-  const [submitting, setSubmitting] = useState(false)
+  const [wiring, setWiring] = useState("")
+  const [mech, setMech] = useState("")
+  const [instructions, setInstructions] = useState("")
 
-  const canSubmit = hydrated && title.trim().length > 0 && summary.trim().length > 0 && files.some((f) => f.name.trim() && f.content.trim())
+  const addRow = () =>
+    setParts((p) => [...p, { name: "", category: "Electrical", subcategory: "", quantity: 1, unitCost: 0 }])
+  const updateRow = (i: number, patch: Partial<PartRow>) =>
+    setParts((p) => p.map((r, idx) => (idx === i ? { ...r, ...patch } : r)))
+  const removeRow = (i: number) => setParts((p) => p.filter((_, idx) => idx !== i))
 
-  const addFile = () => setFiles((prev) => [...prev, { name: "", format: "custom", content: "" }])
-  const removeFile = (i: number) => setFiles((prev) => prev.filter((_, idx) => idx !== i))
-  const updateFile = (i: number, patch: Partial<{ name: string; format: ContextFormat; content: string }>) =>
-    setFiles((prev) => prev.map((f, idx) => (idx === i ? { ...f, ...patch } : f)))
-
-  const parseInstructions = (raw: string): { title: string; items: string[] }[] => {
-    const steps: { title: string; items: string[] }[] = []
-    let current: { title: string; items: string[] } | null = null
-    raw.split("\n").forEach((line) => {
-      const trimmed = line.trim()
-      if (!trimmed) return
-      if (/^\d+\.\s*/.test(trimmed) || /^#\s*/.test(trimmed)) {
-        const title = trimmed.replace(/^\d+\.\s*/, "").replace(/^#\s*/, "")
-        current = { title, items: [] }
-        steps.push(current)
-      } else if (current) {
-        current.items.push(trimmed.replace(/^[-*]\s*/, ""))
-      }
-    })
-    return steps.length ? steps : [{ title: "Use this project", items: ["Copy the files into your repo."] }]
-  }
-
-  const submit = () => {
-    if (!canSubmit) return
-    setSubmitting(true)
-    const parsedTags = tags
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean)
-      .slice(0, 6)
-    const parsedFiles = files.filter((f) => f.name.trim() && f.content.trim())
-    const slug = addProject({
-      title,
-      summary,
-      description: description || summary,
-      repoUrl,
-      category,
-      tags: parsedTags,
-      files: parsedFiles,
-      structure: structure
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault()
+    const slug = slugify(title) || `project-${Date.now()}`
+    const project: HardwareProject = {
+      slug,
+      title: title.trim() || "Untitled project",
+      author: author.trim() || "anonymous",
+      avatarColor: COLORS[Math.floor(Math.random() * COLORS.length)],
+      cover,
+      createdAt: new Date().toISOString(),
+      tags: tags
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean),
+      summary: summary.trim(),
+      parts: parts.filter((p) => p.name.trim()).map((p) => ({ ...p, unitCost: Number(p.unitCost) || 0, quantity: Number(p.quantity) || 1 })),
+      wiring: wiring.trim(),
+      mech: mech.trim(),
+      instructions: instructions
         .split("\n")
         .map((s) => s.trim())
         .filter(Boolean),
-      instructions: parseInstructions(instructions),
-      authorName,
-    })
-    if (slug) router.push(`/community/${slug}`)
-    else setSubmitting(false)
+      stars: 0,
+    }
+    addProject(project)
+    router.push(`/community/${slug}`)
+  }
+
+  const field = (label: string): React.CSSProperties => ({
+    display: "block",
+    fontSize: 13,
+    fontWeight: 700,
+    color: "#334155",
+    margin: "0 0 6px",
+  })
+  const input: React.CSSProperties = {
+    width: "100%",
+    padding: "12px 14px",
+    borderRadius: 12,
+    border: "1px solid #e2e8f0",
+    fontSize: 15,
+    outline: "none",
+    boxSizing: "border-box",
   }
 
   return (
-    <main style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "white" }}>
-      <SiteNav variant="light" />
-
-      <div style={{ maxWidth: "760px", width: "100%", margin: "0 auto", padding: "40px 24px 96px", boxSizing: "border-box" }}>
-        <button
-          type="button"
-          onClick={() => router.push("/community")}
-          style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontSize: "14px", color: "var(--muted)", background: "none", border: "none", cursor: "pointer", marginBottom: "24px" }}
-        >
+    <main style={{ minHeight: "100vh", background: "#f8fafc" }}>
+      <div style={{ maxWidth: 820, margin: "0 auto", padding: "28px 24px 80px" }}>
+        <Link href="/community" style={{ display: "inline-flex", alignItems: "center", gap: 6, color: "#2563eb", textDecoration: "none", fontWeight: 600, fontSize: 14 }}>
           <ArrowLeft size={16} /> {t("community.backToCommunity")}
-        </button>
+        </Link>
 
-        <div style={{ width: "48px", height: "4px", background: "var(--blue-60)", marginBottom: "20px" }} />
-        <h1 style={{ fontFamily: "'IBM Plex Serif', Georgia, serif", fontSize: "38px", fontWeight: 300, letterSpacing: "-0.02em", margin: "0 0 8px" }}>
-          {t("community.newProjectTitle")}
-        </h1>
-        <p style={{ fontSize: "16px", color: "var(--ink-2)", lineHeight: 1.6, margin: "0 0 36px" }}>
-          {t("community.newProjectSubtitle")}
-        </p>
+        <h1 style={{ fontSize: 32, fontWeight: 800, margin: "18px 0 4px" }}>{t("community.newProjectTitle")}</h1>
+        <p style={{ color: "#475569", fontSize: 16, margin: "0 0 28px" }}>{t("community.newProjectSubtitle")}</p>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "22px" }}>
-          <Field label={t("community.projectTitle")}>
-            <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t("community.projectTitlePlaceholder")} style={inputStyle} />
-          </Field>
+        <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: 22 }}>
+          <div>
+            <label style={field(t("community.projectTitle"))}>{t("community.projectTitle")}</label>
+            <input style={input} value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t("community.projectTitlePlaceholder")} required />
+          </div>
 
-          <Field label={t("community.projectSummary")}>
-            <input value={summary} onChange={(e) => setSummary(e.target.value)} placeholder={t("community.projectSummaryPlaceholder")} style={inputStyle} />
-          </Field>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18 }}>
+            <div>
+              <label style={field(t("community.projectAuthor"))}>{t("community.projectAuthor")}</label>
+              <input style={input} value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="your_handle" />
+            </div>
+            <div>
+              <label style={field(t("community.tags"))}>{t("community.tags")}</label>
+              <input style={input} value={tags} onChange={(e) => setTags(e.target.value)} placeholder="IoT, Sensors" />
+            </div>
+          </div>
 
-          <Field label={t("community.projectDescription")}>
-            <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder={t("community.projectDescriptionPlaceholder")} rows={4} style={{ ...inputStyle, resize: "vertical" }} />
-          </Field>
+          <div>
+            <label style={field(t("community.projectSummary"))}>{t("community.projectSummary")}</label>
+            <input style={input} value={summary} onChange={(e) => setSummary(e.target.value)} placeholder={t("community.projectSummaryPlaceholder")} />
+          </div>
 
-          <Field label={t("community.projectRepoUrl")}>
-            <input value={repoUrl} onChange={(e) => setRepoUrl(e.target.value)} placeholder={t("community.projectRepoUrlPlaceholder")} style={inputStyle} />
-          </Field>
-
-          <Field label={t("community.projectCategory")}>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-              {CATEGORIES.map((c) => (
+          <div>
+            <label style={field(t("community.cover"))}>{t("community.cover")}</label>
+            <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+              {COVERS.map((c) => (
                 <button
-                  key={c.id}
+                  key={c}
                   type="button"
-                  onClick={() => setCategory(c.id)}
+                  onClick={() => setCover(c)}
                   style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "8px",
-                    padding: "8px 14px",
-                    borderRadius: "999px",
-                    border: category === c.id ? `1px solid ${c.color}` : "1px solid var(--rule)",
-                    background: category === c.id ? `${c.color}14` : "white",
-                    color: category === c.id ? c.color : "var(--ink-2)",
-                    fontSize: "13px",
-                    fontWeight: category === c.id ? 600 : 500,
-                    cursor: "pointer",
-                    fontFamily: "inherit",
+                    width: 88, height: 66, borderRadius: 12, overflow: "hidden", cursor: "pointer",
+                    border: cover === c ? "3px solid #0f172a" : "2px solid #e2e8f0", padding: 0,
                   }}
                 >
-                  <span style={{ width: "8px", height: "8px", borderRadius: "2px", background: c.color }} />
-                  {c.label}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={c} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                 </button>
               ))}
             </div>
-          </Field>
-
-          <Field label={t("community.projectTags")}>
-            <input value={tags} onChange={(e) => setTags(e.target.value)} placeholder={t("community.projectTagsPlaceholder")} style={inputStyle} />
-          </Field>
-
-          <Field label={t("community.projectFiles")}>
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              {files.map((f, i) => (
-                <div key={i} style={{ border: "1px solid var(--rule)", borderRadius: "8px", padding: "14px", display: "flex", flexDirection: "column", gap: "10px" }}>
-                  <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-                    <input
-                      value={f.name}
-                      onChange={(e) => updateFile(i, { name: e.target.value })}
-                      placeholder={t("community.fileNamePlaceholder")}
-                      style={{ ...inputStyle, flex: 1 }}
-                    />
-                    <select
-                      value={f.format}
-                      onChange={(e) => updateFile(i, { format: e.target.value as ContextFormat })}
-                      style={{ ...inputStyle, width: "auto", minWidth: "140px" }}
-                    >
-                      {Object.entries(FORMAT_LABELS).map(([key, label]) => (
-                        <option key={key} value={key}>
-                          {label}
-                        </option>
-                      ))}
-                    </select>
-                    <button
-                      type="button"
-                      onClick={() => removeFile(i)}
-                      disabled={files.length === 1}
-                      style={{ padding: "10px", border: "1px solid var(--rule)", borderRadius: "6px", background: "white", cursor: files.length === 1 ? "not-allowed" : "pointer" }}
-                    >
-                      <Trash2 size={16} color={files.length === 1 ? "var(--muted-2)" : "#da1e28"} />
-                    </button>
-                  </div>
-                  <textarea
-                    value={f.content}
-                    onChange={(e) => updateFile(i, { content: e.target.value })}
-                    placeholder={t("community.fileContentPlaceholder")}
-                    rows={6}
-                    style={{ ...inputStyle, resize: "vertical", fontFamily: "'IBM Plex Mono', monospace", fontSize: "13px" }}
-                  />
-                </div>
-              ))}
-              <button
-                type="button"
-                onClick={addFile}
-                style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "10px 14px", border: "1px dashed var(--rule)", borderRadius: "6px", background: "white", color: "var(--blue-60)", fontSize: "14px", cursor: "pointer", alignSelf: "flex-start" }}
-              >
-                <Plus size={16} /> {t("community.addFile")}
-              </button>
-            </div>
-          </Field>
-
-          <Field label={t("community.projectStructure")}>
-            <textarea value={structure} onChange={(e) => setStructure(e.target.value)} placeholder={t("community.projectStructurePlaceholder")} rows={5} style={{ ...inputStyle, resize: "vertical", fontFamily: "'IBM Plex Mono', monospace", fontSize: "13px" }} />
-          </Field>
-
-          <Field label={t("community.projectInstructions")}>
-            <textarea value={instructions} onChange={(e) => setInstructions(e.target.value)} placeholder={t("community.projectInstructionsPlaceholder")} rows={6} style={{ ...inputStyle, resize: "vertical" }} />
-          </Field>
-
-          <Field label={t("community.authorName")}>
-            <input value={authorName} onChange={(e) => setAuthorName(e.target.value)} placeholder={t("community.authorNamePlaceholder")} style={inputStyle} />
-          </Field>
+          </div>
 
           <div>
-            <button
-              type="button"
-              onClick={submit}
-              disabled={!canSubmit || submitting}
-              style={{
-                padding: "13px 28px",
-                background: canSubmit && !submitting ? "var(--blue-60)" : "#c1c7cd",
-                color: "white",
-                border: "none",
-                borderRadius: "4px",
-                fontSize: "15px",
-                fontWeight: 500,
-                cursor: canSubmit && !submitting ? "pointer" : "not-allowed",
-              }}
-            >
-              {submitting ? t("community.publishing") : t("community.publish")}
-            </button>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+              <label style={{ ...field(t("community.parts")), margin: 0 }}>{t("community.parts")}</label>
+              <button type="button" onClick={addRow} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 12px", borderRadius: 10, border: "1px solid #e2e8f0", background: "white", cursor: "pointer", fontWeight: 600, fontSize: 13 }}>
+                <Plus size={14} /> {t("community.addPart")}
+              </button>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {parts.map((row, i) => (
+                <div key={i} style={{ display: "grid", gridTemplateColumns: "2.4fr 1.3fr 1.3fr 0.9fr 1fr auto", gap: 8, alignItems: "center" }}>
+                  <input style={{ ...input, padding: "9px 11px", fontSize: 14 }} value={row.name} onChange={(e) => updateRow(i, { name: e.target.value })} placeholder="Part name" />
+                  <select style={{ ...input, padding: "9px 11px", fontSize: 14 }} value={row.category} onChange={(e) => updateRow(i, { category: e.target.value as PartCategory })}>
+                    <option value="Electrical">Electrical</option>
+                    <option value="Mechanical">Mechanical</option>
+                  </select>
+                  <input style={{ ...input, padding: "9px 11px", fontSize: 14 }} value={row.subcategory} onChange={(e) => updateRow(i, { subcategory: e.target.value })} placeholder="Type" />
+                  <input style={{ ...input, padding: "9px 11px", fontSize: 14 }} type="number" min={1} value={row.quantity} onChange={(e) => updateRow(i, { quantity: Number(e.target.value) })} />
+                  <input style={{ ...input, padding: "9px 11px", fontSize: 14 }} type="number" step="0.01" min={0} value={row.unitCost} onChange={(e) => updateRow(i, { unitCost: Number(e.target.value) })} placeholder="$" />
+                  <button type="button" onClick={() => removeRow(i)} style={{ width: 34, height: 34, borderRadius: 9, border: "1px solid #e2e8f0", background: "white", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <Trash2 size={15} color="#ef4444" />
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+
+          <div>
+            <label style={field(t("community.tabWiring"))}>{t("community.tabWiring")}</label>
+            <textarea style={{ ...input, minHeight: 90, resize: "vertical", fontFamily: "inherit" }} value={wiring} onChange={(e) => setWiring(e.target.value)} />
+          </div>
+          <div>
+            <label style={field(t("community.tabMech"))}>{t("community.tabMech")}</label>
+            <textarea style={{ ...input, minHeight: 90, resize: "vertical", fontFamily: "inherit" }} value={mech} onChange={(e) => setMech(e.target.value)} />
+          </div>
+          <div>
+            <label style={field(t("community.tabInstructions"))}>{t("community.tabInstructions")}</label>
+            <textarea style={{ ...input, minHeight: 110, resize: "vertical", fontFamily: "inherit" }} value={instructions} onChange={(e) => setInstructions(e.target.value)} placeholder="One step per line" />
+          </div>
+
+          <button
+            type="submit"
+            style={{
+              alignSelf: "flex-start", padding: "13px 26px", borderRadius: 12, border: "none",
+              background: "#0f172a", color: "white", fontWeight: 700, fontSize: 15, cursor: "pointer",
+            }}
+          >
+            {t("community.publish")}
+          </button>
+        </form>
       </div>
     </main>
-  )
-}
-
-const inputStyle: React.CSSProperties = {
-  width: "100%",
-  padding: "12px 14px",
-  border: "1px solid var(--rule)",
-  borderRadius: "6px",
-  fontSize: "15px",
-  fontFamily: "inherit",
-  color: "var(--ink)",
-  background: "white",
-  outline: "none",
-}
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "var(--ink)", marginBottom: "8px" }}>{label}</label>
-      {children}
-    </div>
   )
 }

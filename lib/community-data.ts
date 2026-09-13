@@ -1,428 +1,309 @@
-// Community data layer — project-gallery model inspired by blueprint.io/community.
-// A "project" is a shareable repo context setup: AGENTS.md, Cursor Rules, etc.
+export type PartCategory = "Electrical" | "Mechanical"
 
-export type CategoryId = "showcase" | "recipe" | "template" | "workflow"
-
-export interface Category {
-  id: CategoryId
-  label: string
-  color: string
-  description: string
-}
-
-export interface Author {
+export interface Part {
   name: string
-  handle: string
-  avatarColor: string
-  role?: string
+  category: PartCategory
+  subcategory: string
+  quantity: number
+  unitCost: number
 }
 
-export type ContextFormat = "agents" | "claude" | "cursor" | "copilot" | "custom"
-
-export const FORMAT_LABELS: Record<ContextFormat, string> = {
-  agents: "AGENTS.md",
-  claude: "CLAUDE.md",
-  cursor: "Cursor Rules",
-  copilot: "Copilot Instructions",
-  custom: "Custom",
-}
-
-export const FORMAT_COLORS: Record<ContextFormat, string> = {
-  agents: "#0f62fe",
-  claude: "#6929c4",
-  cursor: "#009d9a",
-  copilot: "#198038",
-  custom: "#cc6600",
-}
-
-export interface ProjectFile {
-  name: string
-  format: ContextFormat
-  content: string
-}
-
-export interface ProjectPart {
-  name: string
-  category: string
-  description?: string
-  count?: number
-}
-
-export interface ProjectStep {
-  title: string
-  items: string[]
-}
-
-export interface Project {
-  id: string
+export interface HardwareProject {
   slug: string
   title: string
-  summary: string
-  description: string
-  author: Author
+  author: string
+  avatarColor: string
   cover: string
-  repoUrl?: string
-  category: CategoryId
+  createdAt: string // ISO date
   tags: string[]
-  formats: ContextFormat[]
-  files: ProjectFile[]
-  structure: string[]
-  parts: ProjectPart[]
-  instructions: ProjectStep[]
+  summary: string
+  parts: Part[]
+  wiring: string
+  mech: string
+  instructions: string[]
   stars: number
-  createdAt: number
-  pinned?: boolean
+  featured?: boolean
 }
 
-export type SortKey = "trending" | "new" | "top"
+export const CATEGORIES = [
+  "All",
+  "IoT",
+  "Wearable",
+  "Robotics",
+  "Security",
+] as const
 
-export const CATEGORIES: Category[] = [
-  {
-    id: "showcase",
-    label: "Showcases",
-    color: "#0f62fe",
-    description: "Complete repo context setups you can study and copy.",
-  },
-  {
-    id: "recipe",
-    label: "Recipes",
-    color: "#6929c4",
-    description: "Small, reusable snippets for specific problems.",
-  },
-  {
-    id: "template",
-    label: "Templates",
-    color: "#009d9a",
-    description: "Drop-in starters for common project types.",
-  },
-  {
-    id: "workflow",
-    label: "Workflows",
-    color: "#cc6600",
-    description: "CI/CD and automation setups that keep context in sync.",
-  },
-]
+export type SortKey = "trending" | "newest" | "top"
 
-export const CATEGORY_MAP: Record<CategoryId, Category> = CATEGORIES.reduce(
-  (acc, c) => {
-    acc[c.id] = c
-    return acc
-  },
-  {} as Record<CategoryId, Category>,
-)
-
-const A = {
-  mai: { name: "Mai Tran", handle: "mait", avatarColor: "#0f62fe", role: "Community Lead" },
-  devon: { name: "Devon Park", handle: "devonp", avatarColor: "#6929c4" },
-  sora: { name: "Sora Kim", handle: "sora", avatarColor: "#009d9a" },
-  luis: { name: "Luis Fernández", handle: "luisf", avatarColor: "#cc6600" },
-  toby: { name: "Toby Wright", handle: "tobyw", avatarColor: "#198038" },
-  nadia: { name: "Nadia Rahman", handle: "nadiar", avatarColor: "#8a3ffc" },
-  kenji: { name: "Kenji Sato", handle: "kenjis", avatarColor: "#1192e8" },
-} satisfies Record<string, Author>
-
-const HOUR = 3600_000
-const now = Date.now()
-
-function file(name: string, format: ContextFormat, content: string): ProjectFile {
-  return { name, format, content }
+export function formatRelativeTime(iso: string): string {
+  const then = new Date(iso).getTime()
+  const now = Date.now()
+  const diff = Math.max(0, now - then)
+  const day = 86_400_000
+  const days = Math.floor(diff / day)
+  if (days <= 0) return "Today"
+  if (days === 1) return "Yesterday"
+  if (days < 7) return `${days}d ago`
+  const weeks = Math.floor(days / 7)
+  if (weeks < 5) return `${weeks}w ago`
+  const months = Math.floor(days / 30)
+  return `${months}mo ago`
 }
 
-export const SEED_PROJECTS: Project[] = [
-  {
-    id: "p1",
-    slug: "monorepo-onboarding-agents-md",
-    title: "Monorepo onboarding with AGENTS.md",
-    summary: "Cut new-hire onboarding from 3 days to 20 minutes using a generated AGENTS.md.",
-    description:
-      "We onboard every backend engineer by having them read the repo for a few days. I ran RepoContext on our monorepo and dropped the generated AGENTS.md at the root. The result was shockingly accurate.",
-    author: A.devon,
-    cover: "/templates/sample-monorepo.jpg",
-    repoUrl: "https://github.com/example/monorepo",
-    category: "showcase",
-    tags: ["AGENTS.md", "onboarding", "monorepo"],
-    formats: ["agents", "cursor"],
-    files: [
-      file(
-        "AGENTS.md",
-        "agents",
-        "# Monorepo onboarding guide\n\n## Architecture\n- apps/web: Next.js marketing site\n- apps/api: NestJS API\n- packages/ui: shared React components\n- packages/db: Prisma schema + migrations\n\n## Build commands\n- web: pnpm --filter web build\n- api: pnpm --filter api build\n- db: pnpm --filter db migrate\n\n## Testing\nUse `pnpm test` at root. Integration tests need docker compose up.",
-      ),
-      file(
-        ".cursorrules",
-        "cursor",
-        "# Cursor rules for monorepo\n- Prefer pnpm workspace protocols for internal deps\n- Run typecheck before committing\n- Use packages/ui components before writing new ones\n- API routes live in apps/api/src/routes",
-      ),
-    ],
-    structure: ["apps/web/", "apps/api/", "packages/ui/", "packages/db/", "AGENTS.md", ".cursorrules", "pnpm-workspace.yaml", "turbo.json"],
-    parts: [
-      { name: "AGENTS.md", category: "Context", description: "Root onboarding guide", count: 1 },
-      { name: ".cursorrules", category: "Context", description: "Cursor-specific rules", count: 1 },
-      { name: "Web app", category: "App", count: 1 },
-      { name: "API service", category: "App", count: 1 },
-      { name: "Shared packages", category: "Package", count: 2 },
-    ],
-    instructions: [
-      { title: "Copy the context files", items: ["Download AGENTS.md and .cursorrules from the Files tab.", "Place both files at the root of your repo."] },
-      { title: "Customize for your repo", items: ["Edit the on-call rotation link.", "Update package names and build commands to match your workspace."] },
-      { title: "Verify in Cursor", items: ["Open the repo in Cursor.", "Ask the agent to describe the architecture to confirm it reads AGENTS.md."] },
-    ],
-    stars: 142,
-    createdAt: now - 5 * HOUR,
-    pinned: true,
-  },
-  {
-    id: "p2",
-    slug: "cursor-rules-ci-sync",
-    title: "Keep Cursor Rules in sync with CI",
-    summary: "A GitHub Actions workflow that regenerates .cursorrules on every push to main.",
-    description:
-      "Our generated .cursorrules drifted every time someone landed a big refactor. I wired RepoContext into CI via the REST API so the docs never drift for more than a few minutes.",
-    author: A.luis,
-    cover: "/templates/best-cicd.jpg",
-    repoUrl: "https://github.com/example/ci-cursor-sync",
-    category: "workflow",
-    tags: ["Cursor Rules", "CI", "automation"],
-    formats: ["cursor"],
-    files: [
-      file(
-        ".github/workflows/sync-cursorrules.yml",
-        "custom",
-        'name: Sync Cursor Rules\n\non:\n  push:\n    branches: [main]\n\njobs:\n  sync:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - name: Generate .cursorrules\n        run: |\n          curl -X POST https://api.repocontext.io/analyze \\\n            -H "Authorization: Bearer ${{ secrets.RC_TOKEN }}" \\\n            -d \'{"repoUrl":"https://github.com/${{ github.repository }}"}\' \\\n            -o .cursorrules\n      - name: Commit changes\n        run: |\n          git config user.name github-actions\n          git config user.email github-actions@github.com\n          git add .cursorrules\n          git diff --staged --quiet || git commit -m "chore: sync cursor rules"\n          git push',
-      ),
-      file(".cursorrules", "cursor", "# Auto-generated cursor rules\n- Keep in sync via .github/workflows/sync-cursorrules.yml\n- Do not edit manually on main"),
-    ],
-    structure: [".github/workflows/sync-cursorrules.yml", ".cursorrules", "src/", "README.md"],
-    parts: [
-      { name: "GitHub Action", category: "Automation", count: 1 },
-      { name: ".cursorrules", category: "Context", count: 1 },
-      { name: "Repository", category: "Source", count: 1 },
-    ],
-    instructions: [
-      { title: "Add the workflow", items: ["Copy sync-cursorrules.yml into .github/workflows/.", "Add a RepoContext API token as RC_TOKEN in repository secrets."] },
-      { title: "Generate baseline", items: ["Run the workflow manually once to create the first .cursorrules.", "Commit the generated file."] },
-      { title: "Let it run", items: ["Every push to main will refresh .cursorrules automatically.", "Review the diff in PRs."] },
-    ],
-    stars: 38,
-    createdAt: now - 9 * HOUR,
-  },
-  {
-    id: "p3",
-    slug: "readme-conventions-boost-score",
-    title: "README conventions that 2x quality score",
-    summary: "A three-line naming-conventions section lifted the RepoContext quality score from 61 to 94.",
-    description:
-      "The model was guessing our naming conventions. I added a three-line section to the README describing how we name modules, tests, and env files. Re-ran the analysis and the quality score jumped from 61 to 94.",
-    author: A.sora,
-    cover: "/templates/sample-markdown.jpg",
-    repoUrl: "https://github.com/example/conventions",
-    category: "recipe",
-    tags: ["quality score", "README", "prompts"],
-    formats: ["agents"],
-    files: [
-      file(
-        "README.md#conventions",
-        "custom",
-        "## Project conventions\n\n### Naming\n- Modules: kebab-case (e.g. user-profile)\n- Tests: `<name>.test.ts` co-located with source\n- Env files: `.env.<environment>` only in /config\n\n### Running\n```bash\nnpm run dev\n```",
-      ),
-    ],
-    structure: ["README.md", "src/", "tests/", ".env.example"],
-    parts: [
-      { name: "README conventions", category: "Recipe", description: "Naming and env rules", count: 1 },
-      { name: "Source modules", category: "Code", count: 12 },
-      { name: "Tests", category: "Code", count: 8 },
-    ],
-    instructions: [
-      { title: "Add to your README", items: ["Copy the conventions section into your README.md.", "Adjust naming rules to match your stack."] },
-      { title: "Re-analyze", items: ["Run RepoContext analysis again.", "Watch the quality score improve."] },
-    ],
-    stars: 96,
-    createdAt: now - 14 * HOUR,
-  },
-  {
-    id: "p4",
-    slug: "rust-cli-claude-md",
-    title: "CLAUDE.md for a 30k-line Rust CLI",
-    summary: "Generated docs for a Rust CLI. The module map alone saved me an afternoon.",
-    description:
-      "Generated context for our Rust CLI and the module map it produced is genuinely good — it understood the command dispatch, the error type hierarchy, and the test layout. Sharing a sanitized version.",
-    author: A.toby,
-    cover: "/templates/sample-rust.jpg",
-    repoUrl: "https://github.com/example/rust-cli",
-    category: "showcase",
-    tags: ["Rust", "CLAUDE.md", "CLI"],
-    formats: ["claude"],
-    files: [
-      file(
-        "CLAUDE.md",
-        "claude",
-        "# Rust CLI context\n\n## Module map\n- `main.rs`: entry point, command dispatch\n- `commands/`: one module per subcommand\n- `error.rs`: unified error type using `thiserror`\n- `config.rs`: config file parsing with `serde`\n- `tests/`: integration tests invoke the CLI binary\n\n## Conventions\n- Errors bubble up with `?`; never unwrap in library code\n- Use `clap` derive macros for CLI args\n- Config lives at `~/.config/rc/config.toml`",
-      ),
-    ],
-    structure: ["src/main.rs", "src/commands/", "src/error.rs", "src/config.rs", "tests/", "CLAUDE.md", "Cargo.toml"],
-    parts: [
-      { name: "CLAUDE.md", category: "Context", count: 1 },
-      { name: "Command modules", category: "Source", count: 5 },
-      { name: "Core modules", category: "Source", count: 3 },
-      { name: "Integration tests", category: "Tests", count: 4 },
-    ],
-    instructions: [
-      { title: "Generate your own", items: ["Run RepoContext on your Rust repo.", "Export CLAUDE.md format."] },
-      { title: "Use in Claude Code", items: ["Place CLAUDE.md at the repo root.", "Ask Claude to add a new subcommand or fix an error type."] },
-    ],
-    stars: 63,
-    createdAt: now - 4 * 24 * HOUR,
-  },
-  {
-    id: "p5",
-    slug: "pnpm-workspace-template",
-    title: "pnpm workspace starter template",
-    summary: "A ready-made AGENTS.md + .cursorrules setup tuned for pnpm monorepos.",
-    description:
-      "pnpm workspaces are everywhere in the Node world. This template gives you a dedicated context setup that understands workspace:* dependencies and the virtual store.",
-    author: A.kenji,
-    cover: "/templates/sample-typescript.jpg",
-    repoUrl: "https://github.com/example/pnpm-starter",
-    category: "template",
-    tags: ["pnpm", "monorepo", "template"],
-    formats: ["agents", "cursor"],
-    files: [
-      file(
-        "AGENTS.md",
-        "agents",
-        "# pnpm workspace guide\n\n## Layout\n- `apps/*`: deployable applications\n- `packages/*`: shared libraries\n\n## Dependency rules\n- Internal deps use `workspace:*`\n- External deps are hoisted by pnpm\n\n## Scripts\n- `pnpm dev` starts all apps in parallel\n- `pnpm lint` runs ESLint across the workspace\n- `pnpm test` runs Vitest in each package",
-      ),
-      file(
-        ".cursorrules",
-        "cursor",
-        "# pnpm workspace cursor rules\n- Add new packages to `pnpm-workspace.yaml` first\n- Prefer `workspace:*` for internal deps\n- Shared configs live in `packages/eslint-config` and `packages/tsconfig`",
-      ),
-    ],
-    structure: ["apps/web/", "packages/ui/", "packages/eslint-config/", "packages/tsconfig/", "AGENTS.md", ".cursorrules", "pnpm-workspace.yaml"],
-    parts: [
-      { name: "AGENTS.md", category: "Context", count: 1 },
-      { name: ".cursorrules", category: "Context", count: 1 },
-      { name: "Apps", category: "App", count: 1 },
-      { name: "Shared packages", category: "Package", count: 3 },
-    ],
-    instructions: [
-      { title: "Use the template", items: ["Copy AGENTS.md and .cursorrules to your pnpm monorepo.", "Update package and app names."] },
-      { title: "Add your repo URL", items: ["Replace the example repo URL in the files.", "Run RepoContext to validate the context quality."] },
-    ],
-    stars: 54,
-    createdAt: now - 22 * HOUR,
-  },
-  {
-    id: "p6",
-    slug: "secrets-safe-context",
-    title: "Keep secrets out of generated context",
-    summary: "A policy checklist and .repocontextignore recipe for private repos.",
-    description:
-      "Before I point this at our private repo I want to be sure nothing sensitive ends up in the generated AGENTS.md. Here is the policy and ignore list I use.",
-    author: A.kenji,
-    cover: "/templates/best-private.jpg",
-    repoUrl: "https://github.com/example/private-safe",
-    category: "recipe",
-    tags: ["security", "private repos", "secrets"],
-    formats: ["agents"],
-    files: [
-      file(
-        ".repocontextignore",
-        "custom",
-        "# Never include these in generated context\n.env\n.env.*\n*.pem\n*.key\nsecrets/\nconfig/credentials.yml\n.vault/",
-      ),
-      file(
-        "SECURITY.md",
-        "custom",
-        "# Security policy for AI context\n\n- RepoContext reads metadata and structure, not file contents by default\n- Mark credential paths in `.repocontextignore`\n- Review generated files before committing them\n- Rotate any token that accidentally appears in output",
-      ),
-    ],
-    structure: [".repocontextignore", "SECURITY.md", "src/", ".env.example"],
-    parts: [
-      { name: ".repocontextignore", category: "Config", count: 1 },
-      { name: "Security policy", category: "Doc", count: 1 },
-      { name: "Safe paths", category: "Rule", count: 6 },
-    ],
-    instructions: [
-      { title: "Add ignore rules", items: ["Copy .repocontextignore to your repo root.", "Add any other files that contain credentials."] },
-      { title: "Analyze safely", items: ["Run RepoContext with ignore rules in place.", "Inspect the generated context for any sensitive strings."] },
-    ],
-    stars: 29,
-    createdAt: now - 3 * 24 * HOUR,
-  },
-]
-
-// ---- Pure helpers ----------------------------------------------------------
-
-export function timeAgo(ts: number): string {
-  const diff = Date.now() - ts
-  const m = Math.floor(diff / 60000)
-  if (m < 1) return "just now"
-  if (m < 60) return `${m}m`
-  const h = Math.floor(m / 60)
-  if (h < 24) return `${h}h`
-  const d = Math.floor(h / 24)
-  if (d < 30) return `${d}d`
-  const mo = Math.floor(d / 30)
-  return `${mo}mo`
+export function partsCount(p: HardwareProject): number {
+  return p.parts.reduce((sum, part) => sum + part.quantity, 0)
 }
 
-export function formatCount(n: number): string {
-  if (n < 1000) return String(n)
-  if (n < 1_000_000) return `${(n / 1000).toFixed(n % 1000 >= 100 ? 1 : 0)}k`
-  return `${(n / 1_000_000).toFixed(1)}M`
-}
-
-export function hoursSince(ts: number): number {
-  return (Date.now() - ts) / HOUR
-}
-
-export function trendingScore(p: Project): number {
-  const recency = Math.max(0, 100 - hoursSince(p.createdAt) * 1.5)
-  return p.stars * 2 + p.files.length * 4 + recency
-}
-
-export function sortProjects(projects: Project[], sort: SortKey): Project[] {
-  const arr = [...projects]
-  if (sort === "new") {
-    arr.sort((a, b) => b.createdAt - a.createdAt)
-  } else if (sort === "top") {
-    arr.sort((a, b) => b.stars - a.stars)
-  } else {
-    arr.sort((a, b) => trendingScore(b) - trendingScore(a))
-  }
-  arr.sort((a, b) => Number(!!b.pinned) - Number(!!a.pinned))
-  return arr
+export function totalCost(p: HardwareProject): number {
+  return p.parts.reduce((sum, part) => sum + part.quantity * part.unitCost, 0)
 }
 
 export function filterProjects(
-  projects: Project[],
-  category: CategoryId | "all",
+  projects: HardwareProject[],
+  category: string,
   query: string,
-): Project[] {
+): HardwareProject[] {
   const q = query.trim().toLowerCase()
   return projects.filter((p) => {
-    if (category !== "all" && p.category !== category) return false
+    const catOk = category === "All" || p.tags.includes(category)
+    if (!catOk) return false
     if (!q) return true
-    const hay = `${p.title} ${p.summary} ${p.description} ${p.tags.join(" ")} ${p.author.name}`.toLowerCase()
+    const hay = [p.title, p.author, p.summary, ...p.tags].join(" ").toLowerCase()
     return hay.includes(q)
   })
 }
 
-export function slugify(title: string): string {
-  return title
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 80)
+export function sortProjects(
+  projects: HardwareProject[],
+  sort: SortKey,
+): HardwareProject[] {
+  const copy = [...projects]
+  if (sort === "newest") {
+    return copy.sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    )
+  }
+  if (sort === "top") {
+    return copy.sort((a, b) => b.stars - a.stars)
+  }
+  // trending: featured first, then by stars desc as a proxy
+  return copy.sort((a, b) => {
+    if (a.featured && !b.featured) return -1
+    if (!a.featured && b.featured) return 1
+    return b.stars - a.stars
+  })
 }
 
-export function initials(name: string): string {
-  return name
-    .split(/\s+/)
-    .map((w) => w[0])
-    .filter(Boolean)
-    .slice(0, 2)
-    .join("")
-    .toUpperCase()
+export function getProjectBySlug(
+  projects: HardwareProject[],
+  slug: string,
+): HardwareProject | undefined {
+  return projects.find((p) => p.slug === slug)
 }
+
+export function relatedProjects(
+  projects: HardwareProject[],
+  current: HardwareProject,
+  limit = 3,
+): HardwareProject[] {
+  const tagged = projects.filter(
+    (p) => p.slug !== current.slug && p.tags.some((t) => current.tags.includes(t)),
+  )
+  const pool = tagged.length ? tagged : projects.filter((p) => p.slug !== current.slug)
+  return pool.slice(0, limit)
+}
+
+export const PROJECTS: HardwareProject[] = [
+  {
+    slug: "smart-plant-monitor",
+    title: "Smart Plant Monitor",
+    author: "green_thumb",
+    avatarColor: "#10b981",
+    cover: "/projects/plant-monitor.svg",
+    createdAt: "2026-09-11T10:00:00Z",
+    tags: ["IoT", "Sensors"],
+    featured: true,
+    summary:
+      "A low-power ESP32 monitor that reads soil moisture and temperature, shows live readings on a tiny OLED, and runs for weeks on a single Li-Po cell.",
+    stars: 8,
+    parts: [
+      { name: "ESP32 Dev Board", category: "Electrical", subcategory: "MCU", quantity: 1, unitCost: 7.5 },
+      { name: "Capacitive Soil Moisture Sensor", category: "Electrical", subcategory: "Sensor", quantity: 1, unitCost: 3.2 },
+      { name: "BME280 Temp / Humidity", category: "Electrical", subcategory: "Sensor", quantity: 1, unitCost: 3.9 },
+      { name: '0.96" OLED Display', category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 4.8 },
+      { name: "Li-Po 3.7V 1200mAh", category: "Electrical", subcategory: "Power", quantity: 1, unitCost: 6.4 },
+      { name: "TP4056 Charger Module", category: "Electrical", subcategory: "Power", quantity: 1, unitCost: 1.1 },
+      { name: "3D-printed Enclosure", category: "Mechanical", subcategory: "Enclosure", quantity: 1, unitCost: 2.0 },
+      { name: "Probe Housing Tube", category: "Mechanical", subcategory: "Structural", quantity: 1, unitCost: 0.8 },
+    ],
+    wiring:
+      "Moisture sensor SIG → ESP32 GPIO34, VCC → 3.3V, GND → GND. BME280 on I2C (SDA GPIO21 / SCL GPIO22). OLED shares the same I2C bus at address 0x3C. TP4056 charges the Li-Po and feeds 3.3V via the onboard regulator.",
+    mech:
+      "The enclosure is a two-part snap-fit print; the probe tube routes the sensor cable down to the root zone while keeping the board dry above the soil line.",
+    instructions: [
+      "Flash the firmware and confirm the OLED shows sensor readings over USB.",
+      "Solder the sensor and display to the ESP32 breakout, then mount the board in the top half of the enclosure.",
+      "Insert the probe into the soil, connect the battery, and seal the enclosure.",
+    ],
+  },
+  {
+    slug: "heart-rate-badge",
+    title: "Wearable Heart Rate Badge",
+    author: "pawel_s",
+    avatarColor: "#f43f5e",
+    cover: "/projects/heart-badge.svg",
+    createdAt: "2026-09-12T08:30:00Z",
+    tags: ["Wearable", "Sensors"],
+    summary:
+      "A necklace pendant that tracks heart rate with an optical sensor and shows BPM on a small OLED, with a vibration nudge when you sit still too long.",
+    stars: 4,
+    parts: [
+      { name: "Arduino Nano", category: "Electrical", subcategory: "MCU", quantity: 1, unitCost: 4.2 },
+      { name: "MAX30102 Pulse Sensor", category: "Electrical", subcategory: "Sensor", quantity: 1, unitCost: 5.6 },
+      { name: '0.91" OLED Display', category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 3.4 },
+      { name: "CR2032 Holder", category: "Electrical", subcategory: "Power", quantity: 1, unitCost: 0.9 },
+      { name: "Li-Po 3.7V 500mAh", category: "Electrical", subcategory: "Power", quantity: 1, unitCost: 3.8 },
+      { name: "Haptic Buzzer", category: "Electrical", subcategory: "Actuator", quantity: 1, unitCost: 0.6 },
+      { name: "3D-printed Pendant", category: "Mechanical", subcategory: "Enclosure", quantity: 1, unitCost: 2.5 },
+      { name: "Silicone Strap", category: "Mechanical", subcategory: "Structural", quantity: 1, unitCost: 1.2 },
+    ],
+    wiring:
+      "MAX30102 on I2C (A4/A5 on the Nano). OLED on the same bus. Buzzer → D9 through a 100Ω resistor. Power from a small Li-Po stepped up to 5V for the display.",
+    mech:
+      "The pendant shell is printed in TPU for a soft skin feel; the sensor window is a thin resin pour so light reaches the skin without gaps.",
+    instructions: [
+      "Assemble the I2C chain and verify the sensor streams data in the serial plotter.",
+      "Print and fit the TPU shell, routing the strap through the side slots.",
+      "Calibrate the resting BPM baseline, then enable the idle reminder.",
+    ],
+  },
+  {
+    slug: "drone-controller",
+    title: "RC Drone Flight Controller",
+    author: "austro_b140",
+    avatarColor: "#0ea5e9",
+    cover: "/projects/drone-controller.svg",
+    createdAt: "2026-09-13T06:15:00Z",
+    tags: ["Robotics", "IoT"],
+    featured: true,
+    summary:
+      "A 4-inch FPV-style flight controller built around an ESP32 with an MPU6050 for stabilization and a 4-in-1 ESC driving four brushless motors.",
+    stars: 4,
+    parts: [
+      { name: "ESP32-WROOM Module", category: "Electrical", subcategory: "MCU", quantity: 1, unitCost: 6.8 },
+      { name: "MPU6050 IMU", category: "Electrical", subcategory: "Sensor", quantity: 1, unitCost: 2.1 },
+      { name: "Brushless Motor 2207", category: "Electrical", subcategory: "Actuator", quantity: 4, unitCost: 7.9 },
+      { name: "4-in-1 ESC", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 18.0 },
+      { name: "5.8GHz VTX", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 9.5 },
+      { name: "2.4GHz Receiver", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 6.2 },
+      { name: "Li-Po 4S 1500mAh", category: "Electrical", subcategory: "Power", quantity: 1, unitCost: 22.0 },
+      { name: "Carbon Fiber Frame", category: "Mechanical", subcategory: "Structural", quantity: 1, unitCost: 14.0 },
+      { name: '5" Propellers', category: "Mechanical", subcategory: "Structural", quantity: 4, unitCost: 1.2 },
+      { name: "Camera Mount", category: "Mechanical", subcategory: "Enclosure", quantity: 1, unitCost: 1.5 },
+    ],
+    wiring:
+      "ESC signal lines → ESP32 PWM pins (D4–D7). MPU6050 on I2C. Receiver SBUS → UART. VTX powered from a 5V BEC on the ESC; motors A–D map to the four arms.",
+    mech:
+      "The carbon frame uses a stacked layout: motors at the arms, flight stack in the center sandwich, and the camera tilted 25° in a printed mount.",
+    instructions: [
+      "Solder the ESC and receiver, then flash the flight firmware over USB.",
+      "Mount the stack and calibrate the accelerometer on a level surface.",
+      "Bind the receiver, spin each motor to confirm direction, then PID-tune in hover.",
+    ],
+  },
+  {
+    slug: "rfid-door-lock",
+    title: "RFID Smart Door Lock",
+    author: "funtoos_fontoos",
+    avatarColor: "#f59e0b",
+    cover: "/projects/door-lock.svg",
+    createdAt: "2026-09-12T14:00:00Z",
+    tags: ["Security", "IoT"],
+    summary:
+      "Retrofit any deadbolt with an RFID reader and a solenoid driven by an ESP8266 — tap a card to unlock, and log every access attempt.",
+    stars: 6,
+    parts: [
+      { name: "ESP8266 NodeMCU", category: "Electrical", subcategory: "MCU", quantity: 1, unitCost: 4.0 },
+      { name: "MFRC522 RFID Reader", category: "Electrical", subcategory: "Sensor", quantity: 1, unitCost: 2.8 },
+      { name: "SG90 Servo", category: "Electrical", subcategory: "Actuator", quantity: 1, unitCost: 1.3 },
+      { name: "12V Solenoid Lock", category: "Electrical", subcategory: "Actuator", quantity: 1, unitCost: 6.5 },
+      { name: "Relay Module", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 1.1 },
+      { name: "12V Power Supply", category: "Electrical", subcategory: "Power", quantity: 1, unitCost: 5.0 },
+      { name: "3D-printed Mount", category: "Mechanical", subcategory: "Enclosure", quantity: 1, unitCost: 2.0 },
+      { name: "Striker Plate", category: "Mechanical", subcategory: "Structural", quantity: 1, unitCost: 1.5 },
+    ],
+    wiring:
+      "MFRC522 on SPI (D5–D8). Servo → D4. Relay toggles the 12V solenoid from the supply. The MCU runs on 5V from the supply via a buck converter.",
+    mech:
+      "The reader sits in a flush mount by the strike; the solenoid replaces the manual throw and the servo acts as a manual fallback lever.",
+    instructions: [
+      "Enroll your card UIDs in the firmware whitelist.",
+      "Mount the solenoid to the existing strike and test the throw.",
+      "Power up, tap a card, and confirm the unlock plus the access log.",
+    ],
+  },
+  {
+    slug: "solar-weather-station",
+    title: "Solar Weather Station",
+    author: "slickfoal",
+    avatarColor: "#f97316",
+    cover: "/projects/weather-station.svg",
+    createdAt: "2026-09-10T09:45:00Z",
+    tags: ["IoT", "Security"],
+    summary:
+      "A self-contained, solar-powered weather station that reports temperature, humidity, wind, and rain to a local dashboard over Wi-Fi.",
+    stars: 6,
+    parts: [
+      { name: "ESP32 Dev Board", category: "Electrical", subcategory: "MCU", quantity: 1, unitCost: 7.0 },
+      { name: "BME280 Temp / Humidity", category: "Electrical", subcategory: "Sensor", quantity: 1, unitCost: 3.9 },
+      { name: "Anemometer", category: "Electrical", subcategory: "Sensor", quantity: 1, unitCost: 8.5 },
+      { name: "Tipping Bucket Rain Gauge", category: "Electrical", subcategory: "Sensor", quantity: 1, unitCost: 6.0 },
+      { name: "6V 2W Solar Panel", category: "Electrical", subcategory: "Power", quantity: 1, unitCost: 5.5 },
+      { name: "18650 Li-Ion Cell", category: "Electrical", subcategory: "Power", quantity: 1, unitCost: 3.2 },
+      { name: "TP4056 Charger", category: "Electrical", subcategory: "Power", quantity: 1, unitCost: 1.1 },
+      { name: "PVC Mast", category: "Mechanical", subcategory: "Structural", quantity: 1, unitCost: 3.0 },
+      { name: "Weatherproof Enclosure", category: "Mechanical", subcategory: "Enclosure", quantity: 1, unitCost: 4.5 },
+    ],
+    wiring:
+      "BME280 on I2C. Anemometer and rain gauge connect to interrupt pins. Solar panel → TP4056 → 18650 → 3.3V LDO for the ESP32. All sensors inside the sealed enclosure, mast outside.",
+    mech:
+      "A PVC mast holds the anemometer above the roof line; the gauge hangs below a printed funnel; the electronics live in an IP65 box at the base.",
+    instructions: [
+      "Seal the BME280 and board in the enclosure with a desiccant pack.",
+      "Assemble the mast and aim the panel south at ~30° tilt.",
+      "Connect to Wi-Fi and verify the dashboard receives updates.",
+    ],
+  },
+  {
+    slug: "robotic-arm-kit",
+    title: "Desktop Robotic Arm Kit",
+    author: "slick",
+    avatarColor: "#8b5cf6",
+    cover: "/projects/robotic-arm.svg",
+    createdAt: "2026-09-12T18:20:00Z",
+    tags: ["Robotics", "Security"],
+    summary:
+      "A 4-DOF desktop arm with MG996R servos driven by an Arduino and a PCA9685 board, controllable over Bluetooth from a phone.",
+    stars: 5,
+    parts: [
+      { name: "Arduino Uno", category: "Electrical", subcategory: "MCU", quantity: 1, unitCost: 5.5 },
+      { name: "MG996R Servo", category: "Electrical", subcategory: "Actuator", quantity: 4, unitCost: 4.5 },
+      { name: "PCA9685 Servo Driver", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 4.2 },
+      { name: "HC-05 Bluetooth", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 4.0 },
+      { name: "5V 5A Power Supply", category: "Electrical", subcategory: "Power", quantity: 1, unitCost: 7.0 },
+      { name: "Aluminum Brackets Set", category: "Mechanical", subcategory: "Structural", quantity: 1, unitCost: 12.0 },
+      { name: "Acrylic Base Plate", category: "Mechanical", subcategory: "Structural", quantity: 1, unitCost: 5.0 },
+      { name: "Suction Cup Mount", category: "Mechanical", subcategory: "Structural", quantity: 1, unitCost: 2.0 },
+      { name: "Gripper Kit", category: "Mechanical", subcategory: "Structural", quantity: 1, unitCost: 3.5 },
+    ],
+    wiring:
+      "PCA9685 on I2C drives the four servos from a separate 5V rail. HC-05 on UART receives angle commands. Arduino decodes and writes PWM values.",
+    mech:
+      "Aluminum brackets form the two forearm links; the base clamps to a desk with a suction cup; the gripper closes via the final servo through a linkage.",
+    instructions: [
+      "Assemble the links and center all servos at 90°.",
+      "Wire the PCA9685 and confirm each joint moves in the test sketch.",
+      "Pair Bluetooth, load the phone control app, and calibrate the reach.",
+    ],
+  },
+]

@@ -1,146 +1,82 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import {
-  Project,
-  ContextFormat,
-  CategoryId,
-  SEED_PROJECTS,
-  slugify,
-} from "./community-data"
+  PROJECTS,
+  type HardwareProject,
+} from "@/lib/community-data"
 
-const PROJECTS_KEY = "rc_community_projects_v2"
-const STARS_KEY = "rc_community_stars_v2"
+const PROJECTS_KEY = "rc_hw_projects_v1"
+const STARS_KEY = "rc_hw_stars_v1"
 
-export interface NewProjectInput {
-  title: string
-  summary: string
-  description: string
-  repoUrl?: string
-  category: CategoryId
-  tags: string[]
-  files: { name: string; format: ContextFormat; content: string }[]
-  structure: string[]
-  instructions: { title: string; items: string[] }[]
-  authorName: string
-}
-
-function load<T>(key: string, fallback: T): T {
+function loadUserProjects(): HardwareProject[] {
+  if (typeof window === "undefined") return []
   try {
-    const raw = localStorage.getItem(key)
-    return raw ? (JSON.parse(raw) as T) : fallback
+    const raw = window.localStorage.getItem(PROJECTS_KEY)
+    if (!raw) return []
+    const parsed = JSON.parse(raw)
+    return Array.isArray(parsed) ? (parsed as HardwareProject[]) : []
   } catch {
-    return fallback
+    return []
   }
 }
 
-function save<T>(key: string, value: T) {
+function loadStars(): Record<string, boolean> {
+  if (typeof window === "undefined") return {}
   try {
-    localStorage.setItem(key, JSON.stringify(value))
+    const raw = window.localStorage.getItem(STARS_KEY)
+    if (!raw) return {}
+    const parsed = JSON.parse(raw)
+    return parsed && typeof parsed === "object" ? parsed : {}
   } catch {
-    /* ignore quota / privacy-mode errors */
+    return {}
   }
-}
-
-function avatarColorFor(name: string): string {
-  const palette = ["#0f62fe", "#6929c4", "#009d9a", "#cc6600", "#da1e28", "#198038", "#8a3ffc", "#1192e8"]
-  let h = 0
-  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0
-  return palette[h % palette.length]
 }
 
 export function useCommunity() {
-  const [userProjects, setUserProjects] = useState<Project[]>([])
-  const [stars, setStars] = useState<Record<string, boolean>>({})
   const [hydrated, setHydrated] = useState(false)
+  const [userProjects, setUserProjects] = useState<HardwareProject[]>([])
+  const [stars, setStars] = useState<Record<string, boolean>>({})
 
   useEffect(() => {
-    setUserProjects(load<Project[]>(PROJECTS_KEY, []))
-    setStars(load<Record<string, boolean>>(STARS_KEY, {}))
+    setUserProjects(loadUserProjects())
+    setStars(loadStars())
     setHydrated(true)
   }, [])
 
-  const projects = useMemo<Project[]>(() => {
-    const merged = [...userProjects, ...SEED_PROJECTS]
-    return merged.map((p) => {
-      const isStarred = !!stars[p.id]
-      return { ...p, stars: p.stars + (isStarred ? 1 : 0) }
-    })
-  }, [userProjects, stars])
+  const projects = [...userProjects, ...PROJECTS]
 
-  const getProject = useCallback(
-    (slug: string) => projects.find((p) => p.slug === slug),
-    [projects],
+  const isStarred = useCallback(
+    (slug: string) => Boolean(stars[slug]),
+    [stars],
   )
 
-  const star = useCallback(
-    (projectId: string) => {
-      if (!hydrated) return
-      setStars((prev) => {
-        const next = { ...prev }
-        if (next[projectId]) delete next[projectId]
-        else next[projectId] = true
-        save(STARS_KEY, next)
-        return next
-      })
-    },
-    [hydrated],
-  )
-
-  const isStarred = useCallback((projectId: string) => !!stars[projectId], [stars])
-
-  const addProject = useCallback(
-    (input: NewProjectInput): string => {
-      if (!hydrated) return ""
-      const slug = slugify(input.title) || `project-${Date.now()}`
-      const project: Project = {
-        id: `u-${Date.now()}`,
-        slug,
-        title: input.title.trim(),
-        summary: input.summary.trim(),
-        description: input.description.trim(),
-        repoUrl: input.repoUrl?.trim() || undefined,
-        author: {
-          name: input.authorName.trim() || "Anonymous",
-          handle: input.authorName.trim().toLowerCase().replace(/\s+/g, "") || "anon",
-          avatarColor: avatarColorFor(input.authorName || "Anonymous"),
-        },
-        category: input.category,
-        tags: input.tags,
-        formats: input.files.map((f) => f.format),
-        files: input.files,
-        structure: input.structure.length ? input.structure : ["README.md"],
-        parts: input.files.map((f) => ({ name: f.name, category: "Context", count: 1 })),
-        instructions: input.instructions.length
-          ? input.instructions
-          : [{ title: "Use this project", items: ["Copy the files from the Files tab into your repo."] }],
-        cover: "/templates/sample-typescript.jpg",
-        stars: 1,
-        createdAt: Date.now(),
+  const star = useCallback((slug: string, value?: boolean) => {
+    setStars((prev) => {
+      const next = { ...prev }
+      const want = value ?? !prev[slug]
+      if (want) next[slug] = true
+      else delete next[slug]
+      try {
+        window.localStorage.setItem(STARS_KEY, JSON.stringify(next))
+      } catch {
+        /* ignore */
       }
-      setUserProjects((prev) => {
-        const next = [project, ...prev]
-        save(PROJECTS_KEY, next)
-        return next
-      })
-      setStars((prev) => {
-        const next = { ...prev, [project.id]: true }
-        save(STARS_KEY, next)
-        return next
-      })
-      return slug
-    },
-    [hydrated],
-  )
+      return next
+    })
+  }, [])
 
-  return {
-    hydrated,
-    projects,
-    getProject,
-    star,
-    isStarred,
-    addProject,
-  }
+  const addProject = useCallback((project: HardwareProject) => {
+    setUserProjects((prev) => {
+      const next = [project, ...prev]
+      try {
+        window.localStorage.setItem(PROJECTS_KEY, JSON.stringify(next))
+      } catch {
+        /* ignore */
+      }
+      return next
+    })
+  }, [])
+
+  return { projects, hydrated, isStarred, star, addProject }
 }
-
-export type SortKeyAlias = import("./community-data").SortKey

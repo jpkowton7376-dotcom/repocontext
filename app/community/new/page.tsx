@@ -1,11 +1,13 @@
-import type { Metadata } from "next"
+"use client"
+
+import { SiteNav } from "@/components/SiteNav"
 import { NewProjectForm } from "./NewProjectForm"
 
-export const metadata: Metadata = {
-  title: "Share a project — RepoContext Community",
-  description: "Share your AGENTS.md, Cursor Rules, or repo context setup with the RepoContext community.",
-}
-
-export default function NewCommunityProjectPage() {
-  return <NewProjectForm />
+export default function NewProjectPage() {
+  return (
+    <main style={{ minHeight: "100vh", background: "#f8fafc" }}>
+      <SiteNav variant="light" />
+      <NewProjectForm />
+    </main>
+  )
 }

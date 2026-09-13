@@ -8,7 +8,7 @@ import { MaskedIllustration } from "@/components/MaskedIllustration"
 import { GlowLink } from "@/components/GlowLink"
 import { SiteNav } from "@/components/SiteNav"
 import { CommunityProjectCard } from "@/components/CommunityProjectCard"
-import { SEED_PROJECTS } from "@/lib/community-data"
+import { PROJECTS } from "@/lib/community-data"
 import { JsonLd } from "@/components/JsonLd"
 import { supabase, isSupabaseConfigured } from "@/lib/supabase"
 import { saveRecent } from "@/lib/recent-analyses"
@@ -216,7 +216,7 @@ export default function HomePage() {
     )
   }
 
-  const topPosts = [...SEED_PROJECTS].sort((a, b) => b.stars - a.stars).slice(0, 3)
+  const topPosts = [...PROJECTS].sort((a, b) => b.stars - a.stars).slice(0, 3)
 
   return (
     <main style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
@@ -1103,11 +1103,10 @@ export default function HomePage() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "20px" }}>
             {topPosts.map((p) => (
               <CommunityProjectCard
-                key={p.id}
+                key={p.slug}
                 project={p}
-                filesLabel={t("community.files")}
-                starsLabel={t("community.stars")}
-                byLabel={t("community.by")}
+                starred={false}
+                onStar={() => {}}
               />
             ))}
           </div>

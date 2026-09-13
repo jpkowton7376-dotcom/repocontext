@@ -13,7 +13,6 @@ import {
   SortKey,
   filterProjects,
   sortProjects,
-  formatCount,
 } from "@/lib/community-data"
 import { SITE_URL } from "@/lib/site-url"
 import type { Locale } from "@/app/i18n/config"
@@ -24,7 +23,7 @@ export function CommunityFeed() {
   const { projects, hydrated, star, isStarred } = useCommunity()
 
   const [sort, setSort] = useState<SortKey>("trending")
-  const [category, setCategory] = useState<"all" | string>("all")
+  const [category, setCategory] = useState<string>("All")
   const [query, setQuery] = useState("")
 
   useEffect(() => {
@@ -34,12 +33,12 @@ export function CommunityFeed() {
   }, [])
 
   const visible = useMemo(
-    () => sortProjects(filterProjects(projects, category as any, query), sort),
+    () => sortProjects(filterProjects(projects, category, query), sort),
     [projects, category, query, sort],
   )
 
   return (
-    <main style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "white" }}>
+    <main style={{ minHeight: "100vh", background: "white" }}>
       <JsonLd
         data={{
           "@context": "https://schema.org",
@@ -53,211 +52,150 @@ export function CommunityFeed() {
 
       <SiteNav variant="light" />
 
-      {/* Hero */}
       <header
         style={{
-          padding: "56px 48px 32px",
-          background: "linear-gradient(180deg, #f6f8fb 0%, white 100%)",
-          borderBottom: "1px solid var(--rule)",
+          maxWidth: 1160,
+          margin: "0 auto",
+          padding: "56px 24px 12px",
         }}
       >
-        <div
-          style={{
-            maxWidth: "1180px",
-            margin: "0 auto",
-            display: "flex",
-            alignItems: "flex-end",
-            justifyContent: "space-between",
-            gap: "24px",
-            flexWrap: "wrap",
-          }}
-        >
-          <div style={{ maxWidth: "720px" }}>
-            <div style={{ width: "48px", height: "4px", background: "var(--blue-60)", marginBottom: "20px" }} />
-            <p style={{ fontSize: "12px", fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--muted)", margin: "0 0 12px" }}>
-              {t("community.eyebrow")}
-            </p>
-            <h1 style={{ fontFamily: "'IBM Plex Serif', Georgia, serif", fontSize: "46px", fontWeight: 300, letterSpacing: "-0.02em", margin: "0 0 14px" }}>
-              {t("community.title")}
-            </h1>
-            <p style={{ fontSize: "17px", color: "var(--ink-2)", lineHeight: 1.6, margin: 0 }}>
-              {t("community.subtitle")}
-            </p>
-          </div>
-          <Link
-            href="/community/new"
-            className="rc-community-new"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "8px",
-              background: "var(--blue-60)",
-              color: "white",
-              padding: "12px 20px",
-              borderRadius: "4px",
-              textDecoration: "none",
-              fontWeight: 500,
-              fontSize: "14px",
-              whiteSpace: "nowrap",
-            }}
-          >
-            <Plus size={16} /> {t("community.newProject")}
-          </Link>
-        </div>
+        <h1 style={{ margin: 0, fontSize: 44, fontWeight: 800, letterSpacing: "-.02em" }}>
+          {t("community.title")}
+        </h1>
+        <p style={{ margin: "12px 0 0", fontSize: 18, color: "#475569", maxWidth: 640 }}>
+          {t("community.subtitle")}
+        </p>
       </header>
 
-      {/* Body */}
-      <section style={{ flex: 1, maxWidth: "1180px", width: "100%", margin: "0 auto", padding: "40px 48px 96px", boxSizing: "border-box" }}>
-        {/* Toolbar */}
-        <div style={{ display: "flex", gap: "12px", marginBottom: "22px", flexWrap: "wrap", alignItems: "center" }}>
+      <div style={{ maxWidth: 1160, margin: "0 auto", padding: "20px 24px 0" }}>
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 12,
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
           <div
             style={{
-              flex: 1,
-              minWidth: "220px",
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              padding: "0 14px",
-              border: "1px solid var(--rule)",
-              borderRadius: "6px",
-              background: "white",
+              position: "relative",
+              flex: "1 1 260px",
+              maxWidth: 360,
             }}
           >
-            <Search size={16} color="var(--muted-2)" />
+            <Search
+              size={18}
+              color="#94a3b8"
+              style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)" }}
+            />
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder={t("community.searchPlaceholder")}
-              className="rc-community-search"
               style={{
-                flex: 1,
-                border: "none",
+                width: "100%",
+                padding: "12px 14px 12px 42px",
+                borderRadius: 12,
+                border: "1px solid #e2e8f0",
+                fontSize: 15,
                 outline: "none",
-                padding: "12px 0",
-                fontSize: "14px",
-                fontFamily: "inherit",
-                color: "var(--ink)",
-                background: "transparent",
               }}
             />
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <ArrowUpDown size={15} color="var(--muted-2)" />
-            <span style={{ fontSize: "13px", color: "var(--muted)" }}>{t("community.sortBy")}:</span>
-            <select
-              value={sort}
-              onChange={(e) => setSort(e.target.value as SortKey)}
-              className="rc-community-sort"
+          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+            <span style={{ fontSize: 14, color: "#64748b", fontWeight: 600 }}>
+              {projects.length} {t("community.projects").toLowerCase()}
+            </span>
+            <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+              <ArrowUpDown size={15} color="#64748b" style={{ position: "absolute", left: 12 }} />
+              <select
+                value={sort}
+                onChange={(e) => setSort(e.target.value as SortKey)}
+                style={{
+                  appearance: "none",
+                  padding: "10px 34px 10px 36px",
+                  borderRadius: 12,
+                  border: "1px solid #e2e8f0",
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: "#0f172a",
+                  background: "white",
+                  cursor: "pointer",
+                }}
+              >
+                <option value="trending">{t("community.sortBy")}: {t("community.trending")}</option>
+                <option value="newest">{t("community.sortBy")}: {t("community.newest")}</option>
+                <option value="top">{t("community.sortBy")}: {t("community.top")}</option>
+              </select>
+            </div>
+            <Link
+              href="/community/new"
               style={{
-                appearance: "none",
-                border: "1px solid var(--rule)",
-                borderRadius: "6px",
-                padding: "11px 32px 11px 12px",
-                fontSize: "14px",
-                fontFamily: "inherit",
-                color: "var(--ink)",
-                background: "white",
-                cursor: "pointer",
-                fontWeight: 500,
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                padding: "11px 16px",
+                borderRadius: 12,
+                background: "#0f172a",
+                color: "white",
+                fontWeight: 600,
+                fontSize: 14,
+                textDecoration: "none",
               }}
             >
-              <option value="trending">{t("community.trending")}</option>
-              <option value="new">{t("community.newest")}</option>
-              <option value="top">{t("community.top")}</option>
-            </select>
+              <Plus size={16} /> {t("community.newProject")}
+            </Link>
           </div>
         </div>
 
-        {/* Category chips */}
-        <div className="rc-community-chips" style={{ display: "flex", gap: "8px", marginBottom: "24px", flexWrap: "wrap" }}>
-          <button type="button" onClick={() => setCategory("all")} style={chipStyle(category === "all")}>
-            {t("community.all")}
-          </button>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, margin: "18px 0 4px" }}>
           {CATEGORIES.map((c) => (
-            <button key={c.id} type="button" onClick={() => setCategory(c.id)} style={chipStyle(category === c.id, c.color)}>
-              {c.label}
+            <button
+              key={c}
+              type="button"
+              onClick={() => setCategory(c)}
+              style={{
+                padding: "7px 14px",
+                borderRadius: 999,
+                border: "1px solid",
+                borderColor: category === c ? "#0f172a" : "#e2e8f0",
+                background: category === c ? "#0f172a" : "white",
+                color: category === c ? "white" : "#475569",
+                fontSize: 13,
+                fontWeight: 600,
+                cursor: "pointer",
+              }}
+            >
+              {c === "All" ? t("community.all") : c}
             </button>
           ))}
         </div>
+      </div>
 
-        {/* Count + grid */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "18px" }}>
-          <p style={{ margin: 0, fontSize: "14px", color: "var(--muted)" }}>
-            <strong style={{ color: "var(--ink)" }}>{formatCount(visible.length)}</strong> {t("community.projects")}
-          </p>
-        </div>
-
-        {hydrated && visible.length === 0 ? (
-          <div style={{ padding: "60px 24px", textAlign: "center", border: "1px dashed var(--rule)", borderRadius: "12px", color: "var(--muted)" }}>
-            {t("community.empty")}
-          </div>
+      <div style={{ maxWidth: 1160, margin: "0 auto", padding: "24px 24px 80px" }}>
+        {visible.length === 0 ? (
+          <p style={{ color: "#64748b", fontSize: 16 }}>{t("community.empty")}</p>
         ) : (
           <div
             style={{
               display: "grid",
               gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-              gap: "24px",
+              gap: 22,
             }}
           >
             {visible.map((p) => (
               <CommunityProjectCard
-                key={p.id}
+                key={p.slug}
                 project={p}
-                filesLabel={t("community.files")}
-                starsLabel={t("community.stars")}
-                byLabel={t("community.by")}
-                onStar={() => star(p.id)}
-                isStarred={isStarred(p.id)}
+                starred={isStarred(p.slug)}
+                onStar={() => star(p.slug)}
               />
             ))}
           </div>
         )}
-      </section>
-
-      {/* Footer */}
-      <footer style={{ borderTop: "1px solid var(--rule)", padding: "32px 48px", background: "white" }}>
-        <div
-          style={{
-            maxWidth: "1180px",
-            margin: "0 auto",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            gap: "16px",
-            flexWrap: "wrap",
-            fontSize: "13px",
-            color: "var(--muted-2)",
-          }}
-        >
-          <span>© {new Date().getFullYear()} RepoContext</span>
-          <div style={{ display: "flex", gap: "20px" }}>
-            <Link href="/pricing" style={{ color: "var(--muted-2)", textDecoration: "none" }}>
-              {t("nav.pricing")}
-            </Link>
-            <Link href="/docs" style={{ color: "var(--muted-2)", textDecoration: "none" }}>
-              {t("nav.docs")}
-            </Link>
-            <Link href="/terms" style={{ color: "var(--muted-2)", textDecoration: "none" }}>
-              {t("nav.terms")}
-            </Link>
-          </div>
-        </div>
-      </footer>
+      </div>
     </main>
   )
-}
-
-function chipStyle(active: boolean, color?: string): React.CSSProperties {
-  return {
-    padding: "7px 14px",
-    borderRadius: "999px",
-    border: active ? "1px solid " + (color ?? "var(--blue-50)") : "1px solid var(--rule)",
-    background: active ? (color ? `${color}14` : "var(--blue-10)") : "white",
-    color: active ? (color ?? "var(--blue-70)") : "var(--ink-2)",
-    fontSize: "13px",
-    fontWeight: active ? 600 : 500,
-    cursor: "pointer",
-    fontFamily: "inherit",
-  }
 }
