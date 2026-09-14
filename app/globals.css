@@ -563,11 +563,11 @@ img, svg, video, iframe, table, pre, .code-block {
 
 /* The collapsible menu only exists on small screens; force it away
    again if the viewport grows while it is open. */
-@media (min-width: 901px) {
+@media (min-width: 1081px) {
   .rc-nav-mobile { display: none !important; }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1080px) {
   .rc-nav {
     padding-left: 16px !important;
     padding-right: 16px !important;

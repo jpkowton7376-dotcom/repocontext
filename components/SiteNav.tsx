@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useRouter, usePathname } from "next/navigation"
 import type { AuthChangeEvent, Session } from "@supabase/supabase-js"
 import { supabase, isSupabaseConfigured } from "@/lib/supabase"
 import { useTranslation } from "./LanguageProvider"
@@ -15,9 +15,20 @@ type Variant = "dark" | "light"
 export function SiteNav({ variant = "light" }: { variant?: Variant }) {
   const { t } = useTranslation()
   const router = useRouter()
+  const pathname = usePathname()
+  const [hash, setHash] = useState("")
   const [user, setUser] = useState<any>(null)
   const [menuOpen, setMenuOpen] = useState(false)
   const isDark = variant === "dark"
+
+  // Track the in-page anchor (Features / How it works) so the matching link
+  // can show an active state after hash navigation too.
+  useEffect(() => {
+    const syncHash = () => setHash(window.location.hash)
+    syncHash()
+    window.addEventListener("hashchange", syncHash)
+    return () => window.removeEventListener("hashchange", syncHash)
+  }, [pathname])
 
   useEffect(() => {
     if (!isSupabaseConfigured() || !supabase) return
@@ -99,26 +110,46 @@ export function SiteNav({ variant = "light" }: { variant?: Variant }) {
   // On the dark variant the nav sits on the page itself, so anchors are
   // relative; everywhere else they need the leading slash.
   const navLinks = [
-    { href: isDark ? "#features" : "/#features", key: "nav.features" },
-    { href: isDark ? "#how" : "/#how", key: "nav.howItWorks" },
+    { href: isDark ? "#features" : "/#features", key: "nav.features", anchor: "#features" },
+    { href: isDark ? "#how" : "/#how", key: "nav.howItWorks", anchor: "#how" },
     { href: "/pricing", key: "nav.pricing" },
     { href: "/developers", key: "nav.api" },
     { href: "/docs", key: "nav.docs" },
     { href: "/ai-tools", key: "nav.aiTools" },
     { href: "/templates", key: "nav.templates" },
-    { href: "/forge", key: "nav.Forge" },
+    { href: "/forge", key: "nav.forge" },
   ]
 
-  const renderCenterLink = (href: string, key: string) => {
+  // A link is active when its route matches exactly or the current page is a
+  // sub-route of it (e.g. /forge/new highlights Forge). Anchor links are only
+  // active on the home page with the matching hash.
+  const isActive = (link: { href: string; anchor?: string }) => {
+    if (link.anchor) return pathname === "/" && hash === link.anchor
+    return pathname === link.href || pathname.startsWith(`${link.href}/`)
+  }
+
+  const desktopLinkStyle = (active: boolean): React.CSSProperties => ({
+    color: active ? (isDark ? "#ffffff" : "var(--ink)") : linkColor,
+    textDecoration: "none",
+    fontWeight: active ? 700 : 500,
+    padding: "21px 2px",
+    borderBottom: active
+      ? `2px solid ${isDark ? "#ffffff" : "var(--blue-60)"}`
+      : "2px solid transparent",
+    transition: "color 0.15s ease, border-color 0.15s ease",
+    whiteSpace: "nowrap",
+  })
+
+  const renderCenterLink = (href: string, key: string, active: boolean) => {
     if (isDark) {
       return (
-        <GlowLink key={key} href={href} style={{ color: linkColor, textDecoration: "none" }}>
+        <GlowLink key={key} href={href} style={desktopLinkStyle(active)} aria-current={active ? "page" : undefined}>
           {t(key)}
         </GlowLink>
       )
     }
     return (
-      <Link key={key} href={href} style={{ color: linkColor, textDecoration: "none" }}>
+      <Link key={key} href={href} style={desktopLinkStyle(active)} aria-current={active ? "page" : undefined}>
         {t(key)}
       </Link>
     )
@@ -148,13 +179,13 @@ export function SiteNav({ variant = "light" }: { variant?: Variant }) {
         </Link>
         {isDark && (
           <div className="rc-nav-links" style={centerLinksStyle}>
-            {navLinks.map((l) => renderCenterLink(l.href, l.key))}
+            {navLinks.map((l) => renderCenterLink(l.href, l.key, isActive(l)))}
           </div>
         )}
       </div>
       {!isDark && (
         <div className="rc-nav-links" style={centerLinksStyle}>
-          {navLinks.map((l) => renderCenterLink(l.href, l.key))}
+          {navLinks.map((l) => renderCenterLink(l.href, l.key, isActive(l)))}
         </div>
       )}
       <div style={rightLinksStyle}>
@@ -274,20 +305,29 @@ export function SiteNav({ variant = "light" }: { variant?: Variant }) {
             zIndex: 200,
           }}
         >
-          {navLinks.map((l) => (
-            <Link
-              key={l.key}
-              href={l.href}
-              onClick={() => setMenuOpen(false)}
-              style={{
-                color: isDark ? "white" : "var(--ink)",
-                textDecoration: "none",
-                fontSize: "15px",
-              }}
-            >
-              {t(l.key)}
-            </Link>
-          ))}
+          {navLinks.map((l) => {
+            const active = isActive(l)
+            return (
+              <Link
+                key={l.key}
+                href={l.href}
+                onClick={() => setMenuOpen(false)}
+                aria-current={active ? "page" : undefined}
+                style={{
+                  color: active ? "#2563eb" : isDark ? "white" : "var(--ink)",
+                  textDecoration: "none",
+                  fontSize: "15px",
+                  fontWeight: active ? 700 : 500,
+                  borderLeft: active ? "3px solid #2563eb" : "3px solid transparent",
+                  paddingLeft: 10,
+                  marginLeft: -13,
+                  lineHeight: 1.4,
+                }}
+              >
+                {t(l.key)}
+              </Link>
+            )
+          })}
 
           <LanguageSwitcher variant={isDark ? "dark" : "light"} />
 

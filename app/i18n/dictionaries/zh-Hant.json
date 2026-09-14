@@ -12,7 +12,7 @@
     "dashboard": "儀表板",
     "signOut": "登出",
     "templates": "模板",
-    "forge": "鍛造"
+    "forge": "Forge"
   },
   "aiTools": {
     "eyebrow": "目錄",
@@ -136,7 +136,7 @@
     "forgeTitle": "鍛造的作品",
     "forgeSubtitle": "瀏覽創作者分享的硬體專案：零件清單、接線、機構與逐步組裝說明。",
     "forgeCta": "瀏覽專案",
-    "forgeNew": "分享作品",
+    "forgeNew": "用 AI 設計",
     "steps": [
       {
         "title": "貼上儲存庫網址",
@@ -906,6 +906,15 @@
     "tabWiring": "接線",
     "tabMech": "機構",
     "tabInstructions": "設定說明",
+    "category": "分類",
+    "connections": "連接",
+    "wiringNotes": "備註",
+    "specs": "規格",
+    "tools": "工具",
+    "assumptions": "假設",
+    "viewDetails": "查看詳情",
+    "hideDetails": "收起詳情",
+    "doneLabel": "完成",
     "aiSummary": "摘要",
     "parts": "零件",
     "copied": "已複製",

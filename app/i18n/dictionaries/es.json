@@ -12,7 +12,7 @@
     "dashboard": "Panel",
     "signOut": "Cerrar sesión",
     "templates": "Plantillas",
-    "forge": "Forja"
+    "forge": "Forge"
   },
   "aiTools": {
     "eyebrow": "Directorio",
@@ -136,7 +136,7 @@
     "forgeTitle": "Proyectos de la Forja",
     "forgeSubtitle": "Explora proyectos de hardware compartidos por creadores: listas de piezas, cableado, mecánica e instrucciones paso a paso.",
     "forgeCta": "Explorar proyectos",
-    "forgeNew": "Compartir un proyecto",
+    "forgeNew": "Diseñar con IA",
     "steps": [
       {
         "title": "Pega la URL de tu repositorio",
@@ -906,6 +906,15 @@
     "tabWiring": "Cableado",
     "tabMech": "Mecánica",
     "tabInstructions": "Instrucciones",
+    "category": "Categoría",
+    "connections": "Conexiones",
+    "wiringNotes": "Notas",
+    "specs": "Especificaciones",
+    "tools": "Herramientas",
+    "assumptions": "Supuestos",
+    "viewDetails": "Ver detalles",
+    "hideDetails": "Ocultar detalles",
+    "doneLabel": "HECHOS",
     "aiSummary": "Resumen",
     "parts": "Piezas",
     "copied": "Copiado",

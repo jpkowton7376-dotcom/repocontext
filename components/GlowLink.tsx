@@ -9,12 +9,14 @@ export function GlowLink({
   style = {},
   target,
   rel,
+  "aria-current": ariaCurrent,
 }: {
   href: string
   children: React.ReactNode
   style?: React.CSSProperties
   target?: string
   rel?: string
+  "aria-current"?: "page" | "step" | "location" | "date" | "time" | boolean
 }) {
   const [hovered, setHovered] = useState(false)
   const glowStyle: React.CSSProperties = {
@@ -38,6 +40,7 @@ export function GlowLink({
         href={href}
         target={target}
         rel={rel}
+        aria-current={ariaCurrent}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         style={glowStyle}
@@ -50,6 +53,7 @@ export function GlowLink({
   return (
     <Link
       href={href}
+      aria-current={ariaCurrent}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={glowStyle}

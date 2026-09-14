@@ -9,12 +9,12 @@ import { useForge } from "@/lib/forge-store"
 import type { HardwareProject, Part, PartCategory } from "@/lib/forge-data"
 
 const COVERS = [
-  "/projects/plant-monitor.svg",
-  "/projects/heart-badge.svg",
-  "/projects/drone-controller.svg",
-  "/projects/door-lock.svg",
-  "/projects/weather-station.svg",
-  "/projects/robotic-arm.svg",
+  "/projects/plant-monitor.jpg",
+  "/projects/heart-badge.jpg",
+  "/projects/drone-controller.jpg",
+  "/projects/door-lock.jpg",
+  "/projects/weather-station.jpg",
+  "/projects/robotic-arm.jpg",
 ]
 const COLORS = ["#10b981", "#f43f5e", "#0ea5e9", "#f59e0b", "#f97316", "#8b5cf6"]
 
@@ -55,6 +55,10 @@ export function NewProjectForm() {
   const submit = (e: React.FormEvent) => {
     e.preventDefault()
     const slug = slugify(title) || `project-${Date.now()}`
+    const lines = instructions
+      .split("\n")
+      .map((s) => s.trim())
+      .filter(Boolean)
     const project: HardwareProject = {
       slug,
       title: title.trim() || "Untitled project",
@@ -70,10 +74,14 @@ export function NewProjectForm() {
       parts: parts.filter((p) => p.name.trim()).map((p) => ({ ...p, unitCost: Number(p.unitCost) || 0, quantity: Number(p.quantity) || 1 })),
       wiring: wiring.trim(),
       mech: mech.trim(),
-      instructions: instructions
-        .split("\n")
-        .map((s) => s.trim())
-        .filter(Boolean),
+      instructions: lines,
+      build: lines.length
+        ? {
+            tools: [],
+            assumptions: [],
+            phases: [{ title: "Build", steps: lines.map((title) => ({ title })) }],
+          }
+        : undefined,
       stars: 0,
     }
     addProject(project)
@@ -98,7 +106,7 @@ export function NewProjectForm() {
   }
 
   return (
-    <main style={{ minHeight: "100vh", background: "#f8fafc" }}>
+    <div>
       <div style={{ maxWidth: 820, margin: "0 auto", padding: "28px 24px 80px" }}>
         <Link href="/forge" style={{ display: "inline-flex", alignItems: "center", gap: 6, color: "#2563eb", textDecoration: "none", fontWeight: 600, fontSize: 14 }}>
           <ArrowLeft size={16} /> {t("forge.backToForge")}
@@ -199,6 +207,6 @@ export function NewProjectForm() {
           </button>
         </form>
       </div>
-    </main>
+    </div>
   )
 }

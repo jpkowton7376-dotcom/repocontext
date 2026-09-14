@@ -1063,7 +1063,7 @@ export default function HomePage() {
             </p>
             <div style={{ display: "flex", gap: "14px", flexWrap: "wrap" }}>
               <Link
-                href="/forge"
+                href="/forge/new"
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
@@ -1073,14 +1073,14 @@ export default function HomePage() {
                   color: "white",
                   borderRadius: "4px",
                   textDecoration: "none",
-                  fontWeight: 500,
+                  fontWeight: 600,
                   fontSize: "15px",
                 }}
               >
-                {t("home.forgeCta")} →
+                {t("home.forgeNew")} →
               </Link>
               <Link
-                href="/forge/new"
+                href="/forge"
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
@@ -1094,7 +1094,7 @@ export default function HomePage() {
                   fontSize: "15px",
                 }}
               >
-                {t("home.forgeNew")}
+                {t("home.forgeCta")}
               </Link>
             </div>
           </div>

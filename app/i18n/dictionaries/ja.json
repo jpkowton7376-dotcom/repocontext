@@ -12,7 +12,7 @@
     "dashboard": "ダッシュボード",
     "signOut": "サインアウト",
     "templates": "テンプレート",
-    "forge": "フォージ"
+    "forge": "Forge"
   },
   "aiTools": {
     "eyebrow": "ディレクトリ",
@@ -136,7 +136,7 @@
     "forgeTitle": "フォージの作品",
     "forgeSubtitle": "作り手が共有するハードウェア プロジェクトを覧：部品リスト、配線、機構、段階的な組み立て手順。",
     "forgeCta": "プロジェクトを見る",
-    "forgeNew": "作品を共有",
+    "forgeNew": "AIで設計する",
     "steps": [
       {
         "title": "リポジトリ URL を貼り付ける",
@@ -906,6 +906,15 @@
     "tabWiring": "配線",
     "tabMech": "機構",
     "tabInstructions": "手順",
+    "category": "カテゴリ",
+    "connections": "接続",
+    "wiringNotes": "メモ",
+    "specs": "仕様",
+    "tools": "工具",
+    "assumptions": "前提",
+    "viewDetails": "詳細を見る",
+    "hideDetails": "詳細を隠す",
+    "doneLabel": "完了",
     "aiSummary": "概要",
     "parts": "部品",
     "copied": "コピーしました",
