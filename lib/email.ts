@@ -67,7 +67,7 @@ async function send(args: {
 function layout(contentHtml: string, preheader?: string): string {
   const siteUrl =
     SITE_URL
-  const supportEmail = "hello@repocontext.dev"
+  const supportEmail = "support@repocontext.dev"
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -223,7 +223,7 @@ export async function sendPaymentFailedEmail(email: string): Promise<{ ok: boole
  * ──────────────────────────────────────────────────────────────────────────── */
 
 /** Where inbound customer-service messages are delivered. */
-export const SUPPORT_INBOX = "hello@repocontext.dev"
+export const SUPPORT_INBOX = "support@repocontext.dev"
 
 /** Escapes user-controlled text so it cannot break out of the HTML body. */
 function esc(value: string): string {

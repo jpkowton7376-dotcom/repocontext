@@ -244,7 +244,7 @@ E.append(P('让对外邮件用品牌域名、客服走品牌邮箱、支付后�
 
 E.append(H3('10.1 Cloudflare Email Routing（品牌邮箱转发）'))
 E.append(B('Cloudflare → <b>Email → Email Routing</b> → 开启。'))
-E.append(B('添加自定义地址，例如 <font name="Courier">hello@repocontext.dev</font> → 转发到 <font name="Courier">jpkowton@gmail.com</font>。'))
+E.append(B('添加自定义地址，例如 <font name="Courier">support@repocontext.dev</font> → 转发到 <font name="Courier">jpkowton@gmail.com</font>。'))
 E.append(B('确认自动添加的 DNS（CF 托管 DNS 一般自动加）：'))
 E.append(tbl([
     ['类型', '名称', '内容'],
@@ -265,10 +265,10 @@ E.append(tbl([
 E.append(Spacer(1, 4))
 E.append(B('验证通过后，在 Vercel 设环境变量 <font name="Courier">RESEND_API_KEY=re_xxx</font> 与 <font name="Courier">RESEND_FROM=RepoContext &lt;noreply@repocontext.dev&gt;</font>。'))
 E.append(B('当前 lib/email.ts 中这两个变量为空时邮件为 no-op；设好后欢迎/收据/客服邮件才会真正发出，且 From 为品牌域名。'))
-E.append(B('代码侧已将 <font name="Courier">SUPPORT_INBOX</font> 与页脚支持邮箱改为 <font name="Courier">hello@repocontext.dev</font>（经 Email Routing 转发到你的 Gmail）。'))
+E.append(B('代码侧已将 <font name="Courier">SUPPORT_INBOX</font> 与页脚支持邮箱改为 <font name="Courier">support@repocontext.dev</font>（经 Email Routing 转发到你的 Gmail）。'))
 
 E.append(H3('10.3 Creem 后台邮箱 + 触发复审'))
-E.append(B('Creem Dashboard → <b>Settings</b> → 通知邮箱改为 <font name="Courier">hello@repocontext.dev</font> → 保存。'))
+E.append(B('Creem Dashboard → <b>Settings</b> → 通知邮箱改为 <font name="Courier">support@repocontext.dev</font> → 保存。'))
 E.append(B('若涉及收款/业务审核，补全信息后点 <b>Submit for review</b> 触发复审（纯后台操作，无代码改动）。'))
 E.append(P('⚠️ Email Routing 与 Resend 共用 @ 的 SPF，上面 TXT 已把 amazonses.com（Resend）和 cloudflare.net（Email Routing）合并为一条，勿重复添加。', st_note))
 
