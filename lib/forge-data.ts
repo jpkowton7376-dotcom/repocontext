@@ -8,7 +8,7 @@ export interface Part {
   unitCost: number
 }
 
-export type NodeKind = "mcu" | "sensor" | "actuator" | "power" | "module"
+export type NodeKind = "mcu" | "sensor" | "actuator" | "power" | "module" | "driver" | "switch"
 
 export interface WiringNode {
   id: string
@@ -1066,6 +1066,864 @@ export const PROJECTS: HardwareProject[] = [
               detail:
                 "Pair the phone, load the control app, and set grip force + reach limits before letting it lift anything heavier than a pen.",
               parts: ["Suction Cup Mount"],
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  /* ============================================================
+     #7 — Autonomous Rover (rover archetype)
+     ============================================================ */
+  {
+    slug: "autonomous-rover",
+    title: "Autonomous GPS Rover",
+    author: "trail_blazer",
+    avatarColor: "#f97316",
+    cover: "/projects/autonomous-rover.jpg",
+    createdAt: "2026-09-13T08:30:00Z",
+    tags: ["Robotics", "Navigation"],
+    featured: true,
+    summary:
+      "A 4WD rover that follows waypoints from GPS, avoids obstacles with ultrasonic rangefinders, and logs every run through LoRa back to base.",
+    features: [
+      "GPS waypoint navigation",
+      "4WD independent drive",
+      "3× ultrasonic obstacle avoidance",
+      "LoRa telemetry back to base",
+      "Solar-charged battery bank",
+    ],
+    stars: 12,
+    parts: [
+      { name: "Raspberry Pi 4 (4GB)", category: "Electrical", subcategory: "MCU", quantity: 1, unitCost: 45.0 },
+      { name: "Arduino Mega 2560", category: "Electrical", subcategory: "MCU", quantity: 1, unitCost: 18.5 },
+      { name: "ZED-F9P GPS Module", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 24.0 },
+      { name: "HC-SR04 Ultrasonic ×3", category: "Electrical", subcategory: "Sensor", quantity: 3, unitCost: 2.8 },
+      { name: "SX1262 LoRa Module", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 12.0 },
+      { name: "L298N Motor Driver ×2", category: "Electrical", subcategory: "Driver", quantity: 2, unitCost: 4.5 },
+      { name: "775 DC Motor ×4", category: "Electrical", subcategory: "Actuator", quantity: 4, unitCost: 6.2 },
+      { name: "18650 ×6 Battery Pack", category: "Electrical", subcategory: "Power", quantity: 1, unitCost: 15.0 },
+      { name: "Solar Panel 6W + Charge Controller", category: "Electrical", subcategory: "Power", quantity: 1, unitCost: 22.0 },
+      { name: "Aluminum Frame + Wheels", category: "Mechanical", subcategory: "Structural", quantity: 1, unitCost: 38.0 },
+    ],
+    wiringNodes: [
+      { id: "solar", label: "6W Solar + Charger", kind: "power" },
+      { id: "bat", label: "6S Li-ion Pack", kind: "power" },
+      { id: "pi", label: "Raspberry Pi 4", kind: "mcu" },
+      { id: "mega", label: "Arduino Mega", kind: "mcu" },
+      { id: "gps", label: "ZED-F9P GPS", kind: "module" },
+      { id: "lora", label: "SX1262 LoRa", kind: "module" },
+      { id: "front", label: "Front Ultrasonic", kind: "sensor" },
+      { id: "left", label: "Left Ultrasonic", kind: "sensor" },
+      { id: "right", label: "Right Ultrasonic", kind: "sensor" },
+      { id: "drv1", label: "L298N Front", kind: "driver" },
+      { id: "drv2", label: "L298N Rear", kind: "driver" },
+    ],
+    wiringEdges: [
+      { from: "solar", to: "bat", label: "Charge rail" },
+      { from: "bat", to: "pi", label: "USB-C 5V" },
+      { from: "bat", to: "drv1", label: "12V drive" },
+      { from: "bat", to: "drv2", label: "12V drive" },
+      { from: "pi", to: "mega", label: "UART / obstacle cmd" },
+      { from: "pi", to: "gps", label: "UART" },
+      { from: "pi", to: "lora", label: "SPI" },
+      { from: "mega", to: "front", label: "PWM echo" },
+      { from: "mega", to: "left", label: "PWM echo" },
+      { from: "mega", to: "right", label: "PWM echo" },
+      { from: "mega", to: "drv1", label: "PWM EN / IN1-IN2" },
+      { from: "mega", to: "drv2", label: "PWM EN / IN3-IN4" },
+    ],
+    wiring:
+      "Arduino Mega handles motor control and ultrasonic rangefinding; Raspberry Pi runs GPS waypoint math and LoRa comms. Pi sends target speeds over UART; Mega closes the speed loop. Motor drivers sit directly on the battery rail — separate 5V regulator feeds the Pi.",
+    mechSpecs: [
+      { label: "Dimensions", value: "340 × 240 × 160 mm" },
+      { label: "Ground Clearance", value: "45 mm" },
+      { label: "Weight", value: "3.2 kg with solar panel" },
+      { label: "Top Speed", value: "1.1 m/s" },
+    ],
+    mechSections: [
+      {
+        title: "Frame",
+        body: "T-slotted aluminum rails keep the 775 motors bolted rigidly; each wheel carries a suspension spring to absorb trail shock and keep the ultrasonic heads level. The GPS antenna lives on the tallest corner.",
+      },
+      {
+        title: "Battery Layout",
+        body: "Li-ion pack sits low at the rear to keep the CG planted; the solar panel angles up 30° on a hinge so it can be folded down for transport.",
+      },
+    ],
+    instructions: [
+      "Mount the motors and run a PWM sanity check before wiring the Pi.",
+      "Calibrate the ultrasonic sensors and teach the obstacle-avoidance thresholds.",
+      "Flash the navigation stack, load a test waypoint list, and drive a short closed loop.",
+    ],
+    build: {
+      tools: ["Soldering iron", "Hex key set", "Digital multimeter", "Li-ion charger"],
+      assumptions: [
+        "Outdoor GPS visibility available for testing",
+        "6S balance charger for the battery pack",
+        "Raspberry Pi Imager set up on a laptop",
+      ],
+      phases: [
+        {
+          title: "Chassis",
+          steps: [
+            {
+              title: "Build the 4WD frame",
+              detail:
+                "Be generous with lock washers on motor mounts — vibration will walk loose any single-nut joint within an hour of trail running.",
+              tools: ["Hex key set"],
+              parts: ["Aluminum Frame + Wheels", "775 DC Motor"],
+            },
+            {
+              title: "Install suspension and CG balance",
+              detail:
+                "Battery and Pi live at the rear; make sure the rover doesn't nose-dive when you pick it up by the front bumper.",
+              parts: ["18650 ×6 Battery Pack"],
+            },
+          ],
+        },
+        {
+          title: "Wire",
+          steps: [
+            {
+              title: "Power rails first",
+              detail:
+                "Battery → L298Ns directly on 12V; separate 5V regulator feeds Pi and Mega. Never run motor current through a regulator.",
+              tools: ["Soldering iron", "Digital multimeter"],
+              parts: ["L298N Motor Driver", "18650 ×6 Battery Pack"],
+            },
+            {
+              title: "Comm bus between Pi and Mega",
+              detail:
+                "Serial at 115200 baud. Pi sends JSON speed commands; Mega replies with obstacle distances every 50 ms.",
+              parts: ["Raspberry Pi 4", "Arduino Mega 2560"],
+            },
+          ],
+        },
+        {
+          title: "Navigate",
+          steps: [
+            {
+              title: "GPS lock and waypoint test",
+              detail:
+                "Give the ZED-F9P 60 seconds of sky view for a good fix. Drive a 3-point triangle to verify heading accuracy before anything else.",
+              parts: ["ZED-F9P GPS Module"],
+            },
+            {
+              title: "LoRa telemetry and field test",
+              detail:
+                "Send heartbeat packets every 2 seconds. Walk the rover 200 m away and confirm you still see GPS drift before calling it ready.",
+              parts: ["SX1262 LoRa Module"],
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  /* ============================================================
+     #8 — Home Security Hub
+     ============================================================ */
+  {
+    slug: "home-security-hub",
+    title: "Home Security Hub",
+    author: "keymaster",
+    avatarColor: "#ef4444",
+    cover: "/projects/security-hub.jpg",
+    createdAt: "2026-09-13T10:00:00Z",
+    tags: ["Security", "IoT"],
+    summary:
+      "An all-in-one security hub: PIR + window/door sensors stream to an ESP32-CAM, siren triggers on breach, and BLE lets you arm/disarm from your phone.",
+    features: [
+      "ESP32-CAM live feed",
+      "3× PIR motion sensors",
+      "4× door/window reed switches",
+      "Active buzzer + relay siren",
+      "BLE phone app arm/disarm",
+    ],
+    stars: 9,
+    parts: [
+      { name: "ESP32-CAM", category: "Electrical", subcategory: "MCU", quantity: 1, unitCost: 14.0 },
+      { name: "ESP32-C3 (co-proc)", category: "Electrical", subcategory: "MCU", quantity: 1, unitCost: 9.5 },
+      { name: "HC-SR501 PIR Sensor ×3", category: "Electrical", subcategory: "Sensor", quantity: 3, unitCost: 2.2 },
+      { name: "Magnetic Reed Switch ×4", category: "Electrical", subcategory: "Sensor", quantity: 4, unitCost: 0.8 },
+      { name: "Buzzer Active 5V", category: "Electrical", subcategory: "Actuator", quantity: 1, unitCost: 0.6 },
+      { name: "5V Relay Module", category: "Electrical", subcategory: "Driver", quantity: 1, unitCost: 1.2 },
+      { name: "120dB Piezo Siren", category: "Electrical", subcategory: "Actuator", quantity: 1, unitCost: 4.0 },
+      { name: "USB-A 5V 2A PSU", category: "Electrical", subcategory: "Power", quantity: 1, unitCost: 5.5 },
+      { name: "ABS Enclosure + DIN Rail", category: "Mechanical", subcategory: "Enclosure", quantity: 1, unitCost: 7.0 },
+    ],
+    wiringNodes: [
+      { id: "psu", label: "5V 2A PSU", kind: "power" },
+      { id: "cam", label: "ESP32-CAM", kind: "mcu" },
+      { id: "c3", label: "ESP32-C3", kind: "mcu" },
+      { id: "pir1", label: "PIR Hall", kind: "sensor" },
+      { id: "pir2", label: "PIR Back", kind: "sensor" },
+      { id: "pir3", label: "PIR Garage", kind: "sensor" },
+      { id: "door1", label: "Front Door", kind: "sensor" },
+      { id: "door2", label: "Back Door", kind: "sensor" },
+      { id: "door3", label: "Window ×2", kind: "sensor" },
+      { id: "buzz", label: "Buzzer", kind: "actuator" },
+      { id: "relay", label: "Relay → Siren", kind: "driver" },
+    ],
+    wiringEdges: [
+      { from: "psu", to: "cam", label: "5V" },
+      { from: "psu", to: "c3", label: "5V" },
+      { from: "c3", to: "cam", label: "UART status" },
+      { from: "pir1", to: "c3", label: "GPIO ext 1" },
+      { from: "pir2", to: "c3", label: "GPIO ext 2" },
+      { from: "pir3", to: "c3", label: "GPIO ext 3" },
+      { from: "door1", to: "c3", label: "GPIO door 1" },
+      { from: "door2", to: "c3", label: "GPIO door 2" },
+      { from: "door3", to: "c3", label: "GPIO door 3" },
+      { from: "c3", to: "buzz", label: "GPIO 5V" },
+      { from: "c3", to: "relay", label: "GPIO trigger" },
+    ],
+    wiring:
+      "ESP32-C3 is the brain — it reads every sensor via GPIO, runs the alarm logic, and handles BLE arm/disarm. ESP32-CAM streams video over Wi-Fi and only wakes on trigger. Both share a 5V rail; PIRs and reed switches pull down on GPIO when active.",
+    mechSpecs: [
+      { label: "Hub Enclosure", value: "120 × 80 × 45 mm ABS" },
+      { label: "Sensor Cable Length", value: "≤ 10 m per run" },
+      { label: "Siren Rating", value: "120 dB @ 1 m" },
+      { label: "Arm Latency", value: "< 3 s BLE → arm" },
+    ],
+    mechSections: [
+      {
+        title: "Hub Mounting",
+        body: "The enclosure sits in a low-traffic central closet — Wi-Fi and BLE range both stay good, and it's out of sight but not out of earshot of the siren.",
+      },
+      {
+        title: "Sensor Placement",
+        body: "PIRs mount 2.1 m high in corners so their 120° view overlaps. Reed switches go on the door frame, not the movable leaf, so paint and vibration don't shift them.",
+      },
+    ],
+    instructions: [
+      "Flash both ESP32s and pair the phone over BLE before running any wires.",
+      "Run sensor cables in the wall or under baseboards; avoid power cables to keep noise down.",
+      "Walk-test each zone and tune the PIR sensitivity to ignore pets.",
+    ],
+    build: {
+      tools: ["Soldering iron (optional)", "Wire strippers", "Drill + wall plugs", "Phillips screwdriver"],
+      assumptions: [
+        "Existing Wi-Fi network 2.4 GHz",
+        "BLE-capable phone (iOS/Android)",
+        "Access to the attic / crawl-space for cable runs",
+      ],
+      phases: [
+        {
+          title: "Hub",
+          steps: [
+            {
+              title: "Flash and test both ESP32s",
+              detail:
+                "Do this at the bench first — mount the hub on the wall only after you've confirmed BLE pairing and one full alarm cycle.",
+              parts: ["ESP32-CAM", "ESP32-C3"],
+            },
+            {
+              title: "Enclosure and DIN rail wiring",
+              detail:
+                "Leave 30 mm of slack on each sensor cable inside the enclosure so you can service a module without re-pulling a wall run.",
+              parts: ["ABS Enclosure + DIN Rail"],
+            },
+          ],
+        },
+        {
+          title: "Sensors",
+          steps: [
+            {
+              title: "Run reed switches to doors and windows",
+              detail:
+                "Mount the magnet half on the movable leaf, the switch half on the frame — gap ≤ 5 mm when closed.",
+              parts: ["Magnetic Reed Switch"],
+            },
+            {
+              title: "Calibrate PIRs for pet immunity",
+              detail:
+                "Tape the sensitivity pot halfway clockwise. Have a 10 kg dog walk the zone — it should not trip. You will tune per PIR.",
+              tools: ["Phillips screwdriver"],
+              parts: ["HC-SR501 PIR Sensor"],
+            },
+          ],
+        },
+        {
+          title: "Alarm",
+          steps: [
+            {
+              title: "Wire the siren through the relay",
+              detail:
+                "Siren draws way more current than the ESP32 can source — relay coil on GPIO, siren on the relay's own contacts.",
+              parts: ["5V Relay Module", "120dB Piezo Siren"],
+            },
+            {
+              title: "Full-cycle test",
+              detail:
+                "Arm → open a door → siren must fire in < 2 s → disarm from BLE. Repeat for every zone before leaving the house.",
+              tools: ["BLE phone app"],
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  /* ============================================================
+     #9 — Aquaponics Monitor
+     ============================================================ */
+  {
+    slug: "aquaponics-monitor",
+    title: "Aquaponics Farm Monitor",
+    author: "pond_witch",
+    avatarColor: "#06b6d4",
+    cover: "/projects/aquaponics-monitor.jpg",
+    createdAt: "2026-09-13T12:00:00Z",
+    tags: ["IoT", "Sensors"],
+    summary:
+      "Tracks pH, water temp, dissolved oxygen, and nutrient levels across a fish-tank + grow-bed loop; sends alerts to Telegram when anything drifts outside safe bands.",
+    features: [
+      "pH + temp + DO + nutrient sensing",
+      "4× channel multiplexer",
+      "Telegram bot alerts",
+      "Automatic solenoid valve dosing",
+      "Historical data dashboard",
+    ],
+    stars: 11,
+    parts: [
+      { name: "ESP32-S3 DevKit", category: "Electrical", subcategory: "MCU", quantity: 1, unitCost: 18.0 },
+      { name: "Atlas Scientific pH Kit", category: "Electrical", subcategory: "Sensor", quantity: 1, unitCost: 34.0 },
+      { name: "DS18B20 Waterproof Temp", category: "Electrical", subcategory: "Sensor", quantity: 2, unitCost: 4.5 },
+      { name: "Atlas Dissolved Oxygen Kit", category: "Electrical", subcategory: "Sensor", quantity: 1, unitCost: 55.0 },
+      { name: "TCA9548A I2C Mux", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 3.5 },
+      { name: "4× Solenoid Valves 12V", category: "Electrical", subcategory: "Actuator", quantity: 2, unitCost: 6.5 },
+      { name: "ULN2003 Darlington Driver", category: "Electrical", subcategory: "Driver", quantity: 1, unitCost: 2.0 },
+      { name: "5V 2A PSU + 12V 1A PSU", category: "Electrical", subcategory: "Power", quantity: 2, unitCost: 9.0 },
+      { name: "PVC Tee + Tube Fittings", category: "Mechanical", subcategory: "Fluidics", quantity: 1, unitCost: 15.0 },
+    ],
+    wiringNodes: [
+      { id: "psu5", label: "5V 2A PSU", kind: "power" },
+      { id: "psu12", label: "12V 1A PSU", kind: "power" },
+      { id: "mcu", label: "ESP32-S3", kind: "mcu" },
+      { id: "mux", label: "TCA9548A I2C Mux", kind: "module" },
+      { id: "ph", label: "pH Probe", kind: "sensor" },
+      { id: "do", label: "Dissolved Oxygen", kind: "sensor" },
+      { id: "temp1", label: "Tank Temp 1", kind: "sensor" },
+      { id: "temp2", label: "Grow-bed Temp 2", kind: "sensor" },
+      { id: "drv", label: "ULN2003 Driver", kind: "driver" },
+      { id: "vph", label: "pH Dose Valve", kind: "actuator" },
+      { id: "vnut", label: "Nutrient Dose Valve", kind: "actuator" },
+    ],
+    wiringEdges: [
+      { from: "psu5", to: "mcu", label: "5V" },
+      { from: "psu12", to: "vph", label: "12V" },
+      { from: "psu12", to: "vnut", label: "12V" },
+      { from: "mcu", to: "mux", label: "I2C" },
+      { from: "mux", to: "ph", label: "I2C ch0" },
+      { from: "mux", to: "do", label: "I2C ch1" },
+      { from: "temp1", to: "mcu", label: "1-Wire" },
+      { from: "temp2", to: "mcu", label: "1-Wire" },
+      { from: "mcu", to: "drv", label: "GPIO ×2" },
+      { from: "drv", to: "vph", label: "12V ground switch" },
+      { from: "drv", to: "vnut", label: "12V ground switch" },
+    ],
+    wiring:
+      "Atlas pH and DO probes share an I2C bus through a TCA9548A mux (each probe hard-codes an address). DS18B20s live on OneWire. ESP32-S3 runs the dosing logic — ULN2003 switches 12V valves to ground (common-negative solenoids).",
+    mechSpecs: [
+      { label: "Tank Volume", value: "200 L (fish side)" },
+      { label: "Ideal pH Band", value: "6.8 – 7.2" },
+      { label: "Ideal DO", value: "> 6 mg/L" },
+      { label: "Dosing Resolution", value: "10 mL per pulse" },
+    ],
+    mechSections: [
+      {
+        title: "Probe Placement",
+        body: "pH and DO probes live in the sump where flow is steady; never bury them in the grow-bed media or you'll get biofouling and stale readings.",
+      },
+      {
+        title: "Dosing Manifold",
+        body: "Two 12V solenoids feed into a PVC tee that drops into the sump. Keep the dosing lines above water level to prevent back-siphonage when the valves are off.",
+      },
+    ],
+    instructions: [
+      "Calibrate the pH probe with 4.0 and 7.0 buffers before anything else.",
+      "Prime the dosing lines with solution by powering each valve manually 3 times.",
+      "Set wide alert thresholds at first — you'll tighten them as the system stabilizes over 2 weeks.",
+    ],
+    build: {
+      tools: ["Soldering iron", "Wire strippers", "PVC pipe cutter", "Multimeter"],
+      assumptions: [
+        "Existing fish tank + grow-bed loop",
+        "Telegram bot token configured",
+        "Power point within 2 m of the sump",
+      ],
+      phases: [
+        {
+          title: "Sense",
+          steps: [
+            {
+              title: "I2C mux bus and probe calibration",
+              detail:
+                "Power only the probes, run a bus scan, and confirm each one reports before submerging. pH calibration takes 10 minutes — don't rush it.",
+              parts: ["TCA9548A I2C Mux", "Atlas Scientific pH Kit"],
+            },
+            {
+              title: "OneWire temperature ring",
+              detail:
+                "Connect DS18B20s in parallel on a single GPIO with a 4.7 kΩ pull-up. Addresses print to serial on boot so you know which probe is which.",
+              parts: ["DS18B20 Waterproof Temp"],
+            },
+          ],
+        },
+        {
+          title: "Actuate",
+          steps: [
+            {
+              title: "12V valve driver and manifold",
+              detail:
+                "Common-negative solenoids — ULN2003 sinks the current, 12V stays high on the other side. 12V comes from a dedicated supply, not the ESP32 rail.",
+              parts: ["ULN2003 Darlington Driver", "4× Solenoid Valves 12V"],
+            },
+            {
+              title: "Telegram bot and alert bands",
+              detail:
+                "Test with intentionally bad pH — the bot must reply within 30 seconds. Tighten the bands only after a week of stable baselines.",
+              parts: ["ESP32-S3 DevKit"],
+            },
+          ],
+        },
+        {
+          title: "Deploy",
+          steps: [
+            {
+              title: "Submerge probes and mount manifold",
+              detail:
+                "Tie probes to a float so they stay 5 cm below the surface. Dosing manifold sits above water to prevent back-siphonage.",
+              tools: ["PVC pipe cutter"],
+              parts: ["PVC Tee + Tube Fittings"],
+            },
+            {
+              title: "Two-week stabilization log",
+              detail:
+                "Export CSV daily. If variance is still wild after 14 days, check for biofouling on the DO probe membrane and replace if scaly.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  /* ============================================================
+     #10 — Bike Satellite Nav (generic with GPS + LoRa)
+     ============================================================ */
+  {
+    slug: "bike-satnav-lora",
+    title: "Bike Satellite Nav + LoRa Tracker",
+    author: "trail_rider",
+    avatarColor: "#84cc16",
+    cover: "/projects/bike-satnav.jpg",
+    createdAt: "2026-09-13T14:00:00Z",
+    tags: ["Wearable", "Navigation"],
+    summary:
+      "Handlebar-mounted GPS navigator with turn-by-turn directions on a 2.4\" TFT, plus LoRa beacons so a support vehicle can track you through dead zones.",
+    features: [
+      "ZED-F9P high-precision GPS",
+      "2.4\" TFT turn-by-turn display",
+      "SX1262 LoRa beacon every 10 s",
+      "USB-C rechargeable 5000 mAh",
+      "IP67 silicone handlebar mount",
+    ],
+    stars: 7,
+    parts: [
+      { name: "ESP32-S3 DevKit", category: "Electrical", subcategory: "MCU", quantity: 1, unitCost: 18.0 },
+      { name: "ZED-F9P GPS Module", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 24.0 },
+      { name: "2.4\" ST7789 TFT Display", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 12.0 },
+      { name: "SX1262 LoRa Module", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 12.0 },
+      { name: "5000 mAh Li-Po 3.7V", category: "Electrical", subcategory: "Power", quantity: 1, unitCost: 14.0 },
+      { name: "TP4056 USB-C Charger", category: "Electrical", subcategory: "Power", quantity: 1, unitCost: 1.5 },
+      { name: "Silicone Handlebar Mount + Strap", category: "Mechanical", subcategory: "Mount", quantity: 1, unitCost: 8.0 },
+      { name: "3D-printed Splash Shield", category: "Mechanical", subcategory: "Enclosure", quantity: 1, unitCost: 3.0 },
+    ],
+    wiringNodes: [
+      { id: "bat", label: "5000 mAh Li-Po", kind: "power" },
+      { id: "chg", label: "TP4056 Charger", kind: "power" },
+      { id: "mcu", label: "ESP32-S3", kind: "mcu" },
+      { id: "gps", label: "ZED-F9P", kind: "module" },
+      { id: "tft", label: "2.4\" TFT", kind: "module" },
+      { id: "lora", label: "SX1262", kind: "module" },
+    ],
+    wiringEdges: [
+      { from: "bat", to: "chg", label: "Charge rail" },
+      { from: "chg", to: "mcu", label: "3.3V/5V" },
+      { from: "mcu", to: "gps", label: "UART + I2C" },
+      { from: "mcu", to: "tft", label: "SPI" },
+      { from: "mcu", to: "lora", label: "SPI" },
+    ],
+    wiring:
+      "GPS UART for raw NMEA, I2C for configuration. TFT and LoRa share a hardware SPI bus with separate CS pins. The 3.7V rail feeds everything directly from the battery — no regulator needed.",
+    mechSpecs: [
+      { label: "Weight", value: "112 g with battery" },
+      { label: "Run Time", value: "14 hours continuous GPS + LoRa" },
+      { label: "Water Resistance", value: "IP67 (splash shield + mount)" },
+      { label: "Mount Dia.", value: "22.2 – 31.8 mm handlebars" },
+    ],
+    mechSections: [
+      {
+        title: "Handlebar Mount",
+        body: "Silicone wrap with two velcro straps goes under the handlebars; the main body clips on top. This makes it tool-removable for theft protection.",
+      },
+      {
+        title: "Splash Shield",
+        body: "3D-printed PETG visor angled at 45° keeps direct rain off the TFT while still being readable from the riding position.",
+      },
+    ],
+    instructions: [
+      "Flash firmware, upload a GPX route to flash storage, and acquire initial GPS fix in open sky.",
+      "Pair LoRa base station on the support vehicle and confirm 2 km range on a test loop.",
+      "Mount to handlebars, strap tight, go ride.",
+    ],
+    build: {
+      tools: ["Soldering iron", "3D printer (optional)", "Hex key"],
+      assumptions: [
+        "Bike with 22.2–31.8 mm handlebars",
+        "GPX route file exported from Komoot / Strava",
+        "Support vehicle or second LoRa receiver",
+      ],
+      phases: [
+        {
+          title: "Assemble",
+          steps: [
+            {
+              title: "Solder all modules to perfboard",
+              detail:
+                "Keep the GPS antenna away from the LoRa antenna — 20 mm minimum separation or they'll desensitize each other.",
+              parts: ["ESP32-S3 DevKit", "ZED-F9P GPS Module", "SX1262 LoRa Module"],
+            },
+            {
+              title: "Mount in handlebar housing",
+              detail:
+                "3D-printed splash shield is optional but strongly recommended — a single rain-soaked ride will destroy an unprotected TFT.",
+              parts: ["3D-printed Splash Shield"],
+            },
+          ],
+        },
+        {
+          title: "Configure",
+          steps: [
+            {
+              title: "Load GPX route and tune UI",
+              detail:
+                "2.4\" is small — turn-by-turn must be one bold line at 24 px. Test readability in direct sun before the real ride.",
+              parts: ["2.4\" ST7789 TFT Display"],
+            },
+            {
+              title: "LoRa pairing with base station",
+              detail:
+                "Send a beacon every 10 s at SF9 — good balance between range and latency. Base station logs beacons to a CSV for post-ride replay.",
+            },
+          ],
+        },
+        {
+          title: "Ride",
+          steps: [
+            {
+              title: "Open-sky GPS test loop",
+              detail:
+                "10 km loop with known turns. Compare the device's logged position to Strava afterwards — should be within 3 m.",
+            },
+            {
+              title: "Dead-zone LoRa validation",
+              detail:
+                "Ride through a valley or under a canopy. LoRa beacons should keep arriving even when the phone has zero bars.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  /* ============================================================
+     #11 — Retro Gaming Controller
+     ============================================================ */
+  {
+    slug: "retro-gaming-controller",
+    title: "Retro 8-Button USB Controller",
+    author: "arcade_ghost",
+    avatarColor: "#a855f7",
+    cover: "/projects/retro-controller.jpg",
+    createdAt: "2026-09-14T06:00:00Z",
+    tags: ["Wearable", "Robotics"],
+    summary:
+      "A custom 8-button arcade controller with a D-pad, RGB underglow, USB-C passthrough, and an ESP32-S3 inside so it can double as a BLE gamepad.",
+    features: [
+      "Arcade-quality Sanwa buttons ×8",
+      "Sanwa D-pad",
+      "WS2812 RGB underglow",
+      "USB-C + BLE dual mode",
+      "3D-printed sandalwood case",
+    ],
+    stars: 14,
+    parts: [
+      { name: "ESP32-S3 DevKit", category: "Electrical", subcategory: "MCU", quantity: 1, unitCost: 18.0 },
+      { name: "Sanwa OBSF-30 Pushbutton ×8", category: "Electrical", subcategory: "Switch", quantity: 8, unitCost: 3.5 },
+      { name: "Sanwa JLF-TP-8YT Joystick", category: "Electrical", subcategory: "Switch", quantity: 1, unitCost: 45.0 },
+      { name: "WS2812B Addressable LED", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 2.0 },
+      { name: "5V USB-C Female Socket", category: "Electrical", subcategory: "Connector", quantity: 1, unitCost: 1.5 },
+      { name: "1N4148 Signal Diode ×12", category: "Electrical", subcategory: "Component", quantity: 12, unitCost: 0.05 },
+      { name: "3D-printed Sandalwood Case", category: "Mechanical", subcategory: "Enclosure", quantity: 1, unitCost: 25.0 },
+      { name: "Acrylic Faceplate", category: "Mechanical", subcategory: "Enclosure", quantity: 1, unitCost: 12.0 },
+    ],
+    wiringNodes: [
+      { id: "usb", label: "USB-C 5V", kind: "power" },
+      { id: "mcu", label: "ESP32-S3", kind: "mcu" },
+      { id: "dpad", label: "D-pad (4 switches)", kind: "sensor" },
+      { id: "btn1", label: "A Button", kind: "sensor" },
+      { id: "btn2", label: "B Button", kind: "sensor" },
+      { id: "btn3", label: "X Button", kind: "sensor" },
+      { id: "btn4", label: "Y Button", kind: "sensor" },
+      { id: "btn5", label: "L Shoulder", kind: "sensor" },
+      { id: "btn6", label: "R Shoulder", kind: "sensor" },
+      { id: "rgb", label: "WS2812B", kind: "actuator" },
+    ],
+    wiringEdges: [
+      { from: "usb", to: "mcu", label: "5V VBUS" },
+      { from: "dpad", to: "mcu", label: "GPIO ×4" },
+      { from: "btn1", to: "mcu", label: "GPIO" },
+      { from: "btn2", to: "mcu", label: "GPIO" },
+      { from: "btn3", to: "mcu", label: "GPIO" },
+      { from: "btn4", to: "mcu", label: "GPIO" },
+      { from: "btn5", to: "mcu", label: "GPIO" },
+      { from: "btn6", to: "mcu", label: "GPIO" },
+      { from: "mcu", to: "rgb", label: "GPIO (DMA)" },
+    ],
+    wiring:
+      "All 12 switches (4 D-pad + 6 face + 2 shoulders) are active-low inputs with 10 kΩ pull-ups on the ESP32-S3. WS2812B data pin goes on a GPIO with DMA support for flicker-free RGB. USB-C supplies 5V VBUS; the ESP32-S3 acts as a USB device.",
+    mechSpecs: [
+      { label: "Enclosure", value: "170 × 110 × 35 mm wood + acrylic" },
+      { label: "Weight", value: "420 g" },
+      { label: "Mounting Holes", value: "4 × M3 bottom" },
+      { label: "Button Spacing", value: "20 mm center-to-center" },
+    ],
+    mechSections: [
+      {
+        title: "Case",
+        body: "Sandalwood PLA filament on a Prusa — the grain looks gorgeous with a clear coat. Acrylic faceplate laser-cut at 3 mm sits on top to protect the buttons from nail scratches.",
+      },
+      {
+        title: "Ergonomics",
+        body: "Handles angle at 15°; your fingers naturally rest on A/B above X/Y. Shoulder buttons sit exactly where your forefinger curls — test with 10 minutes of Smash Bros before gluing in.",
+      },
+    ],
+    instructions: [
+      "Print the case (0.2 mm layer height), sand, clear-coat, and let cure 24 h.",
+      "Wire every switch with a 1N4148 in series on each button line to prevent ghosting.",
+      "Flash the ESP32-S3 with the USB + BLE dual-mode firmware.",
+    ],
+    build: {
+      tools: ["Soldering iron", "3D printer", "Laser cutter (for acrylic)", "Sandpaper + clear coat"],
+      assumptions: [
+        "PC with USB port (for firmware + play)",
+        "BLE-capable console / PC (optional, for wireless mode)",
+        "20-pin Dupont female cables",
+      ],
+      phases: [
+        {
+          title: "Cut",
+          steps: [
+            {
+              title: "3D-print wood case and laser acrylic faceplate",
+              detail:
+                "Print handles upright for best layer adhesion. Acrylic faceplate holes must be 31 mm — Sanwa buttons are a tight 30 mm press-fit.",
+              parts: ["3D-printed Sandalwood Case", "Acrylic Faceplate"],
+            },
+            {
+              title: "Dry-fit all buttons and joystick",
+              detail:
+                "Press every button in by hand before soldering anything. A misdrilled hole on the faceplate ruins the whole case — catch it here.",
+              parts: ["Sanwa OBSF-30 Pushbutton", "Sanwa JLF-TP-8YT Joystick"],
+            },
+          ],
+        },
+        {
+          title: "Wire",
+          steps: [
+            {
+              title: "Diode matrix to prevent ghosting",
+              detail:
+                "One 1N4148 per switch anode goes to the GPIO, cathode to common GND. Without diodes, pressing A+B+C simultaneously reads A three times.",
+              tools: ["Soldering iron"],
+              parts: ["1N4148 Signal Diode"],
+            },
+            {
+              title: "USB-C power and ESP32-S3 flash",
+              detail:
+                "USB-C VBUS → ESP32-S3 5V rail. Use a 1 MΩ resistor from D-/D+ to GND so the host detects full-speed USB 2.0.",
+              parts: ["ESP32-S3 DevKit", "5V USB-C Female Socket"],
+            },
+          ],
+        },
+        {
+          title: "Play",
+          steps: [
+            {
+              title: "RGB underglow and firmware test",
+              detail:
+                "WS2812B data pin on GPIO 16 for DMA. Cycle through Solid / Breathing / Rainbow presets in the menu before final assembly.",
+              parts: ["WS2812B Addressable LED"],
+            },
+            {
+              title: "USB + BLE smoke test",
+              detail:
+                "Plug in → host sees gamepad. Unplug → BLE pairs to phone. Press every button; no ghosting, no missed inputs.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  /* ============================================================
+     #12 — Mini CNC Router
+     ============================================================ */
+  {
+    slug: "mini-cnc-router",
+    title: "Mini CNC Router V2",
+    author: "chip_carver",
+    avatarColor: "#0ea5e9",
+    cover: "/projects/mini-cnc.jpg",
+    createdAt: "2026-09-14T08:00:00Z",
+    tags: ["Robotics", "Security"],
+    summary:
+      "A 3-axis desktop CNC that carves wood, acrylic, and soft metals. Runs GRBL on an Arduino Uno, stepper drivers on parallel, and a Makita trimmer for the spindle.",
+    features: [
+      "500 × 400 × 100 mm work envelope",
+      "NEMA 17 ×3 steppers",
+      "A4988 stepper drivers",
+      "GRBL controller on Arduino Uno",
+      "Makita RT0702C trimmer spindle",
+    ],
+    stars: 10,
+    parts: [
+      { name: "Arduino Uno", category: "Electrical", subcategory: "MCU", quantity: 1, unitCost: 14.0 },
+      { name: "CNC Shield V3", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 12.0 },
+      { name: "A4988 Stepper Driver ×3", category: "Electrical", subcategory: "Driver", quantity: 3, unitCost: 2.5 },
+      { name: "NEMA 17 1.8° Stepper ×3", category: "Electrical", subcategory: "Actuator", quantity: 3, unitCost: 8.0 },
+      { name: "24V 10A PSU", category: "Electrical", subcategory: "Power", quantity: 1, unitCost: 25.0 },
+      { name: "Makita RT0702C Trim Router", category: "Electrical", subcategory: "Actuator", quantity: 1, unitCost: 89.0 },
+      { name: "GT2 Belt + Pulleys", category: "Mechanical", subcategory: "Motion", quantity: 3, unitCost: 12.0 },
+      { name: "Aluminum V-Slot Rail 2020", category: "Mechanical", subcategory: "Structural", quantity: 1, unitCost: 55.0 },
+      { name: "Linear Bearing + Rod", category: "Mechanical", subcategory: "Motion", quantity: 1, unitCost: 28.0 },
+      { name: "Endstop Switch ×3", category: "Electrical", subcategory: "Switch", quantity: 3, unitCost: 0.5 },
+    ],
+    wiringNodes: [
+      { id: "psu", label: "24V 10A PSU", kind: "power" },
+      { id: "uno", label: "Arduino Uno", kind: "mcu" },
+      { id: "shield", label: "CNC Shield V3", kind: "module" },
+      { id: "xdrv", label: "A4988 X", kind: "driver" },
+      { id: "ydrv", label: "A4988 Y", kind: "driver" },
+      { id: "zdrv", label: "A4988 Z", kind: "driver" },
+      { id: "xmot", label: "NEMA X", kind: "actuator" },
+      { id: "ymot", label: "NEMA Y", kind: "actuator" },
+      { id: "zmot", label: "NEMA Z", kind: "actuator" },
+      { id: "spindle", label: "Makita Spindle", kind: "actuator" },
+      { id: "ex", label: "X Endstop", kind: "sensor" },
+      { id: "ey", label: "Y Endstop", kind: "sensor" },
+      { id: "ez", label: "Z Endstop", kind: "sensor" },
+    ],
+    wiringEdges: [
+      { from: "psu", to: "shield", label: "24V motor rail" },
+      { from: "psu", to: "uno", label: "24V → 5V regulator" },
+      { from: "uno", to: "shield", label: "header stack" },
+      { from: "shield", to: "xdrv", label: "STEP / DIR / EN" },
+      { from: "shield", to: "ydrv", label: "STEP / DIR / EN" },
+      { from: "shield", to: "zdrv", label: "STEP / DIR / EN" },
+      { from: "xdrv", to: "xmot", label: "2A phase A/B" },
+      { from: "ydrv", to: "ymot", label: "2A phase A/B" },
+      { from: "zdrv", to: "zmot", label: "2A phase A/B" },
+      { from: "shield", to: "spindle", label: "PWM speed relay" },
+      { from: "ex", to: "uno", label: "GPIO X_MIN" },
+      { from: "ey", to: "uno", label: "GPIO Y_MIN" },
+      { from: "ez", to: "uno", label: "GPIO Z_MIN (probe)" },
+    ],
+    wiring:
+      "CNC Shield V3 stacks directly on the Uno. A4988 drivers plug into X/Y/Z sockets on top; NEMA motors connect to the 4-pin terminal blocks. 24V PSU feeds motor rail through the shield, which has its own regulator for the Uno's 5V. Endstops are active-low with internal pull-ups.",
+    mechSpecs: [
+      { label: "Work Envelope", value: "500 × 400 × 100 mm" },
+      { label: "Rapid Travel", value: "4000 mm/min" },
+      { label: "Step Resolution", value: "0.0625 mm @ 1/16 microstep" },
+      { label: "Spindle", value: "Makita RT0702C 1.25 HP" },
+    ],
+    mechSections: [
+      {
+        title: "Frame",
+        body: "V-slot 2020 aluminum everywhere — bolts slide along the grooves so you can tune the gantry alignment. Add gussets at every corner joint before the first cut.",
+      },
+      {
+        title: "Gantry",
+        body: "Y-axis rides on dual linear bearings on 16 mm hardened steel rods. Z-axis is a single NEMA driving a leadscrew — this gives enough torque for a 1/8\" end mill in aluminum.",
+      },
+    ],
+    instructions: [
+      "Assemble the frame square within 0.1 mm using a machinist's square.",
+      "Flash GRBL v1.1 and send $$ to set your X/Y/Z steps-per-mm.",
+      "Run a dry run with the spindle off before the first cut. Then clamp the Makita on carefully — it throws chips.",
+    ],
+    build: {
+      tools: ["Allen key set", "Machinist's square", "Soldering iron", "USB cable", "Safety glasses"],
+      assumptions: [
+        "Garage / workshop with 230V or 110V outlet",
+        "Mac or PC with Candle / UGS (GRBL sender)",
+        "Compressed air (recommended) or vacuum for chip removal",
+      ],
+      phases: [
+        {
+          title: "Frame",
+          steps: [
+            {
+              title: "Square the base to < 0.1 mm",
+              detail:
+                "Tighten one corner fully, then pull diagonals with a tape measure. Out of square diagonals means the gantry will bind for the whole build.",
+              tools: ["Allen key set", "Machinist's square"],
+              parts: ["Aluminum V-Slot Rail 2020"],
+            },
+            {
+              title: "Mount linear rails and Z rod",
+              detail:
+                "Torque bearing holders in a cross pattern, same as a wheel. If you tighten one fully before the others you'll twist the rail.",
+              parts: ["Linear Bearing + Rod"],
+            },
+          ],
+        },
+        {
+          title: "Drive",
+          steps: [
+            {
+              title: "CNC Shield V3 and GRBL flash",
+              detail:
+                "Stack the shield on the Uno before wiring anything — it's a press-fit on the headers. Flash GRBL v1.1 directly through the Arduino bootloader.",
+              parts: ["Arduino Uno", "CNC Shield V3"],
+            },
+            {
+              title: "A4988 current limit and stepper wiring",
+              detail:
+                "Set each A4988 trim pot to match your motor's rated current (e.g. NEMA 17 @ 2 A → 2 A on the pot). Don't power steppers from USB — always the 24V rail.",
+              tools: ["Multimeter"],
+              parts: ["A4988 Stepper Driver", "NEMA 17 1.8° Stepper"],
+            },
+          ],
+        },
+        {
+          title: "Cut",
+          steps: [
+            {
+              title: "Spindle mount and first dry run",
+              detail:
+                "Clamp the Makita in its bracket with 8 mm hex screws. Run the full G-code with spindle off — listen for any binding before turning it on.",
+              parts: ["Makita RT0702C Trim Router"],
+            },
+            {
+              title: "0.1 mm pocket test in MDF",
+              detail:
+                "Your first test should be a 50 × 50 × 0.1 mm pocket in MDF. Measure depth with a caliper — if it's off by more than 0.01 mm, tune Z steps-per-mm.",
+              tools: ["Safety glasses", "USB cable"],
             },
           ],
         },
