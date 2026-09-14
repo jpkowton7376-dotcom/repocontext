@@ -237,6 +237,42 @@ E.append(B('<b>Security</b>：Bot Fight Mode 可开，但给 /api/* 加例外，
 E.append(B('<b>监控</b>：Sentry（错误）、Plausible / Google Analytics（流量）。'))
 
 E.append(Spacer(1, 8))
+
+# 10. 邮件与支付品牌化
+E.append(H2('10. 邮件与支付品牌化（Cloudflare Email Routing / Resend / Creem）'))
+E.append(P('让对外邮件用品牌域名、客服走品牌邮箱、支付后台通知收品牌邮箱。以下需在对应控制台 UI 完成，DNS 记录均由 Cloudflare 托管。', st_body))
+
+E.append(H3('10.1 Cloudflare Email Routing（品牌邮箱转发）'))
+E.append(B('Cloudflare → <b>Email → Email Routing</b> → 开启。'))
+E.append(B('添加自定义地址，例如 <font name="Courier">hello@repocontext.dev</font> → 转发到 <font name="Courier">jpkowton@gmail.com</font>。'))
+E.append(B('确认自动添加的 DNS（CF 托管 DNS 一般自动加）：'))
+E.append(tbl([
+    ['类型', '名称', '内容'],
+    ['MX', '@', 'route1.mx.cloudflare.net (优先级 71)'],
+    ['MX', '@', 'route2.mx.cloudflare.net (优先级 72)'],
+    ['MX', '@', 'route3.mx.cloudflare.net (优先级 73)'],
+    ['TXT', '@', 'v=spf1 include:amazonses.com include:cloudflare.net ~all'],
+], [22*mm, 28*mm, 120*mm]))
+
+E.append(H3('10.2 Resend 验证域名（品牌 From）'))
+E.append(B('Resend → <b>Domains → Add repocontext.dev</b>，按提示加 DNS（值以你账号显示为准）：'))
+E.append(tbl([
+    ['类型', '名称', '内容'],
+    ['TXT', 'repocontext.dev', 'v=spf1 include:amazonses.com include:cloudflare.net ~all'],
+    ['TXT', 'resend._domainkey', '<Resend 给的 DKIM 长串>'],
+    ['TXT', '_dmarc.repocontext.dev', 'v=DMARC1; p=none;'],
+], [22*mm, 48*mm, 100*mm]))
+E.append(Spacer(1, 4))
+E.append(B('验证通过后，在 Vercel 设环境变量 <font name="Courier">RESEND_API_KEY=re_xxx</font> 与 <font name="Courier">RESEND_FROM=RepoContext &lt;noreply@repocontext.dev&gt;</font>。'))
+E.append(B('当前 lib/email.ts 中这两个变量为空时邮件为 no-op；设好后欢迎/收据/客服邮件才会真正发出，且 From 为品牌域名。'))
+E.append(B('代码侧已将 <font name="Courier">SUPPORT_INBOX</font> 与页脚支持邮箱改为 <font name="Courier">hello@repocontext.dev</font>（经 Email Routing 转发到你的 Gmail）。'))
+
+E.append(H3('10.3 Creem 后台邮箱 + 触发复审'))
+E.append(B('Creem Dashboard → <b>Settings</b> → 通知邮箱改为 <font name="Courier">hello@repocontext.dev</font> → 保存。'))
+E.append(B('若涉及收款/业务审核，补全信息后点 <b>Submit for review</b> 触发复审（纯后台操作，无代码改动）。'))
+E.append(P('⚠️ Email Routing 与 Resend 共用 @ 的 SPF，上面 TXT 已把 amazonses.com（Resend）和 cloudflare.net（Email Routing）合并为一条，勿重复添加。', st_note))
+
+E.append(Spacer(1, 8))
 E.append(HRFlowable(width='100%', thickness=0.5, color=colors.HexColor('#d7dde3')))
 E.append(P('本文档由部署记录整理：Vercel 部署 + Cloudflare DNS。域名以 repocontext.dev 为例，替换为你实际购买的域名即可。', mk('foot', fontSize=8, leading=11, textColor=colors.HexColor('#8a97a5'))))
 

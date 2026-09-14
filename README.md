@@ -385,6 +385,39 @@ create trigger on_auth_user_created
 
 ---
 
+## ✉️ 邮件与支付品牌化（Cloudflare Email Routing / Resend / Creem）
+
+让对外邮件用品牌域名、客服走品牌邮箱、支付后台通知收品牌邮箱。以下需在对应控制台 UI 完成，并加 DNS 记录（均由 Cloudflare 托管）。
+
+### 🟢 Cloudflare Email Routing（品牌邮箱转发）
+
+- [ ] Cloudflare → **Email → Email Routing** → 开启
+- [ ] 添加自定义地址，例如 `hello@repocontext.dev` → 转发到 `jpkowton@gmail.com`
+- [ ] 确认自动添加的 DNS（CF 托管 DNS 一般自动加）：
+  - `MX @ → route1/2/3.mx.cloudflare.net`（优先级 71/72/73）
+  - `TXT @ → v=spf1 include:amazonses.com include:cloudflare.net ~all`
+
+### 🟡 Resend 验证域名（品牌 From）
+
+- [ ] Resend → **Domains → Add `repocontext.dev`**，按提示加 DNS：
+  - `TXT repocontext.dev → v=spf1 include:amazonses.com include:cloudflare.net ~all`
+  - `TXT resend._domainkey → <Resend 给的 DKIM 长串>`
+  - `TXT _dmarc.repocontext.dev → v=DMARC1; p=none;`
+- [ ] 验证通过后，在 Vercel 设环境变量：
+  - `RESEND_API_KEY=re_xxx`
+  - `RESEND_FROM=RepoContext <noreply@repocontext.dev>`
+- [ ] 当前 `lib/email.ts` 中这两个变量为空时邮件为 no-op；设好后欢迎/收据/客服邮件才会真正发出，且 From 为品牌域名。
+- [ ] 代码侧已将 `SUPPORT_INBOX` 与页脚支持邮箱改为 `hello@repocontext.dev`（经 Email Routing 转发到你的 Gmail）。
+
+### 🟣 Creem 后台邮箱 + 触发复审
+
+- [ ] Creem Dashboard → **Settings** → 通知邮箱改为 `hello@repocontext.dev` → 保存
+- [ ] 若涉及收款/业务审核，补全信息后点 **Submit for review** 触发复审（纯后台操作，无代码改动）
+
+> ⚠️ Email Routing 与 Resend 共用 `@` 的 SPF，上面 TXT 已把 `amazonses.com`（Resend）和 `cloudflare.net`（Email Routing）合并为一条，勿重复添加。
+
+---
+
 ## 📈 上线后的监控
 
 - **错误监控：** Sentry（免费层够用）
