@@ -1930,4 +1930,1084 @@ export const PROJECTS: HardwareProject[] = [
       ],
     },
   },
+
+  /* ============================================================
+     #13 — Cyberdeck Hacking Workstation
+     ============================================================ */
+  {
+    slug: "cyberdeck-workstation",
+    title: "Cyberdeck Hacking Workstation",
+    author: "wirehead",
+    avatarColor: "#22d3ee",
+    cover: "/projects/cyberdeck-workstation.jpg",
+    createdAt: "2026-09-14T10:00:00Z",
+    tags: ["Robotics", "IoT"],
+    featured: true,
+    summary:
+      "A portable 7-inch hacking workstation with a Raspberry Pi 5, mechanical keyboard, USB hub, SDR dongle slot, and battery life to survive a 4-hour DEF CON talk.",
+    features: [
+      "Raspberry Pi 5 + CM4",
+      "7-inch IPS touchscreen",
+      "40% ortholinear keyboard",
+      "USB-C hub + SDR slot",
+      "6-hour battery pack",
+    ],
+    stars: 20,
+    parts: [
+      { name: "Raspberry Pi 5 (8GB)", category: "Electrical", subcategory: "MCU", quantity: 1, unitCost: 55.0 },
+      { name: "7\" IPS Touchscreen HDMI", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 42.0 },
+      { name: "GMK-style 40% PCB", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 38.0 },
+      { name: "Kailh Box Navies ×44", category: "Electrical", subcategory: "Component", quantity: 44, unitCost: 0.3 },
+      { name: "2.4 GHz RTL-SDR Dongle", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 28.0 },
+      { name: "USB-C Hub 8-port", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 22.0 },
+      { name: "10000 mAh PD Power Bank", category: "Electrical", subcategory: "Power", quantity: 1, unitCost: 35.0 },
+      { name: "3D-printed PETG Enclosure", category: "Mechanical", subcategory: "Enclosure", quantity: 1, unitCost: 28.0 },
+      { name: "Hinged Display Mount", category: "Mechanical", subcategory: "Mount", quantity: 1, unitCost: 6.0 },
+    ],
+    wiringNodes: [
+      { id: "bat", label: "10000 mAh PD Bank", kind: "power" },
+      { id: "pi", label: "Raspberry Pi 5", kind: "mcu" },
+      { id: "disp", label: "7\" IPS HDMI", kind: "module" },
+      { id: "kb", label: "40% Keyboard", kind: "module" },
+      { id: "hub", label: "USB-C Hub", kind: "module" },
+      { id: "sdr", label: "RTL-SDR Dongle", kind: "module" },
+    ],
+    wiringEdges: [
+      { from: "bat", to: "pi", label: "USB-C PD" },
+      { from: "pi", to: "disp", label: "HDMI + 5V" },
+      { from: "pi", to: "kb", label: "GPIO I²C (QMK)" },
+      { from: "pi", to: "hub", label: "USB 3.0" },
+      { from: "hub", to: "sdr", label: "USB" },
+    ],
+    wiring:
+      "Pi boots off the PD power bank via USB-C. Display is HDMI + GPIO backlight control. The keyboard uses QMK firmware on GPIO I²C so it doesn't consume a USB slot. SDR, Ethernet dongle, and pentest adapters all hang off the USB-C hub.",
+    mechSpecs: [
+      { label: "Closed Size", value: "200 × 140 × 45 mm" },
+      { label: "Weight", value: "780 g with battery" },
+      { label: "Battery Life", value: "6 hours (Pi idle + screen)" },
+      { label: "Keyboard", value: "40% ortholinear, 44 keys" },
+    ],
+    mechSections: [
+      {
+        title: "Enclosure",
+        body: "Two-part PETG print — bottom tray nests the Pi, keyboard PCB, and USB hub; top shell hinges over the display. All cables route through a single cutout at the back so the hinge stays clean.",
+      },
+      {
+        title: "Ergonomics",
+        body: "Closed = flat case. Open = display tilts 110°, keyboard at a gentle 8° slope. This matches the laptop posture most hackers already default to — no re-learning needed.",
+      },
+    ],
+    instructions: [
+      "Flash Pi OS Lite + headless SSH, run rpi-update, enable I²C for the keyboard.",
+      "Install QMK Toolbox, flash the 40% PCB with your keymap (defaults to Colemak).",
+      "3D-print both shell halves with 20% infill, then wire everything and snap closed.",
+    ],
+    build: {
+      tools: ["3D printer", "M3 hex driver", "USB-C data cable", "Phillips #1"],
+      assumptions: [
+        "Mac/Linux laptop to flash Pi OS",
+        "Basic soldering (keyboard switches)",
+        "4+ hours for 3D print",
+      ],
+      phases: [
+        {
+          title: "Print",
+          steps: [
+            {
+              title: "Bottom shell with cable channels",
+              detail:
+                "Orient flat side down. 20% infill PETG. Add threaded heat-set inserts for the hinge screws before the shell cools.",
+              tools: ["3D printer"],
+              parts: ["3D-printed PETG Enclosure"],
+            },
+            {
+              title: "Top shell with display aperture",
+              detail:
+                "Measure your specific display's exact bezel — the aperture should be 2 mm smaller all around so the display pops in from the front and stays put.",
+              parts: ["7\" IPS Touchscreen HDMI"],
+            },
+          ],
+        },
+        {
+          title: "Wire",
+          steps: [
+            {
+              title: "QMK keyboard on GPIO I²C",
+              detail:
+                "The I²C backpack connects Pi SDA → PCB SDA, Pi SCL → PCB SCL, 5V and GND. Set I²C speed to 400 kHz on the Pi.",
+              parts: ["GMK-style 40% PCB"],
+            },
+            {
+              title: "PD bank boot test",
+              detail:
+                "Plug the bank in before closing the shell. Pi 5 draws up to 5A peak — if the bank can't supply it the system will brown-out on boot.",
+              parts: ["10000 mAh PD Power Bank"],
+            },
+          ],
+        },
+        {
+          title: "Hack",
+          steps: [
+            {
+              title: "Pentest toolkit install",
+              detail:
+                "Run your standard pi-hole + wireshark + nmap + aircrack-ng stack. Use a separate USB Wi-Fi adapter for packet injection — the Pi 5's internal Wi-Fi can't do monitor mode reliably.",
+            },
+            {
+              title: "Field test — conference Wi-Fi",
+              detail:
+                "Bring it to a café or conference. Confirm SDR locks onto the local cell band and the keyboard holds up to a 2-hour packet capture session.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  /* ============================================================
+     #14 — Thermal Vision Camera
+     ============================================================ */
+  {
+    slug: "thermal-vision-camera",
+    title: "DIY Thermal Vision Camera",
+    author: "infrared_ir",
+    avatarColor: "#f43f5e",
+    cover: "/projects/thermal-vision-camera.jpg",
+    createdAt: "2026-09-14T11:00:00Z",
+    tags: ["Robotics", "Wearable"],
+    summary:
+      "A handheld thermal imager using a FLIR Lepton 3.5 core, displaying temperature gradients on a 320×240 AMOLED. Calibrates on boot with a 2-point shutter offset.",
+    features: [
+      "FLIR Lepton 3.5 radiometric core",
+      "160×120 native resolution",
+      "9 Hz refresh rate",
+      "320×240 AMOLED preview",
+      "On-device temperature logging CSV",
+    ],
+    stars: 15,
+    parts: [
+      { name: "ESP32-S3 DevKit", category: "Electrical", subcategory: "MCU", quantity: 1, unitCost: 18.0 },
+      { name: "FLIR Lepton 3.5 Radiometric", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 199.0 },
+      { name: "PureThermal 3 Breakout", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 49.0 },
+      { name: "2.0\" 320×240 AMOLED", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 22.0 },
+      { name: "5000 mAh Li-Po 3.7V", category: "Electrical", subcategory: "Power", quantity: 1, unitCost: 14.0 },
+      { name: "TP4056 USB-C Charger", category: "Electrical", subcategory: "Power", quantity: 1, unitCost: 1.5 },
+      { name: "Shutter Calibration Slider", category: "Mechanical", subcategory: "Structural", quantity: 1, unitCost: 2.0 },
+      { name: "3D-printed Handheld Case", category: "Mechanical", subcategory: "Enclosure", quantity: 1, unitCost: 5.0 },
+    ],
+    wiringNodes: [
+      { id: "bat", label: "5000 mAh Li-Po", kind: "power" },
+      { id: "chg", label: "TP4056 Charger", kind: "power" },
+      { id: "mcu", label: "ESP32-S3", kind: "mcu" },
+      { id: "lepton", label: "FLIR Lepton 3.5", kind: "module" },
+      { id: "pth", label: "PureThermal 3", kind: "module" },
+      { id: "oled", label: "2.0\" AMOLED", kind: "module" },
+      { id: "shut", label: "Calibration Shutter", kind: "actuator" },
+    ],
+    wiringEdges: [
+      { from: "bat", to: "chg", label: "Charge rail" },
+      { from: "chg", to: "mcu", label: "3.3V" },
+      { from: "lepton", to: "pth", label: "Lepton Flex Cable" },
+      { from: "pth", to: "mcu", label: "I2C + SPI" },
+      { from: "mcu", to: "oled", label: "SPI" },
+      { from: "mcu", to: "shut", label: "GPIO" },
+    ],
+    wiring:
+      "PureThermal 3 breakout bridges the Lepton's 2.8 V SPI + I²C into the ESP32-S3's 3.3 V world. Every 2 seconds the MCU commands the shutter closed, captures a black-body reference, subtracts it from the live frame, and renders on the AMOLED.",
+    mechSpecs: [
+      { label: "Field of View", value: "71° × 56°" },
+      { label: "Temp Range", value: "-40 °C to +80 °C" },
+      { label: "Weight", value: "88 g with battery" },
+      { label: "Run Time", value: "3.5 hours continuous" },
+    ],
+    mechSections: [
+      {
+        title: "Optics",
+        body: "The Lepton's lens focal plane must sit exactly behind the shutter. Add a 1 mm PETG thermal window over the front hole — glass filters IR, PETG is transparent out to 14 µm.",
+      },
+      {
+        title: "Shutter",
+        body: "A tiny servo (from an old drone tail) pushes a 5 × 3 mm Mylar flap over the lens on command. You can use your finger in an emergency but don't rest it there — the Lepton takes 2 seconds to re-stabilize after a calibration.",
+      },
+    ],
+    instructions: [
+      "PureThermal 3 driver first — confirm you see raw 16-bit frames over I²C/SPI before worrying about rendering.",
+      "Print the case, add the PETG window, mount the shutter servo.",
+      "Do a 2-point calibration (ice water + boiling water) and store the offset in flash.",
+    ],
+    build: {
+      tools: ["Soldering iron", "3D printer", "USB-C cable", "7mm flathead screwdriver"],
+      assumptions: [
+        "FLIR Lepton 3.5 core (purchased or salvaged)",
+        "ESP32-S3 IDF installed (not Arduino, the Lepton driver needs it)",
+        "PETG sheet for IR window",
+      ],
+      phases: [
+        {
+          title: "Core",
+          steps: [
+            {
+              title: "PureThermal 3 driver bring-up",
+              detail:
+                "Use the official GetThermal example first. Confirm you see temperature arrays printed to serial before touching any display code.",
+              parts: ["PureThermal 3 Breakout", "FLIR Lepton 3.5 Radiometric"],
+            },
+            {
+              title: "Shutter calibration routine",
+              detail:
+                "Map servo angle to fully-open and fully-closed positions in a separate sketch. Store these two integers in NVS so you don't hardcode them.",
+            },
+          ],
+        },
+        {
+          title: "Render",
+          steps: [
+            {
+              title: "False-color palette",
+              detail:
+                "Map the full temperature range (-20 to 60 °C) across 256 colors from blue → purple → yellow → red. Build this LUT once in RAM, not per pixel.",
+              parts: ["2.0\" 320×240 AMOLED"],
+            },
+            {
+              title: "Shutter auto-calibrate trigger",
+              detail:
+                "Trigger re-calibration every 30 seconds OR when the Lepton reports a temperature drift of more than 2 °C over 5 frames. This prevents image drift during long sessions.",
+            },
+          ],
+        },
+        {
+          title: "Test",
+          steps: [
+            {
+              title: "Ice vs boiling water sanity check",
+              detail:
+                "Point at a glass of ice water (should read ~0 °C) then a mug of boiling water (~95 °C). If either is off by more than 5 °C, re-calibrate.",
+            },
+            {
+              title: "CSV logging and PC replay",
+              detail:
+                "Log every 10th frame as a comma-separated float to SPIFFS. After a field session, download and overlay the temp plot onto your normal camera stills.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  /* ============================================================
+     #15 — Powered Exoskeleton Glove
+     ============================================================ */
+  {
+    slug: "powered-exo-glove",
+    title: "Powered Exoskeleton Glove",
+    author: "mech_hand",
+    avatarColor: "#8b5cf6",
+    cover: "/projects/powered-exo-glove.jpg",
+    createdAt: "2026-09-14T12:30:00Z",
+    tags: ["Robotics", "Wearable"],
+    summary:
+      "A 5-finger powered glove that senses grip intent via EMG, then drives 5 linear actuators to amplify grip force up to 30×. Built for prosthetics and heavy lifting.",
+    features: [
+      "5 independent linear actuators",
+      "Dual EMG sensors for grip intent",
+      "Adaptive force control",
+      "20-hour battery life",
+      "Quick-swap fingertips",
+    ],
+    stars: 18,
+    parts: [
+      { name: "Teensy 4.1", category: "Electrical", subcategory: "MCU", quantity: 1, unitCost: 25.0 },
+      { name: "Pololu TB6612FNG ×5", category: "Electrical", subcategory: "Driver", quantity: 5, unitCost: 6.5 },
+      { name: "12 V Linear Actuator ×5", category: "Electrical", subcategory: "Actuator", quantity: 5, unitCost: 18.0 },
+      { name: "EMG Sensor Module ×2", category: "Electrical", subcategory: "Sensor", quantity: 2, unitCost: 12.0 },
+      { name: "5000 mAh 12V LiFePO4", category: "Electrical", subcategory: "Power", quantity: 1, unitCost: 28.0 },
+      { name: "Mechanical Finger Linkage ×5", category: "Mechanical", subcategory: "Motion", quantity: 1, unitCost: 45.0 },
+      { name: "Neoprene Glove Shell", category: "Mechanical", subcategory: "Enclosure", quantity: 1, unitCost: 18.0 },
+      { name: "Aluminum Backplate", category: "Mechanical", subcategory: "Structural", quantity: 1, unitCost: 15.0 },
+    ],
+    wiringNodes: [
+      { id: "bat", label: "12V LiFePO4", kind: "power" },
+      { id: "tb", label: "12V→5V Buck", kind: "power" },
+      { id: "mcu", label: "Teensy 4.1", kind: "mcu" },
+      { id: "emg1", label: "EMG Sensor (Extensor)", kind: "sensor" },
+      { id: "emg2", label: "EMG Sensor (Flexor)", kind: "sensor" },
+      { id: "drv1", label: "TB6612 Thumb", kind: "driver" },
+      { id: "drv2", label: "TB6612 Index", kind: "driver" },
+      { id: "drv3", label: "TB6612 Middle", kind: "driver" },
+      { id: "drv4", label: "TB6612 Ring", kind: "driver" },
+      { id: "drv5", label: "TB6612 Pinky", kind: "driver" },
+      { id: "act1", label: "Actuator Thumb", kind: "actuator" },
+      { id: "act2", label: "Actuator Index", kind: "actuator" },
+      { id: "act3", label: "Actuator Middle", kind: "actuator" },
+      { id: "act4", label: "Actuator Ring", kind: "actuator" },
+      { id: "act5", label: "Actuator Pinky", kind: "actuator" },
+    ],
+    wiringEdges: [
+      { from: "bat", to: "tb", label: "12V in" },
+      { from: "tb", to: "mcu", label: "5V out" },
+      { from: "mcu", to: "drv1", label: "PWM + DIR" },
+      { from: "mcu", to: "drv2", label: "PWM + DIR" },
+      { from: "mcu", to: "drv3", label: "PWM + DIR" },
+      { from: "mcu", to: "drv4", label: "PWM + DIR" },
+      { from: "mcu", to: "drv5", label: "PWM + DIR" },
+      { from: "drv1", to: "act1", label: "12V H-bridge" },
+      { from: "drv2", to: "act2", label: "12V H-bridge" },
+      { from: "drv3", to: "act3", label: "12V H-bridge" },
+      { from: "drv4", to: "act4", label: "12V H-bridge" },
+      { from: "drv5", to: "act5", label: "12V H-bridge" },
+      { from: "emg1", to: "mcu", label: "Analog A0" },
+      { from: "emg2", to: "mcu", label: "Analog A1" },
+    ],
+    wiring:
+      "Teensy reads two EMG channels at 8 kHz each, envelopes them with a software low-pass filter, then drives five TB6612 motor controllers. One channel maps to flex (close), the other to extensor (open). The glove has no external wires — battery, buck converter, and all controllers bolt to the aluminum backplate.",
+    mechSpecs: [
+      { label: "Weight", value: "420 g (actuators + shell)" },
+      { label: "Grip Force Gain", value: "30×" },
+      { label: "Max Actuation Speed", value: "20 mm/s" },
+      { label: "Run Time", value: "20 hours idle, 4 hours continuous" },
+    ],
+    mechSections: [
+      {
+        title: "Linkage",
+        body: "Each actuator sits on the dorsal side of a finger and pulls a fishing line cable through the fingertip. A small return spring opens the finger when the actuator retracts. This keeps the glove slim — no gears in the joints.",
+      },
+      {
+        title: "Fit",
+        body: "The neoprene shell is heat-shrink wrapped to your hand after mounting all linkages. This is a custom-fit device — don't try to resell it after assembly.",
+      },
+    ],
+    instructions: [
+      "EMG calibration first: 10 seconds flex / 10 seconds relax, sample at 1 kHz.",
+      "Install linkages and set max extension so the fingers stop 5 mm before hyperextending.",
+      "Bench test each finger individually before wearing the full glove.",
+    ],
+    build: {
+      tools: ["Soldering iron", "Allen wrench set", "Sewing needle", "Multimeter"],
+      assumptions: [
+        "12V wall charger available",
+        "Willing to sacrifice a neoprene glove",
+        "Steady nerves for cable routing",
+      ],
+      phases: [
+        {
+          title: "Backplate",
+          steps: [
+            {
+              title: "Mount all 5 actuators on the aluminum plate",
+              detail:
+                "Each actuator sits in a laser-cut nest with a 10 mm hole for the cable. The plate must not flex under full grip force — 3 mm minimum thickness.",
+              parts: ["Aluminum Backplate", "12 V Linear Actuator"],
+            },
+            {
+              title: "Route TB6612 drivers flat",
+              detail:
+                "Solder all 5 drivers directly to the plate with short wires. Long wires between drivers pick up switching noise and cause glitches — keep them under 3 cm.",
+              tools: ["Soldering iron"],
+              parts: ["Pololu TB6612FNG"],
+            },
+          ],
+        },
+        {
+          title: "Linkage",
+          steps: [
+            {
+              title: "Thread cable through fingertips",
+              detail:
+                "Use 0.6 mm Dyneema fishing line — 15 kg breaking strength. Knot with bowline + 2 half-hitches. Leave 5 cm slack at rest so the glove feels natural.",
+              parts: ["Mechanical Finger Linkage"],
+            },
+            {
+              title: "Return springs",
+              detail:
+                "One 5 mm × 20 mm compression spring per finger, anchored to the ventral side of each PIP joint. Without them, the glove stays clenched after a strong grip.",
+            },
+          ],
+        },
+        {
+          title: "Calibrate",
+          steps: [
+            {
+              title: "EMG baseline and threshold",
+              detail:
+                "Record 30 seconds of relaxed EMG from both channels. Your threshold for triggering the actuators should be baseline + 2.5 standard deviations — this keeps false positives near zero.",
+              parts: ["EMG Sensor Module"],
+            },
+            {
+              title: "Force tuning per finger",
+              detail:
+                "Index finger has more independent control than pinky — give each finger its own EMG→PWM transfer function. You'll spend 2 hours tweaking this; that's normal.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  /* ============================================================
+     #16 — Jacob's Ladder Plasma
+     ============================================================ */
+  {
+    slug: "jacobs-ladder-plasma",
+    title: "Jacob's Ladder Plasma Tube",
+    author: "tesla_ghost",
+    avatarColor: "#dc2626",
+    cover: "/projects/jacobs-ladder.jpg",
+    createdAt: "2026-09-14T13:30:00Z",
+    tags: ["Robotics", "Wearable"],
+    summary:
+      "A 20 kV Jacob's Ladder that arcs between two converging copper rods, climbs, and then extinguishes. Pure high-voltage physics — no microcontrollers, just magnetics.",
+    features: [
+      "20 kV Tesla-style flyback transformer",
+      "Rod spacing converging 5 → 25 mm",
+      "Continuous arc climbing",
+      "Manual tuning variac",
+      "Safety interlock cabinet",
+    ],
+    stars: 11,
+    parts: [
+      { name: "20 kV Flyback Transformer", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 35.0 },
+      { name: "IRFP460 Mosfet", category: "Electrical", subcategory: "Component", quantity: 2, unitCost: 2.5 },
+      { name: "UC3842 Pulse-Width Controller", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 3.0 },
+      { name: "60 mm Copper Rod Pair", category: "Mechanical", subcategory: "Electrode", quantity: 1, unitCost: 28.0 },
+      { name: "10 kΩ Potentiometer", category: "Electrical", subcategory: "Component", quantity: 1, unitCost: 0.8 },
+      { name: "12 V 3000 mAh Li-Po", category: "Electrical", subcategory: "Power", quantity: 1, unitCost: 12.0 },
+      { name: "Acrylic Safety Cabinet", category: "Mechanical", subcategory: "Enclosure", quantity: 1, unitCost: 32.0 },
+      { name: "HV Wire 25 kV", category: "Electrical", subcategory: "Connector", quantity: 1, unitCost: 4.0 },
+    ],
+    wiringNodes: [
+      { id: "bat", label: "12V Li-Po", kind: "power" },
+      { id: "pwm", label: "UC3842 PWM", kind: "module" },
+      { id: "mf1", label: "IRFP460 Mosfet 1", kind: "driver" },
+      { id: "mf2", label: "IRFP460 Mosfet 2", kind: "driver" },
+      { id: "xfrm", label: "20kV Flyback", kind: "module" },
+      { id: "rod1", label: "Copper Rod +", kind: "actuator" },
+      { id: "rod2", label: "Copper Rod −", kind: "actuator" },
+    ],
+    wiringEdges: [
+      { from: "bat", to: "pwm", label: "12V" },
+      { from: "pwm", to: "mf1", label: "Gate PWM" },
+      { from: "pwm", to: "mf2", label: "Gate PWM" },
+      { from: "bat", to: "mf1", label: "12V Drain" },
+      { from: "mf1", to: "xfrm", label: "Primary tap 1" },
+      { from: "mf2", to: "xfrm", label: "Primary tap 2" },
+      { from: "xfrm", to: "rod1", label: "20kV HV+ wire" },
+      { from: "xfrm", to: "rod2", label: "20kV HV− wire" },
+    ],
+    wiring:
+      "UC3842 drives a half-bridge of two IRFP460s into the primary of the flyback transformer. The secondary produces ~20 kV AC which feeds the copper rods. A 10 kΩ pot on the PWM frequency sets the optimum arc-climb rate.",
+    mechSpecs: [
+      { label: "Rod Length", value: "300 mm" },
+      { label: "Rod Gap", value: "5 mm (bottom) → 25 mm (top)" },
+      { label: "Arc Speed", value: "~300 mm/s" },
+      { label: "Power Draw", value: "2 A @ 12 V (peak)" },
+    ],
+    mechSections: [
+      {
+        title: "Rod Geometry",
+        body: "Converging rods — narrow gap at the bottom makes it easy to strike an arc; wider gap at the top stretches it out until it extinguishes. Mount vertically, tilted 5° for aesthetics.",
+      },
+      {
+        title: "Cabinet",
+        body: "3 mm clear acrylic panels all around. HV wires must stay inside the cabinet — route them through grommets. Add a safety interlock that cuts power if any side panel opens.",
+      },
+    ],
+    instructions: [
+      "Build the flyback driver on perfboard — use heat sinks on both IRFP460s.",
+      "Wire the rods last — double-check polarity before energizing.",
+      "Do not touch the rods or HV wires when powered. This will kill you.",
+    ],
+    build: {
+      tools: ["Soldering iron", "2 mm Allen", "Multimeter (high-voltage probe)"],
+      assumptions: [
+        "Adult supervision if under 18",
+        "No children or pets in the room when operating",
+        "Ventilation for ozone gas",
+      ],
+      phases: [
+        {
+          title: "Driver",
+          steps: [
+            {
+              title: "UC3842 half-bridge",
+              detail:
+                "Frequency determines flyback output voltage — start at 200 kHz with the pot in the middle. Tune up for taller arcs, down for hotter arcs.",
+              parts: ["UC3842", "IRFP460 Mosfet"],
+            },
+            {
+              title: "Flyback phasing",
+              detail:
+                "If arcs don't strike, swap the primary leads — the magnetically-coupled secondary polarity might be flipped. Do this with power OFF.",
+              parts: ["20 kV Flyback Transformer"],
+            },
+          ],
+        },
+        {
+          title: "Arcs",
+          steps: [
+            {
+              title: "Mount converging rods",
+              detail:
+                "5 mm gap at bottom to 25 mm at top, 300 mm tall. Grind the bottom tips to a point — sharp rods strike arcs more reliably than flat ends.",
+              parts: ["60 mm Copper Rod Pair"],
+            },
+            {
+              title: "Safety cabinet and interlock",
+              detail:
+                "Microswitch on each acrylic panel cuts the 12V rail when any open. Wire them in series so ONE switch failing open disables the system.",
+              tools: ["2 mm Allen"],
+              parts: ["Acrylic Safety Cabinet"],
+            },
+          ],
+        },
+        {
+          title: "Tune",
+          steps: [
+            {
+              title: "Optimal climb rate",
+              detail:
+                "Turn the frequency pot until arcs climb smoothly at ~300 mm/s and extinguish at the top without restarting mid-climb. This varies by rod geometry.",
+            },
+            {
+              title: "Cooling and duty cycle",
+              detail:
+                "Run no more than 30 seconds continuously. Let the flyback transformer cool for 2 minutes between runs. The IRFP460s get hot enough to burn skin.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  /* ============================================================
+     #17 — Portable Hydrogen Generator
+     ============================================================ */
+  {
+    slug: "portable-hydrogen-generator",
+    title: "Portable PEM Hydrogen Generator",
+    author: "fuel_cell",
+    avatarColor: "#0ea5e9",
+    cover: "/projects/hydrogen-generator.jpg",
+    createdAt: "2026-09-14T14:00:00Z",
+    tags: ["Robotics", "Security"],
+    summary:
+      "A compact PEM electrolyzer that produces 200 mL/min of hydrogen from distilled water — lights a torch, inflates balloons, or feeds a small fuel cell.",
+    features: [
+      "1.5 W/cm² PEM cell stack",
+      "200 mL/min H₂ production",
+      "Automatic water refill pump",
+      "O2 vented / H2 separated",
+      "Safety pressure relief valve",
+    ],
+    stars: 9,
+    parts: [
+      { name: "6-cell PEM Electrolyzer Stack", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 89.0 },
+      { name: "24 V 5 A PSU", category: "Electrical", subcategory: "Power", quantity: 1, unitCost: 35.0 },
+      { name: "Arduino Uno", category: "Electrical", subcategory: "MCU", quantity: 1, unitCost: 14.0 },
+      { name: "Peristaltic Water Pump", category: "Electrical", subcategory: "Actuator", quantity: 1, unitCost: 12.0 },
+      { name: "Solenoid Vent Valve", category: "Electrical", subcategory: "Actuator", quantity: 1, unitCost: 4.0 },
+      { name: "Pressure Sensor 0–50 kPa", category: "Electrical", subcategory: "Sensor", quantity: 1, unitCost: 8.0 },
+      { name: "600 mL Water Reservoir", category: "Mechanical", subcategory: "Fluidics", quantity: 1, unitCost: 6.0 },
+      { name: "PTFE Tubing + Barbs", category: "Mechanical", subcategory: "Fluidics", quantity: 1, unitCost: 10.0 },
+      { name: "Aluminum Heat Sink + Fan", category: "Mechanical", subcategory: "Thermal", quantity: 1, unitCost: 18.0 },
+    ],
+    wiringNodes: [
+      { id: "psu", label: "24V 5A PSU", kind: "power" },
+      { id: "uno", label: "Arduino Uno", kind: "mcu" },
+      { id: "stack", label: "6-cell PEM Stack", kind: "module" },
+      { id: "pump", label: "Peristaltic Pump", kind: "actuator" },
+      { id: "vent", label: "Solenoid Vent", kind: "actuator" },
+      { id: "pres", label: "Pressure Sensor", kind: "sensor" },
+      { id: "fan", label: "Cooling Fan", kind: "actuator" },
+    ],
+    wiringEdges: [
+      { from: "psu", to: "stack", label: "24V DC main" },
+      { from: "psu", to: "uno", label: "24V → 5V reg" },
+      { from: "uno", to: "stack", label: "EN / PWM power limit" },
+      { from: "uno", to: "pump", label: "GPIO (5V relay)" },
+      { from: "uno", to: "vent", label: "GPIO ULN2003" },
+      { from: "pres", to: "uno", label: "Analog A0" },
+      { from: "uno", to: "fan", label: "GPIO 5V" },
+    ],
+    wiring:
+      "24 V PSU feeds the PEM stack directly (a relay on the Arduino switches the positive lead). The Uno reads the pressure sensor analog-in and opens the vent solenoid if H₂ pressure exceeds 35 kPa. The peristaltic pump adds water when the reservoir level sensor triggers low.",
+    mechSpecs: [
+      { label: "H₂ Flow Rate", value: "200 mL/min @ 24V 4A" },
+      { label: "O₂ Flow Rate", value: "100 mL/min" },
+      { label: "Max Safe Pressure", value: "40 kPa (gauge)" },
+      { label: "Power Efficiency", value: "60% (HHV)" },
+    ],
+    mechSections: [
+      {
+        title: "Stack Mounting",
+        body: "The PEM stack gets warm (40–45 °C) — bolt it to a large aluminum heat sink with a 40 × 40 mm fan blowing across. This is not optional; exceeding 50 °C damages the membrane.",
+      },
+      {
+        title: "Gas Separation",
+        body: "Hydrogen outlet goes UP to a bubbler; oxygen outlet goes DOWN and vents to atmosphere. This keeps hydrogen from mixing with oxygen and deflagrating.",
+      },
+    ],
+    instructions: [
+      "Fill reservoir with distilled water only — tap water electrolyzes and clogs the membrane.",
+      "Test pressure relief valve manually first by pumping air with a syringe.",
+      "Ignite hydrogen only after the bubbler shows a steady stream for 10 seconds.",
+    ],
+    build: {
+      tools: ["Soldering iron", "PTFE tape", "Allen wrench", "Safety goggles"],
+      assumptions: [
+        "Distilled water supply",
+        "Well-ventilated area",
+        "No open flames within 3 m during startup",
+      ],
+      phases: [
+        {
+          title: "Stack",
+          steps: [
+            {
+              title: "Bolt stack to heat sink",
+              detail:
+                "8 M3 bolts with 2 Nm each — too loose and gas leaks; too tight and the membrane compresses unevenly. Use a torque screwdriver.",
+              parts: ["6-cell PEM Electrolyzer Stack", "Aluminum Heat Sink + Fan"],
+            },
+            {
+              title: "PTFE tubing and pressure test",
+              detail:
+                "Seal every barb with PTFE tape. Pressurize with air to 35 kPa, submerge in water, and look for bubbles before connecting power.",
+              tools: ["PTFE tape"],
+              parts: ["PTFE Tubing + Barbs"],
+            },
+          ],
+        },
+        {
+          title: "Control",
+          steps: [
+            {
+              title: "Pressure relief safety chain",
+              detail:
+                "Three layers of protection: pressure sensor → Arduino relay → vent solenoid. Additionally: a spring-loaded pressure relief valve on the bubbler that opens mechanically at 50 kPa.",
+              parts: ["Pressure Sensor", "Solenoid Vent Valve"],
+            },
+            {
+              title: "Water level auto-refill",
+              detail:
+                "Add a simple float switch in the reservoir. When it triggers low, the peristaltic pump runs for 5 seconds, then pauses for 2 minutes to let water settle.",
+              parts: ["Peristaltic Water Pump"],
+            },
+          ],
+        },
+        {
+          title: "Test",
+          steps: [
+            {
+              title: "Flow rate measurement",
+              detail:
+                "Collect hydrogen in an inverted water-filled cylinder. Time how long it takes to fill 200 mL. Should take about 60 seconds at steady state.",
+            },
+            {
+              title: "Ignition test",
+              detail:
+                "Light a candle at the bubbler outlet. The flame should be pale blue and quiet — a loud pop means you're burning a hydrogen-oxygen mixture and the gas separator is failing.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  /* ============================================================
+     #18 — VR Haptic Tactile Vest
+     ============================================================ */
+  {
+    slug: "haptic-tactile-vest",
+    title: "VR Haptic Tactile Vest",
+    author: "skin_deep",
+    avatarColor: "#26a69a",
+    cover: "/projects/haptic-tactile-vest.jpg",
+    createdAt: "2026-09-14T15:00:00Z",
+    tags: ["Wearable", "Robotics"],
+    summary:
+      "A 12-tactor haptic vest that maps VR game events to vibrations — impacts from behind hit the back, bullets from the left hit the left. USB-C powers it from the VR headset.",
+    features: [
+      "12 × ERM haptic tactors",
+      "Quaternion rotation tracking",
+      "PC USB-C data + power",
+      "7-point impact zones",
+      "OSC/UDP wireless bridge",
+    ],
+    stars: 14,
+    parts: [
+      { name: "ESP32-S3 DevKit", category: "Electrical", subcategory: "MCU", quantity: 1, unitCost: 18.0 },
+      { name: "DRV2605 Haptic Driver ×12", category: "Electrical", subcategory: "Driver", quantity: 12, unitCost: 1.8 },
+      { name: "ERM Vibration Motor ×12", category: "Electrical", subcategory: "Actuator", quantity: 12, unitCost: 1.5 },
+      { name: "MPU6050 IMU", category: "Electrical", subcategory: "Sensor", quantity: 1, unitCost: 4.5 },
+      { name: "PC USB-C Female Socket", category: "Electrical", subcategory: "Connector", quantity: 1, unitCost: 1.5 },
+      { name: "5V 3A Boost Module", category: "Electrical", subcategory: "Power", quantity: 1, unitCost: 5.0 },
+      { name: "Neoprene Vest Shell", category: "Mechanical", subcategory: "Enclosure", quantity: 1, unitCost: 22.0 },
+      { name: "3D-printed Tactor Housings ×12", category: "Mechanical", subcategory: "Mount", quantity: 12, unitCost: 1.0 },
+    ],
+    wiringNodes: [
+      { id: "usb", label: "USB-C 5V (VR Headset)", kind: "power" },
+      { id: "boost", label: "5V 3A Boost", kind: "power" },
+      { id: "mcu", label: "ESP32-S3", kind: "mcu" },
+      { id: "imu", label: "MPU6050", kind: "sensor" },
+      { id: "drvX", label: "DRV2605 ×12 (I²C)", kind: "driver" },
+      { id: "tactor", label: "ERM Motors ×12", kind: "actuator" },
+    ],
+    wiringEdges: [
+      { from: "usb", to: "boost", label: "5V in" },
+      { from: "boost", to: "drvX", label: "5V 3A (motors)" },
+      { from: "boost", to: "mcu", label: "5V" },
+      { from: "mcu", to: "imu", label: "I²C" },
+      { from: "mcu", to: "drvX", label: "I²C (multiplexed)" },
+      { from: "drvX", to: "tactor", label: "H-bridge drive" },
+    ],
+    wiring:
+      "ESP32-S3 acts as a USB HID to the PC, receives UDP OSC messages over Wi-Fi, or reads USB serial from the VR headset. It maps event positions to the nearest haptic zone and triggers 1–4 motors. A TCA9548A I²C mux addresses 12 DRV2605 drivers (each with its own hardcoded address).",
+    mechSpecs: [
+      { label: "Tactors", value: "12 ERM (6 back, 4 front, 2 shoulders)" },
+      { label: "Impact Zones", value: "7 directional + chest + back" },
+      { label: "Weight", value: "380 g" },
+      { label: "Latency", value: "< 15 ms from event to vibration" },
+    ],
+    mechSections: [
+      {
+        title: "Zone Placement",
+        body: "Back: 6 tactors arranged 3 × 2 across both scapulae and lumbar. Front: 4 around the sternum. Shoulders: 1 each at the clavicle. Never mount directly on the spine or major blood vessels.",
+      },
+      {
+        title: "Coupling",
+        body: "Each tactor sits in a 3D-printed PETG housing glued to the neoprene with contact cement — the housing transfers vibration through the fabric to the skin. Wires run through a cable channel along the inside shoulder seam.",
+      },
+    ],
+    instructions: [
+      "Flash ESP32-S3 with USB + Wi-Fi OSC listener firmware.",
+      "Calibrate IMU on boot: hold still 5 seconds while gyro bias is estimated.",
+      "Install PC-side VR game bridge (OVR Toolkit or OpenVR) to broadcast impact events over OSC.",
+    ],
+    build: {
+      tools: ["Soldering iron", "3D printer", "Contact cement", "Sewing needle (for wire routing)"],
+      assumptions: [
+        "VR headset with USB-C data pass-through",
+        "PC VR (Quest 3, PCVR, etc.)",
+        "OpenVR/OpenXR compatible game",
+      ],
+      phases: [
+        {
+          title: "Drivers",
+          steps: [
+            {
+              title: "I²C mux + 12 DRV2605s",
+              detail:
+                "Chain all 12 DRV2605s through a TCA9548A mux with a 1 kΩ pull-up on SDA/SCL. Write a test sketch that buzzes each motor sequentially — expect to hear/feel 12 distinct clicks.",
+              tools: ["Soldering iron"],
+              parts: ["DRV2605 Haptic Driver"],
+            },
+            {
+              title: "5V 3A boost from USB-C",
+              detail:
+                "ERM motors draw up to 250 mA peak each — ×12 = 3A worst case. The VR headset USB-C can deliver at most 2A, so the boost module steps up efficiency is crucial.",
+              parts: ["5V 3A Boost Module"],
+            },
+          ],
+        },
+        {
+          title: "Mount",
+          steps: [
+            {
+              title: "3D-print housings and glue to vest",
+              detail:
+                "20 × 20 × 12 mm PETG boxes with a 1 mm lip. Roughen the neoprene with sandpaper before applying contact cement — they'll shear off otherwise.",
+              tools: ["3D printer", "Contact cement"],
+              parts: ["Neoprene Vest Shell"],
+            },
+            {
+              title: "Wire through shoulder seam",
+              detail:
+                "Thread 24 AWG stranded wire through a 5 mm plastic tube sewn inside the vest seam. Tape one end of the wire to the tactor with Kapton — it will chafe through bare wire within a month.",
+            },
+          ],
+        },
+        {
+          title: "Integrate",
+          steps: [
+            {
+              title: "OSC bridge from VR to vest",
+              detail:
+                "Use OVR Toolkit or OpenComposite to broadcast impact position and magnitude as OSC messages to UDP:11111. The ESP32-S3 parses /impact/xyz and /impact/magnitude.",
+            },
+            {
+              title: "Latency test",
+              detail:
+                "Film a fast punch to the shoulder at 120 fps. The LED in the tactor housing should trigger within 2 frames of the punch visual — that's < 17 ms. If not, you're missing I²C bus cycles.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  /* ============================================================
+     #19 — Underwater ROV
+     ============================================================ */
+  {
+    slug: "underwater-rov",
+    title: "Underwater Exploration ROV",
+    author: "deep_sea",
+    avatarColor: "#0891b2",
+    cover: "/projects/underwater-rov.jpg",
+    createdAt: "2026-09-14T16:00:00Z",
+    tags: ["Robotics", "IoT"],
+    summary:
+      "A 6-thruster underwater ROV with live FPV, depth logging, and a gripper. Tethered to shore over a Cat6 cable — Wi-Fi doesn't work underwater.",
+    features: [
+      "6 brushless thrusters (4 vectored + 2 depth)",
+      "1080p FPV camera + white LED",
+      "Barometric + temperature sensors",
+      "Simple 1-DOF gripper arm",
+      "IP67 pressure enclosure",
+    ],
+    stars: 16,
+    parts: [
+      { name: "Raspberry Pi 4 (8GB)", category: "Electrical", subcategory: "MCU", quantity: 1, unitCost: 55.0 },
+      { name: "Arduino Nano (thruster PID)", category: "Electrical", subcategory: "MCU", quantity: 1, unitCost: 10.0 },
+      { name: "1080p FPV Camera + White LEDs", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 35.0 },
+      { name: "BME280 Baro + Temp", category: "Electrical", subcategory: "Sensor", quantity: 1, unitCost: 3.9 },
+      { name: "BLDC 2207 Thruster ×6", category: "Electrical", subcategory: "Actuator", quantity: 6, unitCost: 22.0 },
+      { name: "20A ESC ×6", category: "Electrical", subcategory: "Driver", quantity: 6, unitCost: 18.0 },
+      { name: "14.8V 10000 mAh Li-Po", category: "Electrical", subcategory: "Power", quantity: 1, unitCost: 65.0 },
+      { name: "100 m Cat6 + Power Cable", category: "Electrical", subcategory: "Connector", quantity: 1, unitCost: 45.0 },
+      { name: "Pressure Enclosure 100 m depth rated", category: "Mechanical", subcategory: "Enclosure", quantity: 1, unitCost: 95.0 },
+      { name: "CNC-milled ABS Frame", category: "Mechanical", subcategory: "Structural", quantity: 1, unitCost: 60.0 },
+    ],
+    wiringNodes: [
+      { id: "bat", label: "14.8V Li-Po", kind: "power" },
+      { id: "nano", label: "Arduino Nano", kind: "mcu" },
+      { id: "pi", label: "Raspberry Pi 4", kind: "mcu" },
+      { id: "cam", label: "1080p FPV + LEDs", kind: "module" },
+      { id: "bme", label: "BME280", kind: "sensor" },
+      { id: "escX", label: "20A ES ×6", kind: "driver" },
+      { id: "thr", label: "BLDC Thrusters ×6", kind: "actuator" },
+    ],
+    wiringEdges: [
+      { from: "bat", to: "escX", label: "14.8V power rails" },
+      { from: "bat", to: "pi", label: "14.8V → 5V stepdown" },
+      { from: "nano", to: "pi", label: "UART 115200" },
+      { from: "pi", to: "cam", label: "USB + LED GPIO" },
+      { from: "nano", to: "bme", label: "I²C" },
+      { from: "nano", to: "escX", label: "PWM ×6 (thruster PID)" },
+      { from: "escX", to: "thr", label: "3-phase per thruster" },
+    ],
+    wiring:
+      "Nano runs the thruster PID control loop at 400 Hz (reading depth from BME280 and target angles from the Pi). Pi handles camera streaming, sensor logging, and the UDP tunnel to shore over Cat6. Power is 14.8 V directly from the battery to all ES cables.",
+    mechSpecs: [
+      { label: "Max Rated Depth", value: "100 m" },
+      { label: "Thruster Config", value: "4 vector (2× fore/aft + 2× lateral) + 2 depth" },
+      { label: "Top Speed", value: "0.8 m/s" },
+      { label: "Run Time", value: "3 hours continuous" },
+    ],
+    mechSections: [
+      {
+        title: "Buoyancy",
+        body: "The ROV needs to be slightly positively buoyant — add pool-noodle floats bolted to the frame until it hovers motionless with zero thruster input. Do this on the surface first before diving.",
+      },
+      {
+        title: "Tether Management",
+        body: "Tether runs up a buoy to shore — never tie it directly to the ROV frame, tie it to the top of the pressure enclosure with a weak link that fails before the cable yanks the ROV off the bottom.",
+      },
+    ],
+    instructions: [
+      "Water test in a pool first. Do not skip to open water.",
+      "PID tune depth hold before any horizontal movement — use 0.5 m/s² climb rate max.",
+      "Keep the tether slack during descent — a taut tether catches on reefs.",
+    ],
+    build: {
+      tools: ["M3 Allen set", "Silicone grease", "Pressure washer (cleaning)", "Laptop with Cat6 port"],
+      assumptions: [
+        "14.8V Li-Po charger",
+        "Pool or controlled water for initial testing",
+        "Nerve of steel (first dive is always nerve-wracking)",
+      ],
+      phases: [
+        {
+          title: "Frame",
+          steps: [
+            {
+              title: "CNC ABS frame assembly",
+              detail:
+                "M4 bolts through all corners. Use nylon insert lock nuts — vibration from thrusters will walk bare nuts within an hour.",
+              tools: ["M3 Allen set"],
+              parts: ["CNC-milled ABS Frame"],
+            },
+            {
+              title: "Buoyancy tuning with pool noodles",
+              detail:
+                "Start with 200 g of positive buoyancy. Trim down 50 g at a time until the ROV hovers neutrally at 1 m depth with all thrusters off.",
+            },
+          ],
+        },
+        {
+          title: "Pressure",
+          steps: [
+            {
+              title: "O-ring and silicone seal prep",
+              detail:
+                "Wipe O-rings with isopropanol before installing. A single speck of sand will cause a flood at 20 m depth — this is where the project lives or dies.",
+              tools: ["Silicone grease"],
+              parts: ["Pressure Enclosure"],
+            },
+            {
+              title: "Dry chamber vacuum test",
+              detail:
+                "Evacuate the enclosure to −50 kPa with a syringe pump. If you can hold it for 5 minutes with no leak bubble, it's good. If not, find the leak and fix it before diving.",
+            },
+          ],
+        },
+        {
+          title: "Dive",
+          steps: [
+            {
+              title: "Pool test — depth hold only",
+              detail:
+                "Disconnect horizontal thrusters. Set a depth target of 1 m. Watch the PID compensate for pool currents. If it overshoots more than ±3 cm, tune Kd up.",
+            },
+            {
+              title: "Open water — slow descent",
+              detail:
+                "Drop at 0.3 m/s with the tether paying out slack. The shore operator monitors depth, video, and battery voltage. Abort if battery drops below 3.65 V per cell.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  /* ============================================================
+     #20 — Magic Mirror AI
+     ============================================================ */
+  {
+    slug: "magic-mirror-ai",
+    title: "Magic Mirror AI Dashboard",
+    author: "reflection_ai",
+    avatarColor: "#6366f1",
+    cover: "/projects/magic-mirror-ai.jpg",
+    createdAt: "2026-09-14T17:00:00Z",
+    tags: ["IoT", "Wearable"],
+    summary:
+      "A two-way mirror with a hidden Raspberry Pi display and USB camera. When you approach it shows weather, news, calendar — and secretly runs face recognition to personalize.",
+    features: [
+      "Two-way mirror glass",
+      "Raspberry Pi 5 + 10\" IPS",
+      "Face recognition attendance",
+      "PIR proximity wake-up",
+      "Weather + calendar + news feed",
+    ],
+    stars: 19,
+    parts: [
+      { name: "Raspberry Pi 5 (4GB)", category: "Electrical", subcategory: "MCU", quantity: 1, unitCost: 45.0 },
+      { name: "10\" IPS HDMI 1280×800", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 65.0 },
+      { name: "Logitech C270 USB Camera", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 18.0 },
+      { name: "HC-SR501 PIR Motion", category: "Electrical", subcategory: "Sensor", quantity: 1, unitCost: 2.2 },
+      { name: "5V 3A USB-C PSU", category: "Electrical", subcategory: "Power", quantity: 1, unitCost: 8.0 },
+      { name: "Two-way Mirror Glass 12×18\"", category: "Mechanical", subcategory: "Enclosure", quantity: 1, unitCost: 32.0 },
+      { name: "Wood Frame + Back Panel", category: "Mechanical", subcategory: "Structural", quantity: 1, unitCost: 28.0 },
+      { name: "LED Strip Ambient Backlight", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 10.0 },
+    ],
+    wiringNodes: [
+      { id: "psu", label: "5V 3A USB-C", kind: "power" },
+      { id: "pi", label: "Raspberry Pi 5", kind: "mcu" },
+      { id: "disp", label: "10\" IPS HDMI", kind: "module" },
+      { id: "cam", label: "C270 Camera", kind: "module" },
+      { id: "pir", label: "HC-SR501", kind: "sensor" },
+      { id: "led", label: "Ambient Strip", kind: "actuator" },
+    ],
+    wiringEdges: [
+      { from: "psu", to: "pi", label: "USB-C PD" },
+      { from: "pi", to: "disp", label: "HDMI + backlight GPIO" },
+      { from: "pi", to: "cam", label: "USB 2.0" },
+      { from: "pir", to: "pi", label: "GPIO wake-up" },
+      { from: "pi", to: "led", label: "PWM dim" },
+    ],
+    wiring:
+      "Pi boots headless with MagicMirror². PIR triggers GPIO interrupt to wake the display from blank. The camera runs face_recognition (Python) every 5 seconds at 160×120 for identity matches. If you're in the known face database, it shows your calendar, weather for your location, and your news filter.",
+    mechSpecs: [
+      { label: "Mirror Size", value: "12\" × 18\" (305 × 457 mm)" },
+      { label: "Viewing Angle", value: "≤ 30° from normal", },
+      { label: "Wake-up Latency", value: "< 2 s from PIR trigger" },
+      { label: "Face Recognition FPS", value: "~2 Hz (160×120)" },
+    ],
+    mechSections: [
+      {
+        title: "Frame",
+        body: "Wood frame holds the two-way mirror glass with 1 mm felt pads to prevent chipping. The display sits 5 mm behind the glass — too far back and text blurs, too close and the backlight shows through.",
+      },
+      {
+        title: "Ambient Light",
+        body: "LED strip around the inside of the frame, pointing away from the mirror. This creates soft glow without washing out the display text. Color changes to match the weather (blue = rain, yellow = sunny).",
+      },
+    ],
+    instructions: [
+      "Flash Pi OS Lite + X11 server, install MagicMirror², configure your API keys (OpenWeatherMap, Google Calendar, NewsAPI).",
+      "Crop and normalize 10–20 reference photos of your face — face recognition accuracy depends heavily on this.",
+      "Tape the camera to the glass from the inside with double-sided foam — it sits dead-center just like a 'smart' mirror.",
+    ],
+    build: {
+      tools: ["Double-sided foam tape", "Phillips #1", "Wood glue", "Caulk gun"],
+      assumptions: [
+        "120 V wall outlet nearby",
+        "Wi-Fi connection",
+        "API keys for weather/calendar/news (free tiers)",
+      ],
+      phases: [
+        {
+          title: "Frame",
+          steps: [
+            {
+              title: "Build wood frame and caulk mirror",
+              detail:
+                "Seal the two-way mirror into the frame with silicone caulk. Let cure 24 h. Don't skip this — a drop of water running down the inside ruins the display.",
+              tools: ["Caulk gun"],
+              parts: ["Two-way Mirror Glass", "Wood Frame + Back Panel"],
+            },
+            {
+              title: "Mount display 5 mm behind mirror",
+              detail:
+                "Use 3D-printed shims or double-sided foam of exactly 5 mm thickness. Test text visibility from your normal mirror-viewing height before gluing anything.",
+              parts: ["10\" IPS HDMI 1280×800"],
+            },
+          ],
+        },
+        {
+          title: "Camera",
+          steps: [
+            {
+              title: "PIR wake-up and blanking",
+              detail:
+                "Pi stays awake but blanks the HDMI output. On PIR trigger, it wakes the HDMI and starts face recognition. This drops idle power draw to 2 W from 10 W.",
+              parts: ["HC-SR501 PIR Motion"],
+            },
+            {
+              title: "Face recognition calibration",
+              detail:
+                "Take 15 face photos of yourself under different lighting. Run face_recognition_knn.py and confirm 98%+ accuracy before trusting it. Add other household members if desired.",
+              parts: ["Logitech C270 USB Camera"],
+            },
+          ],
+        },
+        {
+          title: "Dashboard",
+          steps: [
+            {
+              title: "MagicMirror² module config",
+              detail:
+                "Weather module on the left (48-hour forecast), calendar in the middle-right (next 3 events), news ticker at the bottom (10 headlines). Keep font size ≥ 24 px — two-way mirrors wash out fine print.",
+            },
+            {
+              title: "Family profiles",
+              detail:
+                "Each recognized face gets its own API key + feed preference. Mom sees school pickup calendar, Dad sees golf course tee-times, you see GitHub PR statuses.",
+            },
+          ],
+        },
+      ],
+    },
+  },
 ]
