@@ -11,7 +11,7 @@
     "howItWorks": "使い方",
     "dashboard": "ダッシュボード",
     "signOut": "サインアウト",
-    "templates": "テンプレート",
+    "templates": "Starter Kits",
     "forge": "Forge"
   },
   "aiTools": {
@@ -872,10 +872,22 @@
     ],
     "formatsTitle": "エクスポート形式",
     "formats": [
-      { "name": "AGENTS.md", "desc": "自律型コーディングエージェント向けの包括的なプロジェクト概要。" },
-      { "name": "CLAUDE.md", "desc": "Claude CodeやAnthropicベースのワークフローに最適化。" },
-      { "name": "Cursor Rules", "desc": "補完やチャットの挙動を左右するCursor固有のルール。" },
-      { "name": "Copilot Instructions", "desc": "GitHub Copilotのコンテキスト向けに調整された指示。" }
+      {
+        "name": "AGENTS.md",
+        "desc": "自律型コーディングエージェント向けの包括的なプロジェクト概要。"
+      },
+      {
+        "name": "CLAUDE.md",
+        "desc": "Claude CodeやAnthropicベースのワークフローに最適化。"
+      },
+      {
+        "name": "Cursor Rules",
+        "desc": "補完やチャットの挙動を左右するCursor固有のルール。"
+      },
+      {
+        "name": "Copilot Instructions",
+        "desc": "GitHub Copilotのコンテキスト向けに調整された指示。"
+      }
     ],
     "ctaTitle": "試してみませんか？",
     "ctaDesc": "最初のリポジトリを数秒で解析できます。クレジットカードは不要です。",

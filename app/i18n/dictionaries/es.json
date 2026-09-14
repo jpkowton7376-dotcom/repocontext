@@ -11,7 +11,7 @@
     "howItWorks": "Cómo funciona",
     "dashboard": "Panel",
     "signOut": "Cerrar sesión",
-    "templates": "Plantillas",
+    "templates": "Starter Kits",
     "forge": "Forge"
   },
   "aiTools": {
@@ -872,10 +872,22 @@
     ],
     "formatsTitle": "Formatos de exportación",
     "formats": [
-      { "name": "AGENTS.md", "desc": "Un resumen completo del proyecto para agentes de codificación autónomos." },
-      { "name": "CLAUDE.md", "desc": "Optimizado para Claude Code y flujos de trabajo basados en Anthropic." },
-      { "name": "Reglas de Cursor", "desc": "Reglas específicas de Cursor que condicionan los autocompletados y el chat." },
-      { "name": "Instrucciones de Copilot", "desc": "Instrucciones adaptadas al contexto de GitHub Copilot." }
+      {
+        "name": "AGENTS.md",
+        "desc": "Un resumen completo del proyecto para agentes de codificación autónomos."
+      },
+      {
+        "name": "CLAUDE.md",
+        "desc": "Optimizado para Claude Code y flujos de trabajo basados en Anthropic."
+      },
+      {
+        "name": "Reglas de Cursor",
+        "desc": "Reglas específicas de Cursor que condicionan los autocompletados y el chat."
+      },
+      {
+        "name": "Instrucciones de Copilot",
+        "desc": "Instrucciones adaptadas al contexto de GitHub Copilot."
+      }
     ],
     "ctaTitle": "¿Listo para probarlo?",
     "ctaDesc": "Analiza tu primer repositorio en segundos. Sin tarjeta de crédito.",

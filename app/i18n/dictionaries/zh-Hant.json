@@ -11,7 +11,7 @@
     "howItWorks": "運作方式",
     "dashboard": "儀表板",
     "signOut": "登出",
-    "templates": "模板",
+    "templates": "Starter Kits",
     "forge": "Forge"
   },
   "aiTools": {
@@ -872,10 +872,22 @@
     ],
     "formatsTitle": "匯出格式",
     "formats": [
-      { "name": "AGENTS.md", "desc": "給自主程式設計代理的完整專案摘要。" },
-      { "name": "CLAUDE.md", "desc": "針對 Claude Code 與 Anthropic 工作流程最佳化。" },
-      { "name": "Cursor Rules", "desc": "Cursor 專屬規則，影響程式碼補全與聊天行為。" },
-      { "name": "Copilot Instructions", "desc": "為 GitHub Copilot 上下文量身打造的指示。" }
+      {
+        "name": "AGENTS.md",
+        "desc": "給自主程式設計代理的完整專案摘要。"
+      },
+      {
+        "name": "CLAUDE.md",
+        "desc": "針對 Claude Code 與 Anthropic 工作流程最佳化。"
+      },
+      {
+        "name": "Cursor Rules",
+        "desc": "Cursor 專屬規則，影響程式碼補全與聊天行為。"
+      },
+      {
+        "name": "Copilot Instructions",
+        "desc": "為 GitHub Copilot 上下文量身打造的指示。"
+      }
     ],
     "ctaTitle": "準備好試試看了嗎？",
     "ctaDesc": "幾秒就能完成第一次分析，不需要信用卡。",
