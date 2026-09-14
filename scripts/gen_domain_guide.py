@@ -202,6 +202,41 @@ E.append(code(
 'curl -I https://repocontext.dev       # 应返回 308/200，含 Location 或正常页面'
 ))
 E.append(Spacer(1, 8))
+
+# 9. 上线后 SEO & 性能
+E.append(H2('9. 上线后 SEO & 性能（Cloudflare + Search Console）'))
+E.append(P('部署完成、域名生效后，再做这几步让 Google 收录、访问更快。都在控制台 UI 完成，无需改代码。', st_body))
+
+E.append(H3('9.1 Google Search Console 提交 sitemap'))
+E.append(B('打开 search.google.com/search-console，添加资源。'))
+E.append(B('推荐选 <b>Domain</b>（域名级）输入 <font name="Courier">repocontext.dev</font>，覆盖所有子域。'))
+E.append(B('验证：复制 GSC 给的 TXT 记录，到 Cloudflare → DNS → Records 加一条 TXT，几分钟即验证通过。'))
+E.append(B('验证后左侧 <b>Sitemaps</b> → 输入 <font name="Courier">sitemap.xml</font> → 提交。'))
+E.append(B('几天后看 Coverage / 效果报告，确认页面被收录。'))
+E.append(P('备选：用 "URL prefix" 方式填 https://www.repocontext.dev，可用 HTML 标签或已接入的 GA 验证。', st_note))
+
+E.append(H3('9.2 Cloudflare 性能 & 缓存（免费）'))
+E.append(B('<b>Speed → Optimization</b>：开启 Auto Minify（HTML/CSS/JS）与 Brotli（必开）。'))
+E.append(B('<b>Caching → Configuration</b>：Browser Cache TTL 保持默认（尊重源站）。'))
+E.append(B('<b>Cache Rules（关键）</b>：给 Next.js 静态资源设长缓存。'))
+E.append(tbl([
+    ['When', '设置'],
+    ['URI Path 匹配 /_next/static/*', 'Edge Cache TTL = 1 year'],
+    ['（同上）', 'Browser TTL = 1 year'],
+    ['（同上）', 'Cache Eligibility = Eligible for cache'],
+], [75*mm, 95*mm]))
+E.append(Spacer(1, 4))
+E.append(B('<b>Caching → Tiered Cache</b>：开启（免费，加速边缘）。'))
+E.append(B('<b>SSL/TLS → Edge Certificates</b>：可开 Always Use HTTPS（Vercel 已处理重定向，二选一即可）。'))
+E.append(P('⚠️ 重定向（apex→www、vercel.app→www）已在 Vercel 侧处理，不要在 Cloudflare 再设 Redirect Rules，否则可能双重跳转。', st_note))
+
+E.append(H3('9.3 可选增强'))
+E.append(B('<b>Bing Webmaster</b>：bing.com/webmasters 导入 GSC 或直接提交 sitemap（覆盖 Bing / ChatGPT 抓取）。'))
+E.append(B('<b>Analytics</b>：Vercel Analytics 或 Cloudflare Web Analytics（免费）。'))
+E.append(B('<b>Security</b>：Bot Fight Mode 可开，但给 /api/* 加例外，避免拦了公开 API；WAF 免费层基础防护已开。'))
+E.append(B('<b>监控</b>：Sentry（错误）、Plausible / Google Analytics（流量）。'))
+
+E.append(Spacer(1, 8))
 E.append(HRFlowable(width='100%', thickness=0.5, color=colors.HexColor('#d7dde3')))
 E.append(P('本文档由部署记录整理：Vercel 部署 + Cloudflare DNS。域名以 repocontext.dev 为例，替换为你实际购买的域名即可。', mk('foot', fontSize=8, leading=11, textColor=colors.HexColor('#8a97a5'))))
 

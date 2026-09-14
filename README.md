@@ -351,6 +351,40 @@ create trigger on_auth_user_created
 
 ---
 
+## 🔍 上线后：SEO & 性能配置（Cloudflare + Search Console）
+
+部署完成、域名生效后，再做这几步让 Google 能收录、访问更快。都可在控制台 UI 完成，无需改代码。
+
+### 🟢 Google Search Console（提交 sitemap）
+
+- [ ] 打开 https://search.google.com/search-console/
+- [ ] 添加资源：推荐选 **Domain**（域名级），输入 `repocontext.dev`
+- [ ] 验证：复制 GSC 给的 **TXT 记录**，到 Cloudflare → DNS → Records 加一条 TXT，几分钟即验证通过（覆盖所有子域，最省事）
+- [ ] 验证后，左侧 **Sitemaps** → 输入 `sitemap.xml` → 提交
+- [ ] 几天后看 **Coverage / 效果报告**，确认页面被收录
+
+> 备选：若用 "URL prefix" 方式，填 `https://www.repocontext.dev`，可用 HTML 标签或已接入的 GA 验证。
+
+### 🟡 Cloudflare 性能 & 缓存（免费）
+
+- **Speed → Optimization**：开启 **Auto Minify**（HTML / CSS / JS）与 **Brotli**（必开，压缩更狠）
+- **Caching → Configuration**：Browser Cache TTL 保持默认（尊重源站）
+- **Cache Rules（关键）**：给 Next.js 静态资源设长缓存
+  - 规则：`URI Path` 匹配 `/_next/static/*` → **Edge Cache TTL = 1 year**、**Browser TTL = 1 year**、**Cache Eligibility = Eligible for cache**
+- **Caching → Tiered Cache**：开启（免费，加速边缘）
+- **SSL/TLS → Edge Certificates**：可开 **Always Use HTTPS**（Vercel 已处理重定向，二选一即可）
+
+> ⚠️ 重定向（apex→www、vercel.app→www）已在 **Vercel** 侧处理，**不要在 Cloudflare 再设 Redirect Rules**，否则可能双重跳转。
+
+### 🟣 可选增强
+
+- **Bing Webmaster**：https://www.bing.com/webmasters/ 导入 GSC 或直接提交 sitemap（覆盖 Bing / ChatGPT 抓取）
+- **Analytics**：Vercel Analytics 或 Cloudflare Web Analytics（免费）
+- **Security**：Bot Fight Mode 可开，但给 `/api/*` 加例外，避免拦了公开 API；WAF 免费层基础防护已开
+- **监控**：Sentry（错误）、Plausible / Google Analytics（流量）
+
+---
+
 ## 📈 上线后的监控
 
 - **错误监控：** Sentry（免费层够用）
