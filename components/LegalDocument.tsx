@@ -4,7 +4,7 @@ import Link from "next/link"
 import { useTranslation } from "./LanguageProvider"
 import { LanguageSwitcher } from "./LanguageSwitcher"
 
-export const SUPPORT_EMAIL = "jpkowton@gmail.com"
+export const SUPPORT_EMAIL = "support@repocontext.dev"
 
 type LegalKey = "terms" | "privacy" | "refund" | "aup"
 

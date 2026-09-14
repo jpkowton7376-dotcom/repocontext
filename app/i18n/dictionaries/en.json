@@ -156,7 +156,7 @@
     "sentNote": "It reached our support inbox. Leave your email next time if you want a reply.",
     "sentNoteEmail": "It reached our support inbox. We'll reply to your email, usually within one business day.",
     "sendFailed": "Couldn't send",
-    "sendFailedNote": "Something went wrong. Try again, or email jpkowton@gmail.com directly.",
+    "sendFailedNote": "Something went wrong. Try again, or email support@repocontext.dev directly.",
     "tryAgain": "Try again",
     "emailDirectly": "Email us directly instead →",
     "away": "We're away",
@@ -424,7 +424,7 @@
           "Keep your password confidential and do not share your account with others.",
           "API keys are displayed once at creation and stored only as a SHA-256 hash. If you lose a key, revoke it and create a new one.",
           "Never commit an API key to a repository, paste it into a share link, or embed it in client-side code.",
-          "Email jpkowton@gmail.com promptly if you believe your account or a key has been compromised."
+          "Email support@repocontext.dev promptly if you believe your account or a key has been compromised."
         ]
       },
       {
@@ -460,7 +460,7 @@
         "heading": "7. Shared Links",
         "body": [
           "Creating a share link publishes a snapshot of your analysis — repository name, quality score and the generated context files — at a public URL. Anyone with the link can open it, and search engines may index it.",
-          "Only create a share link for content you are comfortable making public. To have one removed, email jpkowton@gmail.com with the URL."
+          "Only create a share link for content you are comfortable making public. To have one removed, email support@repocontext.dev with the URL."
         ]
       },
       {
@@ -518,7 +518,7 @@
       {
         "heading": "16. Contact",
         "body": [
-          "Questions about these Terms? Email jpkowton@gmail.com."
+          "Questions about these Terms? Email support@repocontext.dev."
         ]
       }
     ]
@@ -576,7 +576,7 @@
         "heading": "6. Shared Analysis Links",
         "body": [
           "When you create a share link, a snapshot of that analysis — repository name, quality score and generated context files — becomes publicly readable at an unguessable URL. Anyone with the link can view it.",
-          "Do not create a share link for sensitive content. To have one removed, email jpkowton@gmail.com with the URL and we will delete it."
+          "Do not create a share link for sensitive content. To have one removed, email support@repocontext.dev with the URL and we will delete it."
         ]
       },
       {
@@ -620,7 +620,7 @@
         ],
         "bullets": [
           "Delete your account and its data directly from the dashboard.",
-          "Ask us for a copy of your data, or ask us to correct or erase it, by emailing jpkowton@gmail.com.",
+          "Ask us for a copy of your data, or ask us to correct or erase it, by emailing support@repocontext.dev.",
           "We answer requests within 30 days."
         ]
       },
@@ -639,7 +639,7 @@
       {
         "heading": "13. Children's Privacy",
         "body": [
-          "The Service is not directed at children under 16 and we do not knowingly collect their data. If you believe a child has given us data, email jpkowton@gmail.com and we will delete it."
+          "The Service is not directed at children under 16 and we do not knowingly collect their data. If you believe a child has given us data, email support@repocontext.dev and we will delete it."
         ]
       },
       {
@@ -651,7 +651,7 @@
       {
         "heading": "15. Contact",
         "body": [
-          "Questions about this policy or about your data? Email jpkowton@gmail.com."
+          "Questions about this policy or about your data? Email support@repocontext.dev."
         ]
       }
     ]
@@ -706,7 +706,7 @@
       {
         "heading": "7. How to Request a Refund",
         "body": [
-          "Email jpkowton@gmail.com with the subject “Refund request”."
+          "Email support@repocontext.dev with the subject “Refund request”."
         ],
         "bullets": [
           "Include the email address on the account and the approximate date of the charge.",
@@ -724,7 +724,7 @@
       {
         "heading": "9. Contact",
         "body": [
-          "Questions about this policy? Email jpkowton@gmail.com."
+          "Questions about this policy? Email support@repocontext.dev."
         ]
       }
     ]
@@ -793,7 +793,7 @@
       {
         "heading": "7. Reporting Abuse",
         "body": [
-          "If content analysed by RepoContext violates this AUP, or another user is abusing the Service, email jpkowton@gmail.com with a link and a short description. We review reports within five business days."
+          "If content analysed by RepoContext violates this AUP, or another user is abusing the Service, email support@repocontext.dev with a link and a short description. We review reports within five business days."
         ]
       },
       {
@@ -811,7 +811,7 @@
       {
         "heading": "10. Contact",
         "body": [
-          "Questions about this policy? Email jpkowton@gmail.com."
+          "Questions about this policy? Email support@repocontext.dev."
         ]
       }
     ]
@@ -872,22 +872,10 @@
     ],
     "formatsTitle": "Export formats",
     "formats": [
-      {
-        "name": "AGENTS.md",
-        "desc": "A comprehensive project brief for autonomous coding agents."
-      },
-      {
-        "name": "CLAUDE.md",
-        "desc": "Optimised for Claude Code and Anthropic-powered workflows."
-      },
-      {
-        "name": "Cursor Rules",
-        "desc": "Cursor-specific rules that shape completions and chat behaviour."
-      },
-      {
-        "name": "Copilot Instructions",
-        "desc": "Instructions tailored for GitHub Copilot context."
-      }
+      { "name": "AGENTS.md", "desc": "A comprehensive project brief for autonomous coding agents." },
+      { "name": "CLAUDE.md", "desc": "Optimised for Claude Code and Anthropic-powered workflows." },
+      { "name": "Cursor Rules", "desc": "Cursor-specific rules that shape completions and chat behaviour." },
+      { "name": "Copilot Instructions", "desc": "Instructions tailored for GitHub Copilot context." }
     ],
     "ctaTitle": "Ready to try it?",
     "ctaDesc": "Analyse your first repository in seconds. No credit card required.",

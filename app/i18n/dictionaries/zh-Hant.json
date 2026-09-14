@@ -313,7 +313,7 @@
     "sentNote": "訊息已送達客服信箱。若需要回覆，下次請留下 Email。",
     "sentNoteEmail": "訊息已送達客服信箱，我們會透過 Email 回覆，通常在一個工作日內。",
     "sendFailed": "送出失敗",
-    "sendFailedNote": "發生錯誤，請再試一次，或直接來信 jpkowton@gmail.com。",
+    "sendFailedNote": "發生錯誤，請再試一次，或直接來信 support@repocontext.dev。",
     "tryAgain": "再試一次",
     "emailDirectly": "直接來信給我們 →",
     "away": "客服不在",
@@ -424,7 +424,7 @@
           "請妥善保管密碼，勿與他人共用帳號。",
           "API 金鑰僅在建立時顯示一次，且只以 SHA-256 雜湊值儲存。若遺失金鑰，請將其撤銷並重新建立。",
           "切勿將 API 金鑰提交至儲存庫、貼入分享連結，或嵌入用戶端程式碼。",
-          "若您認為帳號或金鑰已遭盜用，請立即來信 jpkowton@gmail.com。"
+          "若您認為帳號或金鑰已遭盜用，請立即來信 support@repocontext.dev。"
         ]
       },
       {
@@ -460,7 +460,7 @@
         "heading": "7. 分享連結",
         "body": [
           "建立分享連結會將該次分析的快照（儲存庫名稱、品質分數與產生的上下文檔案）發布到公開網址。任何持有連結者都能開啟，搜尋引擎也可能索引。",
-          "請只對您願意公開的內容建立分享連結。如需移除，請來信 jpkowton@gmail.com 並提供網址。"
+          "請只對您願意公開的內容建立分享連結。如需移除，請來信 support@repocontext.dev 並提供網址。"
         ]
       },
       {
@@ -518,7 +518,7 @@
       {
         "heading": "16. 聯絡我們",
         "body": [
-          "對本條款有疑問？請來信 jpkowton@gmail.com。"
+          "對本條款有疑問？請來信 support@repocontext.dev。"
         ]
       }
     ]
@@ -576,7 +576,7 @@
         "heading": "6. 分享的分析連結",
         "body": [
           "建立分享連結後，該次分析的快照（儲存庫名稱、品質分數與產生的上下文檔案）會以難以猜測的網址公開，任何持有連結者都能檢視。",
-          "請勿為敏感內容建立分享連結。如需移除，請來信 jpkowton@gmail.com 並提供網址。"
+          "請勿為敏感內容建立分享連結。如需移除，請來信 support@repocontext.dev 並提供網址。"
         ]
       },
       {
@@ -620,7 +620,7 @@
         ],
         "bullets": [
           "可直接在控制台刪除帳號及其資料。",
-          "來信 jpkowton@gmail.com 即可索取資料複本，或要求更正、刪除。",
+          "來信 support@repocontext.dev 即可索取資料複本，或要求更正、刪除。",
           "我們會在 30 天內回覆您的請求。"
         ]
       },
@@ -639,7 +639,7 @@
       {
         "heading": "13. 兒童隱私",
         "body": [
-          "本服務並非針對 16 歲以下兒童，我們也不會刻意蒐集其資料。若您認為兒童已提供資料給我們，請來信 jpkowton@gmail.com，我們將予以刪除。"
+          "本服務並非針對 16 歲以下兒童，我們也不會刻意蒐集其資料。若您認為兒童已提供資料給我們，請來信 support@repocontext.dev，我們將予以刪除。"
         ]
       },
       {
@@ -651,7 +651,7 @@
       {
         "heading": "15. 聯絡我們",
         "body": [
-          "對本政策或您的資料有疑問？請來信 jpkowton@gmail.com。"
+          "對本政策或您的資料有疑問？請來信 support@repocontext.dev。"
         ]
       }
     ]
@@ -706,7 +706,7 @@
       {
         "heading": "7. 如何申請退款",
         "body": [
-          "請來信 jpkowton@gmail.com，主旨請寫「退款申請」。"
+          "請來信 support@repocontext.dev，主旨請寫「退款申請」。"
         ],
         "bullets": [
           "請提供帳號的電子郵件地址與扣款的大約日期。",
@@ -724,7 +724,7 @@
       {
         "heading": "9. 聯絡我們",
         "body": [
-          "對本政策有疑問？請來信 jpkowton@gmail.com。"
+          "對本政策有疑問？請來信 support@repocontext.dev。"
         ]
       }
     ]
@@ -793,7 +793,7 @@
       {
         "heading": "7. 檢舉濫用",
         "body": [
-          "若您認為 RepoContext 所分析的內容違反本政策，或有其他使用者濫用服務，請來信 jpkowton@gmail.com 並附上連結與簡要說明。我們會在五個工作天內處理。"
+          "若您認為 RepoContext 所分析的內容違反本政策，或有其他使用者濫用服務，請來信 support@repocontext.dev 並附上連結與簡要說明。我們會在五個工作天內處理。"
         ]
       },
       {
@@ -811,7 +811,7 @@
       {
         "heading": "10. 聯絡我們",
         "body": [
-          "對本政策有疑問？請來信 jpkowton@gmail.com。"
+          "對本政策有疑問？請來信 support@repocontext.dev。"
         ]
       }
     ]
@@ -872,22 +872,10 @@
     ],
     "formatsTitle": "匯出格式",
     "formats": [
-      {
-        "name": "AGENTS.md",
-        "desc": "給自主程式設計代理的完整專案摘要。"
-      },
-      {
-        "name": "CLAUDE.md",
-        "desc": "針對 Claude Code 與 Anthropic 工作流程最佳化。"
-      },
-      {
-        "name": "Cursor Rules",
-        "desc": "Cursor 專屬規則，影響程式碼補全與聊天行為。"
-      },
-      {
-        "name": "Copilot Instructions",
-        "desc": "為 GitHub Copilot 上下文量身打造的指示。"
-      }
+      { "name": "AGENTS.md", "desc": "給自主程式設計代理的完整專案摘要。" },
+      { "name": "CLAUDE.md", "desc": "針對 Claude Code 與 Anthropic 工作流程最佳化。" },
+      { "name": "Cursor Rules", "desc": "Cursor 專屬規則，影響程式碼補全與聊天行為。" },
+      { "name": "Copilot Instructions", "desc": "為 GitHub Copilot 上下文量身打造的指示。" }
     ],
     "ctaTitle": "準備好試試看了嗎？",
     "ctaDesc": "幾秒就能完成第一次分析，不需要信用卡。",

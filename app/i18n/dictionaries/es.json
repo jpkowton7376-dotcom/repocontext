@@ -313,7 +313,7 @@
     "sentNote": "Llegó a nuestra bandeja de soporte. Deja tu correo la próxima vez si quieres respuesta.",
     "sentNoteEmail": "Llegó a nuestra bandeja de soporte. Te responderemos a tu correo, normalmente en un día laborable.",
     "sendFailed": "No se pudo enviar",
-    "sendFailedNote": "Algo salió mal. Inténtalo de nuevo o escribe directamente a jpkowton@gmail.com.",
+    "sendFailedNote": "Algo salió mal. Inténtalo de nuevo o escribe directamente a support@repocontext.dev.",
     "tryAgain": "Reintentar",
     "emailDirectly": "Escríbenos directamente →",
     "away": "No estamos",
@@ -424,7 +424,7 @@
           "Mantén tu contraseña en secreto y no compartas tu cuenta con terceros.",
           "Las claves de API se muestran una sola vez al crearlas y se guardan únicamente como un hash SHA-256. Si pierdes una clave, revócala y crea otra.",
           "No añadas nunca una clave de API a un repositorio, la pegues en un enlace compartido ni la incluyas en código de cliente.",
-          "Escribe a jpkowton@gmail.com cuanto antes si crees que tu cuenta o una clave se han visto comprometidas."
+          "Escribe a support@repocontext.dev cuanto antes si crees que tu cuenta o una clave se han visto comprometidas."
         ]
       },
       {
@@ -460,7 +460,7 @@
         "heading": "7. Enlaces compartidos",
         "body": [
           "Crear un enlace compartido publica una instantánea de tu análisis — nombre del repositorio, puntuación de calidad y archivos de contexto generados — en una URL pública. Cualquiera que tenga el enlace puede abrirla y los motores de búsqueda pueden indexarla.",
-          "Crea un enlace compartido solo para contenido que te resulte aceptable hacer público. Para que lo eliminemos, escribe a jpkowton@gmail.com indicando la URL."
+          "Crea un enlace compartido solo para contenido que te resulte aceptable hacer público. Para que lo eliminemos, escribe a support@repocontext.dev indicando la URL."
         ]
       },
       {
@@ -518,7 +518,7 @@
       {
         "heading": "16. Contacto",
         "body": [
-          "¿Preguntas sobre estos Términos? Escribe a jpkowton@gmail.com."
+          "¿Preguntas sobre estos Términos? Escribe a support@repocontext.dev."
         ]
       }
     ]
@@ -576,7 +576,7 @@
         "heading": "6. Enlaces de análisis compartidos",
         "body": [
           "Cuando creas un enlace compartido, una instantánea de ese análisis — nombre del repositorio, puntuación de calidad y archivos de contexto generados — pasa a ser legible públicamente en una URL difícil de adivinar. Cualquiera que tenga el enlace puede verla.",
-          "No crees un enlace compartido para contenido sensible. Para que lo eliminemos, escribe a jpkowton@gmail.com indicando la URL."
+          "No crees un enlace compartido para contenido sensible. Para que lo eliminemos, escribe a support@repocontext.dev indicando la URL."
         ]
       },
       {
@@ -620,7 +620,7 @@
         ],
         "bullets": [
           "Borra tu cuenta y sus datos directamente desde el panel.",
-          "Pide una copia de tus datos, o que los corrijamos o eliminemos, escribiendo a jpkowton@gmail.com.",
+          "Pide una copia de tus datos, o que los corrijamos o eliminemos, escribiendo a support@repocontext.dev.",
           "Respondemos a las solicitudes en un plazo de 30 días."
         ]
       },
@@ -639,7 +639,7 @@
       {
         "heading": "13. Privacidad de los menores",
         "body": [
-          "El Servicio no se dirige a menores de 16 años y no recogemos sus datos de forma deliberada. Si crees que un menor nos ha facilitado datos, escribe a jpkowton@gmail.com y los eliminaremos."
+          "El Servicio no se dirige a menores de 16 años y no recogemos sus datos de forma deliberada. Si crees que un menor nos ha facilitado datos, escribe a support@repocontext.dev y los eliminaremos."
         ]
       },
       {
@@ -651,7 +651,7 @@
       {
         "heading": "15. Contacto",
         "body": [
-          "¿Preguntas sobre esta política o sobre tus datos? Escribe a jpkowton@gmail.com."
+          "¿Preguntas sobre esta política o sobre tus datos? Escribe a support@repocontext.dev."
         ]
       }
     ]
@@ -706,7 +706,7 @@
       {
         "heading": "7. Cómo solicitar un reembolso",
         "body": [
-          "Escribe a jpkowton@gmail.com con el asunto «Solicitud de reembolso»."
+          "Escribe a support@repocontext.dev con el asunto «Solicitud de reembolso»."
         ],
         "bullets": [
           "Indica el correo electrónico de la cuenta y la fecha aproximada del cargo.",
@@ -724,7 +724,7 @@
       {
         "heading": "9. Contacto",
         "body": [
-          "¿Preguntas sobre esta política? Escribe a jpkowton@gmail.com."
+          "¿Preguntas sobre esta política? Escribe a support@repocontext.dev."
         ]
       }
     ]
@@ -793,7 +793,7 @@
       {
         "heading": "7. Notificar abusos",
         "body": [
-          "Si un contenido analizado por RepoContext infringe esta PUA, o si otro usuario abusa del Servicio, escribe a jpkowton@gmail.com con un enlace y una breve descripción. Revisamos los informes en un plazo de cinco días hábiles."
+          "Si un contenido analizado por RepoContext infringe esta PUA, o si otro usuario abusa del Servicio, escribe a support@repocontext.dev con un enlace y una breve descripción. Revisamos los informes en un plazo de cinco días hábiles."
         ]
       },
       {
@@ -811,7 +811,7 @@
       {
         "heading": "10. Contacto",
         "body": [
-          "¿Preguntas sobre esta política? Escribe a jpkowton@gmail.com."
+          "¿Preguntas sobre esta política? Escribe a support@repocontext.dev."
         ]
       }
     ]

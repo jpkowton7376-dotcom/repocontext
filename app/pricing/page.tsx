@@ -737,7 +737,7 @@ export default function PricingPage() {
                 <Link href="/privacy" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.privacy")}</Link>
                 <Link href="/refund" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.refund")}</Link>
                 <Link href="/acceptable-use" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.aup")}</Link>
-                <a href="mailto:jpkowton@gmail.com" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.contact")}</a>
+                <a href="mailto:support@repocontext.dev" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.contact")}</a>
               </div>
             </div>
           </div>
@@ -752,16 +752,6 @@ export default function PricingPage() {
             color: "#6f6f6f",
           }}>
             <span>{t("footer.copyright")}</span>
-            <div style={{ display: "flex", gap: "24px" }}>
-              <a
-                href="https://github.com/jpkowton7376-dotcom/repocontext"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: "#6f6f6f", textDecoration: "none" }}
-              >
-                {t("footer.github")}
-              </a>
-            </div>
           </div>
         </div>
       </footer>

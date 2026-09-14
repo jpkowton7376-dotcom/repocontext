@@ -268,7 +268,7 @@ console.log(analysis.agentsMd); // write to AGENTS.md`
       }}>
         <Link href="/" style={{ color: "white", textDecoration: "none", fontWeight: 600 }}>RepoContext</Link>
         {" · "}
-        Questions? Email <a href="mailto:jpkowton@gmail.com" style={{ color: "white" }}>jpkowton@gmail.com</a>
+        Questions? Email <a href="mailto:support@repocontext.dev" style={{ color: "white" }}>support@repocontext.dev</a>
       </footer>
     </main>
   )

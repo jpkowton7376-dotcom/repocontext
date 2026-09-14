@@ -48,12 +48,10 @@ const organizationJsonLd = {
   url: SITE_URL,
   logo: `${SITE_URL}/logo.png`,
   description: DEFAULT_DESCRIPTION,
-  sameAs: [
-    "https://github.com/jpkowton7376-dotcom/repocontext",
-  ],
+  sameAs: [],
   contactPoint: {
     "@type": "ContactPoint",
-    email: "jpkowton@gmail.com",
+    email: "support@repocontext.dev",
     contactType: "customer support",
     availableLanguage: ["en", "zh-Hant", "ja", "es"],
   },

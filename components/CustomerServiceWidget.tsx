@@ -328,7 +328,7 @@ export function CustomerServiceWidget() {
                 </p>
                 {status === "error" && (
                   <a
-                    href={`mailto:jpkowton@gmail.com?subject=${encodeURIComponent(
+                    href={`mailto:support@repocontext.dev?subject=${encodeURIComponent(
                       "RepoContext support",
                     )}&body=${encodeURIComponent(draft)}`}
                     style={{

@@ -1258,7 +1258,7 @@ export default function HomePage() {
                 <GlowLink href="/privacy" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.privacy")}</GlowLink>
                 <GlowLink href="/refund" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.refund")}</GlowLink>
                 <GlowLink href="/acceptable-use" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.aup")}</GlowLink>
-                <GlowLink href="mailto:jpkowton@gmail.com" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.contact")}</GlowLink>
+                <GlowLink href="mailto:support@repocontext.dev" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.contact")}</GlowLink>
               </div>
             </div>
           </div>
@@ -1273,16 +1273,6 @@ export default function HomePage() {
             color: "#6f6f6f",
           }}>
             <span>{t("footer.copyright")}</span>
-            <div style={{ display: "flex", gap: "24px" }}>
-              <GlowLink
-                href="https://github.com/jpkowton7376-dotcom/repocontext"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: "#6f6f6f", textDecoration: "none" }}
-              >
-                {t("footer.github")}
-              </GlowLink>
-            </div>
           </div>
         </div>
       </footer>
