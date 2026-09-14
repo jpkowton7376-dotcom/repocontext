@@ -8,7 +8,7 @@ export interface Part {
   unitCost: number
 }
 
-export type NodeKind = "mcu" | "sensor" | "actuator" | "power" | "module" | "driver" | "switch"
+export type NodeKind = "mcu" | "sensor" | "actuator" | "power" | "module" | "driver" | "switch" | "component" | "antenna" | "transformer"
 
 export interface WiringNode {
   id: string
@@ -3004,6 +3004,1074 @@ export const PROJECTS: HardwareProject[] = [
               title: "Family profiles",
               detail:
                 "Each recognized face gets its own API key + feed preference. Mom sees school pickup calendar, Dad sees golf course tee-times, you see GitHub PR statuses.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  /* ============================================================
+     #21 — Portable EMP Generator
+     ============================================================ */
+  {
+    slug: "portable-emp-generator",
+    title: "Portable EMP Generator",
+    author: "field_tech",
+    avatarColor: "#eab308",
+    cover: "/projects/portable-emp-generator.jpg",
+    createdAt: "2026-09-14T18:00:00Z",
+    tags: ["Robotics", "Security"],
+    summary:
+      "A 12 V DC-input EMP generator that produces short bursts of electromagnetic energy — used for field testing EMI shielding on electronics enclosures.",
+    features: [
+      "12 V 30 A input",
+      "3-stage Marx generator (15 kV)",
+      "Shielded spiral antenna",
+      "Adjustable burst rate",
+      "Battery or mains powered",
+    ],
+    stars: 8,
+    parts: [
+      { name: "ESP32-C3 (burst controller)", category: "Electrical", subcategory: "MCU", quantity: 1, unitCost: 9.5 },
+      { name: "IRFZ44N Mosfet ×6", category: "Electrical", subcategory: "Component", quantity: 6, unitCost: 0.8 },
+      { name: "4700 µF 50 V Capacitor ×6", category: "Electrical", subcategory: "Component", quantity: 6, unitCost: 0.9 },
+      { name: "10 kV Diode ×6", category: "Electrical", subcategory: "Component", quantity: 6, unitCost: 3.5 },
+      { name: "Flyback Transformer 12V→5kV", category: "Electrical", subcategory: "Module", quantity: 3, unitCost: 18.0 },
+      { name: "Shielded Spiral Antenna", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 22.0 },
+      { name: "12V 30A Lead-Acid or Li-Po", category: "Electrical", subcategory: "Power", quantity: 1, unitCost: 45.0 },
+      { name: "Metal Shielded Enclosure", category: "Mechanical", subcategory: "Enclosure", quantity: 1, unitCost: 38.0 },
+    ],
+    wiringNodes: [
+      { id: "bat", label: "12V 30A Battery", kind: "power" },
+      { id: "mcu", label: "ESP32-C3 Controller", kind: "mcu" },
+      { id: "xfrm", label: "3 × Flyback Transformers", kind: "module" },
+      { id: "cap", label: "6 × 4700 µF Caps", kind: "component" },
+      { id: "diode", label: "6 × 10kV Diodes", kind: "component" },
+      { id: "ant", label: "Shielded Spiral Antenna", kind: "module" },
+    ],
+    wiringEdges: [
+      { from: "bat", to: "xfrm", label: "12V primary power" },
+      { from: "mcu", to: "xfrm", label: "Mosfet gate trigger" },
+      { from: "xfrm", to: "cap", label: "5kV charge each stage" },
+      { from: "cap", to: "diode", label: "Marx stage link" },
+      { from: "diode", to: "ant", label: "15kV discharge" },
+    ],
+    wiring:
+      "ESP32-C3 pulses the Mosfet gates at 15 kHz → flybacks charge each Marx stage capacitor to 5 kV → diodes link stages in series → 15 kV discharge fires into the spiral antenna. The ESP32 also controls burst rate (1–10 pulses per second) and a safety relay that disconnects high-voltage rails when the enclosure is open.",
+    mechSpecs: [
+      { label: "Output Peak Voltage", value: "~15 kV" },
+      { label: "Burst Rate", value: "1–10 Hz adjustable" },
+      { label: "Effective Range", value: "≤ 3 m (shielded targets)" },
+      { label: "Weight", value: "3.8 kg with battery" },
+    ],
+    mechSections: [
+      {
+        title: "Shielding",
+        body: "The entire circuit lives inside a 1.5 mm aluminum Faraday cage. If you omit this, the EMP will knock out the generator's own electronics. All wires enter via shielded feedthrough capacitors.",
+      },
+      {
+        title: "Antenna",
+        body: "Counter-wound spiral antenna (20 turns, 10 cm diameter) fed at the bottom. Point it at the target and keep at least 1 m away from your own body when firing.",
+      },
+    ],
+    instructions: [
+      "Build the Marx generator on a perfboard first — test each stage charges to 5 kV before linking.",
+      "Install a 5 s countdown relay so you have time to step back before each burst.",
+      "Do not operate near medical devices, pacemakers, or live electronics you care about.",
+    ],
+    build: {
+      tools: ["Soldering iron", "HV safety gloves", "Multimeter (high-voltage probe)", "Wire strippers"],
+      assumptions: [
+        "HV knowledge and experience",
+        "Outdoor or shielded test environment",
+        "Li-Po balance charger",
+      ],
+      phases: [
+        {
+          title: "Charge",
+          steps: [
+            {
+              title: "3-stage Marx generator",
+              detail:
+                "Stage 1 charges to 5 kV, stage 2 to 10 kV, stage 3 to 15 kV. Each stage uses a flyback + cap + diode. Test each stage individually before daisy-chaining.",
+              tools: ["HV safety gloves"],
+              parts: ["Flyback Transformer", "4700 µF Capacitor", "10 kV Diode"],
+            },
+            {
+              title: "Flyback phasing",
+              detail:
+                "Primary wraps determine output polarity. If a stage won't charge, flip the primary winding leads. Do this with power OFF and discharged caps.",
+            },
+          ],
+        },
+        {
+          title: "Control",
+          steps: [
+            {
+              title: "ESP32-C3 burst timing",
+              detail:
+                "Pulse width = 20 µs per burst. Burst rate = 1–10 Hz via a 10-turn pot. Too fast and the caps won't recharge between bursts.",
+              parts: ["ESP32-C3 (burst controller)"],
+            },
+            {
+              title: "Enclosure interlock",
+              detail:
+                "A magnetic reed switch on the aluminum enclosure cuts the Mosfet gate drive immediately when opened. This is the single most important safety feature.",
+            },
+          ],
+        },
+        {
+          title: "Test",
+          steps: [
+            {
+              title: "Distance calibration",
+              detail:
+                "Place a cheap digital watch at 1 m, 2 m, 3 m from the antenna. Fire 5 bursts at each distance and see if it glitches. Tune burst rate vs. distance.",
+            },
+            {
+              title: "EMI shielding test",
+              detail:
+                "Wrap the target in aluminum foil, fire, and check if it survives. This gives you a baseline for how good (or bad) the target's native shielding is.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  /* ============================================================
+     #22 — Portable Power Inverter
+     ============================================================ */
+  {
+    slug: "portable-inverter",
+    title: "Portable 12V → 220V Sine-Wave Inverter",
+    author: "grid_offline",
+    avatarColor: "#14b8a6",
+    cover: "/projects/portable-inverter.jpg",
+    createdAt: "2026-09-14T18:30:00Z",
+    tags: ["IoT", "Robotics"],
+    summary:
+      "A 2000 W pure sine-wave inverter that converts 12 V DC from a car battery or solar panel to 220 V AC — runs fridges, tools, and laptops off-grid.",
+    features: [
+      "2000 W continuous / 4000 W peak",
+      "Pure sine-wave output (THD < 3%)",
+      "MPPT solar input",
+      "USB-C + USB-A fast charge",
+      "LCD voltage / amp / watt display",
+    ],
+    stars: 7,
+    parts: [
+      { name: "EG8010 SPWM Controller", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 18.0 },
+      { name: "IRFP460N H-Bridge ×4", category: "Electrical", subcategory: "Component", quantity: 4, unitCost: 2.5 },
+      { name: "IRFB3207 Boost ×2", category: "Electrical", subcategory: "Component", quantity: 2, unitCost: 1.8 },
+      { name: "Custom 12V→320V Transformer", category: "Mechanical", subcategory: "Motion", quantity: 1, unitCost: 48.0 },
+      { name: "220 V 10 A Outlet ×2", category: "Electrical", subcategory: "Connector", quantity: 2, unitCost: 3.5 },
+      { name: "HC-SR501-like Relay ×2", category: "Electrical", subcategory: "Driver", quantity: 2, unitCost: 1.2 },
+      { name: "12 V 30 A Input Breaker", category: "Electrical", subcategory: "Component", quantity: 1, unitCost: 12.0 },
+      { name: "20 A Sine-Wave Filter Cap ×4", category: "Electrical", subcategory: "Component", quantity: 4, unitCost: 3.5 },
+      { name: "Aluminum Heat Sink + 120 mm Fan", category: "Mechanical", subcategory: "Thermal", quantity: 1, unitCost: 28.0 },
+    ],
+    wiringNodes: [
+      { id: "bat", label: "12V Input (Battery / Solar)", kind: "power" },
+      { id: "boost", label: "Boost Stage (12→320V)", kind: "driver" },
+      { id: "eg", label: "EG8010 SPWM Controller", kind: "mcu" },
+      { id: "hb", label: "H-Bridge ×4 Mosfets", kind: "driver" },
+      { id: "trafo", label: "320V Transformer", kind: "module" },
+      { id: "out", label: "2 × 220V Outlets", kind: "actuator" },
+    ],
+    wiringEdges: [
+      { from: "bat", to: "boost", label: "12V 30A" },
+      { from: "boost", to: "hb", label: "320V DC bus" },
+      { from: "eg", to: "hb", label: "SPWM gate signals" },
+      { from: "hb", to: "trafo", label: "PWM AC" },
+      { from: "trafo", to: "out", label: "220V 50/60Hz" },
+    ],
+    wiring:
+      "Two-stage topology: boost stage steps 12 V up to 320 V DC via an interleaved topology (two boost inductors share a capacitor), then the H-bridge (driven by EG8010 SPWM) modulates 320 V into a 220 V pure sine wave at 50/60 Hz. The transformer is actually a high-frequency toroid — not a mains-frequency E-I core.",
+    mechSpecs: [
+      { label: "Continuous Power", value: "2000 W" },
+      { label: "Surge Power", value: "4000 W (100 ms)" },
+      { label: "Efficiency", value: "~92% full load" },
+      { label: "THD", value: "< 3% (pure sine)" },
+    ],
+    mechSections: [
+      {
+        title: "Thermal",
+        body: "The boost Mosfets handle the worst of the switching losses — bolt them directly to the 10 mm aluminum base plate with thermal compound and 2 Nm torque. H-bridge Mosfets share a smaller heat sink on the output side.",
+      },
+      {
+        title: "Safety",
+        body: "Input-side 30 A DC breaker + output-side 10 A AC fuse + over-voltage shutdown at 260 V RMS + short-circuit protection within 10 µs. Ground the metal chassis to the input battery negative.",
+      },
+    ],
+    instructions: [
+      "Test boost stage first with a 10 Ω dummy load — confirm 320 V before powering the H-bridge.",
+      "Set EG8010 to 50 Hz (Europe) or 60 Hz (North America).",
+      "Never plug a sine-wave inverter directly into mains AC — you will burn it out.",
+    ],
+    build: {
+      tools: ["Soldering iron (high-power)", "Torque screwdriver", "Isolated multimeter", "Oscilloscope (optional)"],
+      assumptions: [
+        "12 V lead-acid or Li-Po battery ≥ 100 Ah",
+        "230 V wiring experience",
+        "Isolated AC outlet for the first test",
+      ],
+      phases: [
+        {
+          title: "Boost",
+          steps: [
+            {
+              title: "12V→320V interleaved boost",
+              detail:
+                "Use two identical inductors switched 180° out of phase on one shared output cap. This halves the inductor ripple current for the same total ripple.",
+              tools: ["Oscilloscope (optional)"],
+              parts: ["IRFB3207 Boost"],
+            },
+            {
+              title: "320V over-voltage protection",
+              detail:
+                "A TL431 + optocoupler feeds back to the boost controller when the cap bus exceeds 340 V. This protects the H-bridge from over-voltage.",
+            },
+          ],
+        },
+        {
+          title: "Sine",
+          steps: [
+            {
+              title: "EG8010 SPWM setup",
+              detail:
+                "Set modulation index to 0.95, frequency to 50/60 Hz. The SPWM dead time must be ≥ 2 µs — otherwise the H-bridge will shoot-through.",
+              parts: ["EG8010 SPWM Controller", "IRFP460N H-Bridge"],
+            },
+            {
+              title: "Output LC filter",
+              detail:
+                "200 µH inductor + 4 µF capacitor on the transformer secondary, before the outlet. This strips all switching harmonics and leaves a pure 50/60 Hz sine.",
+              parts: ["20 A Sine-Wave Filter Cap"],
+            },
+          ],
+        },
+        {
+          title: "Test",
+          steps: [
+            {
+              title: "Dummy load test",
+              detail:
+                "2 × 500 W heating elements wired in parallel = 1000 W resistive load. Run 15 minutes. Inlet temperature should not exceed 35 °C above ambient.",
+            },
+            {
+              title: "Surge test",
+              detail:
+                "Plug in a 1 HP vacuum cleaner. It will draw 7–8 A startup surge — the inverter should ride through it without tripping. If it trips, your peak power rating is optimistic.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  /* ============================================================
+     #23 — Water Quality Monitor
+     ============================================================ */
+  {
+    slug: "water-quality-monitor",
+    title: "DIY Water Quality Monitor",
+    author: "aquatic_metric",
+    avatarColor: "#06b6d4",
+    cover: "/projects/water-quality-monitor.jpg",
+    createdAt: "2026-09-14T19:00:00Z",
+    tags: ["IoT", "Sensors"],
+    summary:
+      "A handheld water quality meter measuring pH, TDS, turbidity, and temperature — logs to SD card and sends alerts via LoRa when parameters drift out of safe ranges.",
+    features: [
+      "pH + TDS + Turbidity + Temp",
+      "SD card CSV logging",
+      "LoRa uplink to base station",
+      "OLED display live readings",
+      "Auto-calibration routines",
+    ],
+    stars: 10,
+    parts: [
+      { name: "ESP32-S3 DevKit", category: "Electrical", subcategory: "MCU", quantity: 1, unitCost: 18.0 },
+      { name: "Atlas Scientific pH Kit", category: "Electrical", subcategory: "Sensor", quantity: 1, unitCost: 34.0 },
+      { name: "DFRobot TDS Sensor V1.0", category: "Electrical", subcategory: "Sensor", quantity: 1, unitCost: 12.0 },
+      { name: "TSL2500 Turbidity Module", category: "Electrical", subcategory: "Sensor", quantity: 1, unitCost: 22.0 },
+      { name: "DS18B20 Waterproof Temp", category: "Electrical", subcategory: "Sensor", quantity: 1, unitCost: 4.5 },
+      { name: "SX1262 LoRa Module", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 12.0 },
+      { name: "0.96\" OLED SSD1306", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 3.5 },
+      { name: "Micro-SD Card Module", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 4.0 },
+      { name: "5000 mAh Li-Po 3.7V", category: "Electrical", subcategory: "Power", quantity: 1, unitCost: 14.0 },
+      { name: "IP67 Handheld Enclosure", category: "Mechanical", subcategory: "Enclosure", quantity: 1, unitCost: 18.0 },
+    ],
+    wiringNodes: [
+      { id: "bat", label: "5000 mAh Li-Po", kind: "power" },
+      { id: "mcu", label: "ESP32-S3", kind: "mcu" },
+      { id: "ph", label: "pH Probe", kind: "sensor" },
+      { id: "tds", label: "TDS Sensor", kind: "sensor" },
+      { id: "turb", label: "Turbidity (TSL2500)", kind: "sensor" },
+      { id: "temp", label: "DS18B20 Temp", kind: "sensor" },
+      { id: "oled", label: "0.96\" OLED", kind: "module" },
+      { id: "lora", label: "SX1262", kind: "module" },
+      { id: "sd", label: "Micro-SD", kind: "module" },
+    ],
+    wiringEdges: [
+      { from: "bat", to: "mcu", label: "3.3V / 5V" },
+      { from: "mcu", to: "ph", label: "I²C" },
+      { from: "mcu", to: "tds", label: "Analog ADC1" },
+      { from: "mcu", to: "turb", label: "Analog ADC2" },
+      { from: "temp", to: "mcu", label: "1-Wire" },
+      { from: "mcu", to: "oled", label: "I²C" },
+      { from: "mcu", to: "lora", label: "SPI" },
+      { from: "mcu", to: "sd", label: "SPI (separate CS)" },
+    ],
+    wiring:
+      "Atlas pH module talks I²C; DFRobot TDS and TSL2500 turbidity feed analog into two different ADC channels; DS18B20 shares the same 1-Wire bus the aquaponics build used. ESP32-S3 multiplexes I²C (OLED + pH on different addresses) and SPI (SD and LoRa on separate CS pins).",
+    mechSpecs: [
+      { label: "pH Range", value: "0–14 (± 0.05)" },
+      { label: "TDS Range", value: "0–2000 ppm (± 2%)" },
+      { label: "Turbidity", value: "0–100 NTU" },
+      { label: "Battery Life", value: "8 hours continuous / 7 days log interval" },
+    ],
+    mechSections: [
+      {
+        title: "Probe Holder",
+        body: "All four probes (pH, TDS, temp, turbidity) slot into a 3D-printed holder with 20 cm of slack cable so you can lower them into ponds or rivers. The holder is weighted with a steel nut so it sinks slowly.",
+      },
+      {
+        title: "IP67 Enclosure",
+        body: "All electronics live in a waterproof plastic case with sealed cable glands. LoRa antenna lives outside via a coax gland — antenna inside metal = no signal.",
+      },
+    ],
+    instructions: [
+      "Calibrate pH with 4.0 and 7.0 buffers at least every 2 weeks.",
+      "TDS sensor needs a 2-minute warm-up before reliable readings.",
+      "Back up your SD card logs weekly — the SD module has no wear-leveling.",
+    ],
+    build: {
+      tools: ["Soldering iron", "3D printer (probe holder)", "Phillips screwdriver", "Cable glands"],
+      assumptions: [
+        "pH calibration buffers (4.0, 7.0)",
+        "Clear container for turbidity zeroing",
+        "LoRa base station or gateway",
+      ],
+      phases: [
+        {
+          title: "Calibrate",
+          steps: [
+            {
+              title: "2-point pH calibration",
+              detail:
+                "Buffer 4.0 first, rinse, buffer 7.0. The Atlas module stores both points in EEPROM. Don't forget to rinse between buffers.",
+              parts: ["Atlas Scientific pH Kit"],
+            },
+            {
+              title: "TDS and turbidity zero",
+              detail:
+                "TDS zero in distilled water; turbidity zero by placing a black cover over the TSL2500 cell with it submerged in distilled water. Neither needs calibration beyond the zero point.",
+              parts: ["DFRobot TDS Sensor", "TSL2500 Turbidity"],
+            },
+          ],
+        },
+        {
+          title: "Log",
+          steps: [
+            {
+              title: "SD card logging and LoRa uplink",
+              detail:
+                "Write a CSV line every 30 seconds: ts,temp,pH,tds,turb,bat. Send a short LoRa packet every 5 minutes with the rolling average of each parameter.",
+              parts: ["Micro-SD Card Module", "SX1262 LoRa Module"],
+            },
+            {
+              title: "Threshold alerts",
+              detail:
+                "pH < 6.5 or > 8.5 alerts → LoRa urgent packet + OLED flash. TDS > 1500 ppm alerts. Hard-code the thresholds so you don't accidentally disable them.",
+            },
+          ],
+        },
+        {
+          title: "Field",
+          steps: [
+            {
+              title: "Lab tap water baseline",
+              detail:
+                "Run 10 minutes of readings at your tap. pH ~7.0, TDS < 500 ppm, turbidity < 5 NTU. This is your reference — anything significantly different needs investigation.",
+            },
+            {
+              title: "River/pond test",
+              detail:
+                "Find a known water body with published data (government monitoring stations often publish). Compare your readings to theirs — expect ± 0.2 pH, ± 5% TDS, ± 10 NTU.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  /* ============================================================
+     #24 — Smart AI Fan
+     ============================================================ */
+  {
+    slug: "smart-ai-fan",
+    title: "Smart AI Ceiling Fan",
+    author: "breeze",
+    avatarColor: "#60a5fa",
+    cover: "/projects/smart-ai-fan.jpg",
+    createdAt: "2026-09-14T19:30:00Z",
+    tags: ["IoT", "Wearable"],
+    summary:
+      "A 5-speed smart ceiling fan with ESP32-C3 motion + ambient + temp sensors — slows down when you leave the room, speeds up when room temp rises, and takes voice commands.",
+    features: [
+      "PIR + mmWave dual occupancy sensors",
+      "Ambient light dimming",
+      "Temperaturure-triggered speed control",
+      "ESP32-C3 Voice Assist (BLE + Wi-Fi)",
+      "Home Assistant / MQTT integration",
+    ],
+    stars: 6,
+    parts: [
+      { name: "ESP32-C3 Mini", category: "Electrical", subcategory: "MCU", quantity: 1, unitCost: 9.5 },
+      { name: "HC-SR501 PIR Motion", category: "Electrical", subcategory: "Sensor", quantity: 1, unitCost: 2.2 },
+      { name: "LD1115H mmWave Sensor", category: "Electrical", subcategory: "Sensor", quantity: 1, unitCost: 8.0 },
+      { name: "BME280 Temp / Humidity", category: "Electrical", subcategory: "Sensor", quantity: 1, unitCost: 3.9 },
+      { name: "GY-30 BH1750 Light Sensor", category: "Electrical", subcategory: "Sensor", quantity: 1, unitCost: 1.8 },
+      { name: "Fan Speed Controller Triac Module", category: "Electrical", subcategory: "Driver", quantity: 1, unitCost: 4.5 },
+      { name: "220V 3-Wire Fan Motor", category: "Electrical", subcategory: "Actuator", quantity: 1, unitCost: 35.0 },
+      { name: "AC Relay Module (light control)", category: "Electrical", subcategory: "Driver", quantity: 1, unitCost: 3.5 },
+      { name: "ABS Ceiling Mount Canopy", category: "Mechanical", subcategory: "Mount", quantity: 1, unitCost: 25.0 },
+    ],
+    wiringNodes: [
+      { id: "mcu", label: "ESP32-C3", kind: "mcu" },
+      { id: "pir", label: "PIR HC-SR501", kind: "sensor" },
+      { id: "mmw", label: "mmWave LD1115H", kind: "sensor" },
+      { id: "env", label: "BME280 + BH1750", kind: "sensor" },
+      { id: "triac", label: "Triac Speed Ctrl", kind: "driver" },
+      { id: "relay", label: "AC Relay (light)", kind: "driver" },
+      { id: "fan", label: "220V Fan Motor", kind: "actuator" },
+    ],
+    wiringEdges: [
+      { from: "mcu", to: "pir", label: "GPIO wake" },
+      { from: "mcu", to: "mmw", label: "UART" },
+      { from: "mcu", to: "env", label: "I²C (2 sensors)" },
+      { from: "mcu", to: "triac", label: "GPIO PWM" },
+      { from: "mcu", to: "relay", label: "GPIO" },
+      { from: "triac", to: "fan", label: "220V speed" },
+      { from: "relay", to: "fan", label: "220V light" },
+    ],
+    wiring:
+      "ESP32-C3 is low-side to the Triac via GPIO optocoupler (PC817) — mains voltage stays out of the ESP32. mmWave sensor gives Doppler motion data over UART (more reliable than PIR). BME280 and BH1750 share the same I²C bus with different addresses.",
+    mechSpecs: [
+      { label: "Fan Speeds", value: "5 discrete + stepless via Triac" },
+      { label: "Motion Hold Time", value: "30 s after last detection" },
+      { label: "Temperature Threshold", value: "Auto speeds up > 26 °C, slows < 23 °C" },
+      { label: "Wi-Fi Range", value: "Single-wall ≥ 10 m" },
+    ],
+    mechSections: [
+      {
+        title: "Canopy",
+        body: "All electronics (ESP32 + sensors + drivers) live inside a standard ceiling fan canopy box — replace the old pull-chain switch with the Triac module and route power through the same wires.",
+      },
+      {
+        title: "Sensors",
+        body: "PIR and mmWave both point down through the canopy bottom plate — you'll need to cut a 15 mm hole for the mmWave. BME280 sits on the side of the canopy away from fan airflow for accurate room temp readings.",
+      },
+    ],
+    instructions: [
+      "Turn off the circuit breaker before opening the ceiling fan. Mains voltage kills.",
+      "Flash ESPHome firmware with your Wi-Fi credentials + MQTT broker.",
+      "Pair with Home Assistant to get auto-discovered light + fan entities.",
+    ],
+    build: {
+      tools: ["Phillips screwdriver", "Wire strippers", "Voltage tester pen", "Drill (for sensor holes)"],
+      assumptions: [
+        "Existing ceiling fan wiring (live + neutral + earth)",
+        "2.4 GHz Wi-Fi",
+        "Optional: Home Assistant instance",
+      ],
+      phases: [
+        {
+          title: "Wire",
+          steps: [
+            {
+              title: "Safe mains isolation",
+              detail:
+                "Turn off breaker, test with non-contact voltage pen, then mark wires with tape BEFORE removing old switch. Black = live, white = neutral, green = earth.",
+              tools: ["Voltage tester pen"],
+              parts: ["Fan Speed Controller Triac Module"],
+            },
+            {
+              title: "Low-voltage ESP circuit",
+              detail:
+                "ESP32-C3, all sensors, and the Triac optocoupler side run 3.3 V — completely isolated from mains by the optocoupler. Do NOT bypass the optocoupler.",
+              parts: ["ESP32-C3 Mini"],
+            },
+          ],
+        },
+        {
+          title: "Sense",
+          steps: [
+            {
+              title: "mmWave + PIR dual motion",
+              detail:
+                "PIR catches rapid motion, mmWave catches slow breathing even under blankets. Combine with AND: both must agree motion is present. This eliminates pets but also reduces false positives.",
+              parts: ["LD1115H mmWave Sensor", "HC-SR501 PIR Motion"],
+            },
+            {
+              title: "Temp-based speed PID",
+              detail:
+                "Set target temp = user preference. BME280 → PID loop → fan speed (0–100%). Integral term winds up over 2 minutes — no sudden slamming changes.",
+              parts: ["BME280 Temp / Humidity"],
+            },
+          ],
+        },
+        {
+          title: "Home",
+          steps: [
+            {
+              title: "ESPHome flash and MQTT",
+              detail:
+                "Use ESPHome YAML with a Home Assistant WiFi fallback. First flash over USB-C, then OTA updates from Home Assistant dashboard.",
+            },
+            {
+              title: "Voice control",
+              detail:
+                "Expose fan speed + light as MQTT topics. Use Alexa Media Player skill or Home Assistant Conversation agent — 'Alexa, set the bedroom fan to medium'.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  /* ============================================================
+     #25 — Robot Pet Feeder
+     ============================================================ */
+  {
+    slug: "robot-pet-feeder",
+    title: "Autonomous Robot Pet Feeder",
+    author: "fur_dad",
+    avatarColor: "#fbbf24",
+    cover: "/projects/robot-pet-feeder.jpg",
+    createdAt: "2026-09-14T20:00:00Z",
+    tags: ["IoT", "Robotics"],
+    summary:
+      "A wheeled robot that drives to a pet's water bowl, refills it, then returns to base. RFID detects which pet approached, cameras confirm it drank, and weight sensors measure intake.",
+    features: [
+      "2WD robot with wheel encoder",
+      "RFID collar detection",
+      "Load-cell weight sensor",
+      "Live MP4 camera feed",
+      "Schedule + manual dispense",
+    ],
+    stars: 8,
+    parts: [
+      { name: "Raspberry Pi Zero W", category: "Electrical", subcategory: "MCU", quantity: 1, unitCost: 28.0 },
+      { name: "L298N Motor Driver", category: "Electrical", subcategory: "Driver", quantity: 1, unitCost: 4.5 },
+      { name: "TT Geared DC Motor ×2", category: "Electrical", subcategory: "Actuator", quantity: 2, unitCost: 6.5 },
+      { name: "RC522 RFID Module", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 8.0 },
+      { name: "HX711 + Load Cell (5 kg)", category: "Electrical", subcategory: "Sensor", quantity: 1, unitCost: 7.0 },
+      { name: "Camera Module v2", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 14.0 },
+      { name: "500 ml Water Pump + Tube", category: "Electrical", subcategory: "Actuator", quantity: 1, unitCost: 6.0 },
+      { name: "18650 ×4 Battery Pack", category: "Electrical", subcategory: "Power", quantity: 1, unitCost: 14.0 },
+      { name: "3D-printed Wheeled Base", category: "Mechanical", subcategory: "Structural", quantity: 1, unitCost: 35.0 },
+    ],
+    wiringNodes: [
+      { id: "bat", label: "18650 ×4 14.8V", kind: "power" },
+      { id: "pi", label: "Pi Zero W", kind: "mcu" },
+      { id: "drv", label: "L298N Motor Driver", kind: "driver" },
+      { id: "mot", label: "TT Geared Motor ×2", kind: "actuator" },
+      { id: "rfid", label: "RC522 RFID", kind: "module" },
+      { id: "load", label: "HX711 + Load Cell", kind: "sensor" },
+      { id: "cam", label: "Camera v2", kind: "module" },
+      { id: "pump", label: "Water Pump", kind: "actuator" },
+    ],
+    wiringEdges: [
+      { from: "bat", to: "drv", label: "14.8V motor rail" },
+      { from: "bat", to: "pi", label: "5V stepdown" },
+      { from: "pi", to: "drv", label: "PWM IN1-IN2" },
+      { from: "pi", to: "rfid", label: "SPI" },
+      { from: "pi", to: "load", label: "GPIO E+ E- A+ A-" },
+      { from: "pi", to: "cam", label: "CSI ribbon" },
+      { from: "pi", to: "pump", label: "GPIO + MOSFET" },
+    ],
+    wiring:
+      "Pi Zero handles WiFi scheduling, camera streaming, and RFID tag matching. L298N drives the two TT motors. HX711 load cell reads the water bowl weight — Pi calculates the delta before/after to know how much the pet drank. RFID antenna sits 3 cm above the bowl, tuned to detect collar tags at < 10 cm range.",
+    mechSpecs: [
+      { label: "Size", value: "160 × 100 × 80 mm" },
+      { label: "Dispense Rate", value: "10 ml/s" },
+      { label: "Weight Resolution", value: "± 2 g (HX711 × 64 gain)" },
+      { label: "Battery Life", value: "50 refills or 7 days idle" },
+    ],
+    mechSections: [
+      {
+        title: "Wheeled Base",
+        body: "3D-printed PETG chassis. TT motors press-fit into the rear; a caster wheel at the front keeps the bowl level. Pump tubing runs from an external water reservoir through the robot to the bowl.",
+      },
+      {
+        title: "RFID + Camera Mount",
+        body: "RFID antenna sits in the bowl rim, camera 15 cm above on a bracket angled 30° down. The camera is there for verification — we don't want to dispense water if a cat knock it over.",
+      },
+    ],
+    instructions: [
+      "Train 2–3 RFID collar tags for each pet in the household.",
+      "Calibrate HX711 with known weights before any water measurements.",
+      "Set safe levels — refill to 300 ml, alert when below 50 ml.",
+    ],
+    build: {
+      tools: ["Soldering iron", "3D printer", "Hex key", "Calibration weights"],
+      assumptions: [
+        "Pet collar with NTAG215 RFID (or compatible)",
+        "Flat surface (no carpet for initial tests)",
+        "External water reservoir with float switch",
+      ],
+      phases: [
+        {
+          title: "Drive",
+          steps: [
+            {
+              title: "TT motor PID tuning",
+              detail:
+                "Set Kp=0.5, Ki=0.01, Kd=0.0 first. Drive 1 m straight on carpet, then straight on tile. Different floors need different gains — make two profiles.",
+              parts: ["TT Geared DC Motor", "L298N Motor Driver"],
+            },
+            {
+              title: "Wheel encoder feedback",
+              detail:
+                "If using TT motors without encoders, add a simple LED + photoresistor wheel encoder disk taped to the motor gear. Counts pulses per second → speed.",
+            },
+          ],
+        },
+        {
+          title: "Sense",
+          steps: [
+            {
+              title: "HX711 weight calibration",
+              detail:
+                "Calibrate code: zero with nothing on cell, put a 500 g known weight, record raw. Calculate calibration factor. Repeat daily — temperature drift shifts readings.",
+              tools: ["Calibration weights"],
+              parts: ["HX711 + Load Cell"],
+            },
+            {
+              title: "RFID collar enrollment",
+              detail:
+                "Hold each pet's collar within 5 cm of the RFID antenna. The Pi reads the serial number, assigns a name. Re-enroll after washing collars — glue shifts can change RF properties.",
+              parts: ["RC522 RFID Module"],
+            },
+          ],
+        },
+        {
+          title: "Feed",
+          steps: [
+            {
+              title: "Schedule logic",
+              detail:
+                "Morning: refill to 300 ml. If bowl empty by noon → dispense alert + refill to 200 ml (prevent gorging). Evening: same as morning. Log every pet visit with weight delta.",
+            },
+            {
+              title: "Verification camera",
+              detail:
+                "Take an MP4 10-second clip when a pet approaches (RFID trigger). Upload to S3-compatible storage. Humans watching the feed can press 'that was my pet' to tune the RFID sensitivity.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  /* ============================================================
+     #26 — Voron 2.4 CoreXY 3D Printer
+     ============================================================ */
+  {
+    slug: "voron-2-4-printer",
+    title: "Voron 2.4 CoreXY 3D Printer",
+    author: "layer_shift",
+    avatarColor: "#f97316",
+    cover: "/projects/voron-3d-printer.jpg",
+    createdAt: "2026-09-14T20:30:00Z",
+    tags: ["Robotics", "IoT"],
+    summary:
+      "A Voron 2.4 CoreXY 3D printer with Klipper firmware, Stepper Doomers, CB touch probe, and a Raspberry Pi running Mainsail for remote monitoring.",
+    features: [
+      "CoreXY motion (500 × 500 × 500 mm)",
+      "Klipper + Mainsail",
+      "CB touch auto-level probe",
+      "TMC2209 UART silent drivers",
+      "Chamber enclosure + LED lighting",
+    ],
+    stars: 22,
+    parts: [
+      { name: "Raspberry Pi 4 (4GB)", category: "Electrical", subcategory: "MCU", quantity: 1, unitCost: 45.0 },
+      { name: "SKR 1.4 Turbo Controller", category: "Electrical", subcategory: "MCU", quantity: 1, unitCost: 42.0 },
+      { name: "TMC2209 UART Driver ×6", category: "Electrical", subcategory: "Driver", quantity: 6, unitCost: 5.5 },
+      { name: "NEMA 17 1.8° 1.8A ×6", category: "Electrical", subcategory: "Actuator", quantity: 6, unitCost: 5.0 },
+      { name: "220 V 235 W Cartridge Heater", category: "Electrical", subcategory: "Actuator", quantity: 1, unitCost: 3.0 },
+      { name: "12 V 5 A Bed Heater", category: "Electrical", subcategory: "Actuator", quantity: 1, unitCost: 12.0 },
+      { name: "Chamber Thermistor", category: "Electrical", subcategory: "Sensor", quantity: 2, unitCost: 0.8 },
+      { name: "24 V 15 A PSU", category: "Electrical", subcategory: "Power", quantity: 1, unitCost: 45.0 },
+      { name: "Voron 2.4 Hardware Kit", category: "Mechanical", subcategory: "Motion", quantity: 1, unitCost: 120.0 },
+      { name: "ABS Enclosure Panels", category: "Mechanical", subcategory: "Enclosure", quantity: 1, unitCost: 80.0 },
+    ],
+    wiringNodes: [
+      { id: "psu", label: "24V 15A PSU", kind: "power" },
+      { id: "skr", label: "SKR 1.4 Turbo", kind: "mcu" },
+      { id: "pi", label: "Raspberry Pi 4", kind: "mcu" },
+      { id: "xdrv", label: "X / Y TMC2209", kind: "driver" },
+      { id: "zdrv", label: "Z ×2 TMC2209", kind: "driver" },
+      { id: "edrv", label: "E1 / E2 TMC2209", kind: "driver" },
+      { id: "cart", label: "235W Cartridge", kind: "actuator" },
+      { id: "bed", label: "Bed Heater 12V", kind: "actuator" },
+      { id: "cb", label: "CB Touch Probe", kind: "sensor" },
+    ],
+    wiringEdges: [
+      { from: "psu", to: "skr", label: "24V main" },
+      { from: "skr", to: "pi", label: "24V → 5V stepdown" },
+      { from: "skr", to: "xdrv", label: "SPI + UART" },
+      { from: "skr", to: "zdrv", label: "SPI + UART" },
+      { from: "skr", to: "edrv", label: "SPI + UART" },
+      { from: "skr", to: "cart", label: "MOSFET hotend" },
+      { from: "skr", to: "bed", label: "MOSFET bed" },
+      { from: "cb", to: "skr", label: "GPIO probe" },
+      { from: "pi", to: "skr", label: "UART Klipper control" },
+    ],
+    wiring:
+      "SKR 1.4 Turbo is the motion controller, Pi 4 runs Klipper + Mainsail over UART. TMC2209 drivers communicate UART for silent stepper modes. CB Touch probe does mesh leveling before every print. Chamber fans run at 20% duty until temp stabilizes.",
+    mechSpecs: [
+      { label: "Print Volume", value: "500 × 500 × 500 mm" },
+      { label: "Max Nozzle Temp", value: "300 °C (Ender nozzle)" },
+      { label: "Max Bed Temp", value: "110 °C" },
+      { label: "Acceleration", value: "2000 mm/s² CoreXY" },
+    ],
+    mechSections: [
+      {
+        title: "Frame",
+        body: "V-slot 2020 aluminum, square it to within 0.1 mm diagonal using a tape measure before bolting anything. If the frame is out of square, Core XY belts will tension unevenly.",
+      },
+      {
+        title: "Enclosure",
+        body: "ABS panels, not acrylic — acrylic gets brittle and cracks above 80 °C chamber temp. Add a 100 mm filter fan at the back and a vent at the front for controlled air flow during ABS/PC prints.",
+      },
+    ],
+    instructions: [
+      "Bootstrap Klipper: flash firmware to SKR, flash USB bridge to Pi.",
+      "Run calibration: Z-offset first, then pressure advance, then input shaper.",
+      "Print the Voron benchy to check for ringing and layer shifts.",
+    ],
+    build: {
+      tools: ["Allen key set", "Machinist's square", "Precision straight edge", "Dial indicator"],
+      assumptions: [
+        "Voron 2.4 hardware kit (or eBay clone)",
+        "ABS panel kit (12 mm recommended)",
+        "PLA for break-in prints",
+      ],
+      phases: [
+        {
+          title: "Frame",
+          steps: [
+            {
+              title: "2020 extrusion assembly",
+              detail:
+                "Start at the base. Square the four corners, drill the Z axis linear rail holes, then add left/right/top crossbars. Don't over-tighten M4 bolts — they strip aluminum easily.",
+              tools: ["Allen key set", "Machinist's square"],
+              parts: ["Voron 2.4 Hardware Kit"],
+            },
+            {
+              title: "AB belt tension",
+              detail:
+                "Target 150 Hz belt frequency. Use an online calculator for your belt length. Too tight = stepper stalls; too loose = ringing at 80–120 Hz.",
+            },
+          ],
+        },
+        {
+          title: "Calibrate",
+          steps: [
+            {
+              title: "Z-offset + CB touch",
+              detail:
+                "Paper test Z offset first. Then CB touch mesh leveling across 25 points. Re-run leveling after tightening belts — belt preload shifts Z slightly.",
+              parts: ["CB Touch Probe"],
+            },
+            {
+              title: "Pressure advance + input shaper",
+              detail:
+                "Pressure advance = 0.035 for PLA, 0.08 for ABS. Input shaper run: 120–250 Hz range, 100 mm/s max acceleration. Save both files to Klipper config.",
+            },
+          ],
+        },
+        {
+          title: "Print",
+          steps: [
+            {
+              title: "Voron benchy",
+              detail:
+                "Print the benchy at 200 °C nozzle / 60 °C bed / 50 mm/s. Inspect for ringing on the tower, elephant foot at the base, corner warping.",
+            },
+            {
+              title: "First real part",
+              detail:
+                "Print a 3D-printable Voron upgrade — the skirting mod or the spool holder. This tests real-world tolerances before you commit to printing your own upgrades.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  /* ============================================================
+     #27 — Automated Herb Garden
+     ============================================================ */
+  {
+    slug: "automated-herb-garden",
+    title: "Automated Countertop Herb Garden",
+    author: "salad_farmer",
+    avatarColor: "#84cc16",
+    cover: "/projects/automated-herb-garden.jpg",
+    createdAt: "2026-09-14T21:00:00Z",
+    tags: ["IoT", "Sensors"],
+    summary:
+      "A 6-plant hydroponic countertop garden with automated LED grow lights, water pump, pH and TDS monitoring — grows basil, mint, cilantro year-round.",
+    features: [
+      "6 × plant sites NFT system",
+      "27 W full-spectrum LED",
+      "pH + TDS auto-monitor",
+      "Auto top-off water pump",
+      "Wi-Fi dashboard + Telegram alerts",
+    ],
+    stars: 9,
+    parts: [
+      { name: "ESP32-C3 Super Mini", category: "Electrical", subcategory: "MCU", quantity: 1, unitCost: 9.5 },
+      { name: "Atlas Scientific pH", category: "Electrical", subcategory: "Sensor", quantity: 1, unitCost: 34.0 },
+      { name: "DFRobot TDS V1.0", category: "Electrical", subcategory: "Sensor", quantity: 1, unitCost: 12.0 },
+      { name: "27 W Full-Spectrum LED", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 18.0 },
+      { name: "3 W Submersible Water Pump", category: "Electrical", subcategory: "Actuator", quantity: 1, unitCost: 6.0 },
+      { name: "MOSFET 30 A Gate Driver", category: "Electrical", subcategory: "Driver", quantity: 1, unitCost: 5.0 },
+      { name: "BME280 Temp / Humidity", category: "Electrical", subcategory: "Sensor", quantity: 1, unitCost: 3.9 },
+      { name: "6 × Rockwool Cube Grodan", category: "Mechanical", subcategory: "Hydroponic", quantity: 6, unitCost: 1.5 },
+      { name: "10 L Reservoir + Nutrient", category: "Mechanical", subcategory: "Fluidics", quantity: 1, unitCost: 20.0 },
+    ],
+    wiringNodes: [
+      { id: "mcu", label: "ESP32-C3", kind: "mcu" },
+      { id: "ph", label: "Atlas pH", kind: "sensor" },
+      { id: "tds", label: "DFRobot TDS", kind: "sensor" },
+      { id: "env", label: "BME280", kind: "sensor" },
+      { id: "pump", label: "3 W Pump", kind: "actuator" },
+      { id: "led", label: "27 W Grow Light", kind: "actuator" },
+    ],
+    wiringEdges: [
+      { from: "mcu", to: "ph", label: "I²C" },
+      { from: "mcu", to: "tds", label: "Analog ADC" },
+      { from: "mcu", to: "env", label: "I²C" },
+      { from: "mcu", to: "pump", label: "GPIO → MOSFET" },
+      { from: "mcu", to: "led", label: "PWM → MOSFET" },
+    ],
+    wiring:
+      "ESP32-C3 controls both pump and LED via MOSFET gates (direct GPIO can't handle 27 W LED current). pH I²C, TDS analog, BME280 on the same I²C bus as pH with different address. Pump runs 15 min every 45 min by default.",
+    mechSpecs: [
+      { label: "Sites", value: "6 rockwool cubes (30 × 30 mm)" },
+      { label: "Light Cycle", value: "16 h on / 8 h off (30% sunrise ramp)" },
+      { label: "EC Range", value: "1.0–1.8 mS/cm (TDS 500–900 ppm)" },
+      { label: "pH Target", value: "5.5 – 6.5" },
+    ],
+    mechSections: [
+      {
+        title: "NFT Channel",
+        body: "15 mm deep NFT channel with 10 mm slope from inlet to outlet. Rockwool cubes sit in net pots spaced 50 mm apart. Water flows in a thin sheet — roots need oxygen, not submersion.",
+      },
+      {
+        title: "LED Mount",
+        body: "27 W COB LED bar mounted 15 cm above the NFT channel. Keep it exactly perpendicular to the channel so all 6 plants get equal PAR. PAR = photosynthetically active radiation, aim for 200 µmol/m²/s at the canopy.",
+      },
+    ],
+    instructions: [
+      "Fill reservoir with pH-balanced water (5.8–6.2) and hydroponic nutrient.",
+      "Plant seeds in rockwool cubes 7 days before first water — they need to sprout in a humidity dome.",
+      "Change water + top up nutrient every 2 weeks. pH drifts down naturally as nutrients are consumed.",
+    ],
+    build: {
+      tools: ["Soldering iron", "Jig saw (NFT channel)", "Silicone sealant", "pH calibration buffers"],
+      assumptions: [
+        "Window available (or full LED power)",
+        "2 L hydroponic nutrient concentrate",
+        "Basic Linux PC for MQTT dashboard",
+      ],
+      phases: [
+        {
+          title: "NFT",
+          steps: [
+            {
+              title: "Build channel with proper slope",
+              detail:
+                "15 mm deep × 100 mm wide × 600 mm long. 10 mm slope is non-negotiable — too shallow and water pools (root rot), too steep and sheet breaks up.",
+              tools: ["Jig saw"],
+              parts: ["10 L Reservoir + Nutrient"],
+            },
+            {
+              title: "Pump flow rate test",
+              detail:
+                "Pump → inlet → NFT → outlet → reservoir. Flow should be 500 ml/min — no splashing. Use a ball valve after the pump to dial it in.",
+              parts: ["3 W Submersible Water Pump"],
+            },
+          ],
+        },
+        {
+          title: "Monitor",
+          steps: [
+            {
+              title: "pH + TDS calibration",
+              detail:
+                "pH: 4.0 + 7.0 buffers. TDS: 0 ppm in distilled water, 1413 µS/cm standard solution. Recalibrate every 2 weeks — water chemistry eats probe electrodes.",
+              tools: ["pH calibration buffers"],
+              parts: ["Atlas Scientific pH", "DFRobot TDS"],
+            },
+            {
+              title: "Telegram alert bot",
+              detail:
+                "Create a bot via BotFather. pH < 5.3 → alert, TDS < 400 → 'add nutrient', water level low → alert. ESP32 sends messages via Blynk.io or direct API.",
+            },
+          ],
+        },
+        {
+          title: "Grow",
+          steps: [
+            {
+              title: "Basil first test crop",
+              detail:
+                "Basil is forgiving — tolerate ± 0.5 pH swings and 1 week of missed feeds. It tells you if your system works without killing you.",
+            },
+            {
+              title: "Harvest and prune",
+              detail:
+                "Cut above the 4th node to encourage branching. Keep lights on 16/8 even when harvest-ready — the plant needs the energy to heal.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  /* ============================================================
+     #28 — Circadian Sleep Light
+     ============================================================ */
+  {
+    slug: "circadian-sleep-light",
+    title: "Circadian Sleep Wake-Up Light",
+    author: "dawn_sim",
+    avatarColor: "#fb923c",
+    cover: "/projects/circadian-sleep-light.jpg",
+    createdAt: "2026-09-14T21:30:00Z",
+    tags: ["IoT", "Wearable"],
+    summary:
+      "A dawn-simulating wake-up light that gradually increases brightness over 30 minutes, shifts from warm red → orange → white (5000 K), and triggers a vibration pillow at full brightness.",
+    features: [
+      "Full sunrise simulation (30 min fade)",
+      "Color temp 2200K → 5000K progression",
+      "Ambient light sensor auto-dimming",
+      "Vibration pillow + aromatherapy trigger",
+      "Mistral / Home Assistant / MQTT",
+    ],
+    stars: 13,
+    parts: [
+      { name: "ESP32-S3 Mini", category: "Electrical", subcategory: "MCU", quantity: 1, unitCost: 14.0 },
+      { name: "SK6812 RGBW LED Strip (CCT)", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 18.0 },
+      { name: "BH1750 Ambient Light", category: "Electrical", subcategory: "Sensor", quantity: 1, unitCost: 1.8 },
+      { name: "BNO055 IMU (pillow vibration sync)", category: "Electrical", subcategory: "Sensor", quantity: 1, unitCost: 8.0 },
+      { name: "5 V 3 A PSU", category: "Electrical", subcategory: "Power", quantity: 1, unitCost: 8.0 },
+      { name: "42 mm ERM Pillow Vibration ×2", category: "Electrical", subcategory: "Actuator", quantity: 2, unitCost: 3.5 },
+      { name: "MOSFET Gate ×1 (ERM)", category: "Electrical", subcategory: "Driver", quantity: 1, unitCost: 5.0 },
+      { name: "3D-printed Wood-Grain Case", category: "Mechanical", subcategory: "Enclosure", quantity: 1, unitCost: 12.0 },
+    ],
+    wiringNodes: [
+      { id: "psu", label: "5V 3A PSU", kind: "power" },
+      { id: "mcu", label: "ESP32-S3", kind: "mcu" },
+      { id: "led", label: "SK6812 RGBW CCT", kind: "module" },
+      { id: "amb", label: "BH1750", kind: "sensor" },
+      { id: "imu", label: "BNO055 Pillow IMU", kind: "sensor" },
+      { id: "vib", label: "ERM Pillow Vib ×2", kind: "actuator" },
+    ],
+    wiringEdges: [
+      { from: "psu", to: "mcu", label: "5V" },
+      { from: "psu", to: "led", label: "5V (3A peak)" },
+      { from: "mcu", to: "led", label: "GPIO WS2812B" },
+      { from: "mcu", to: "amb", label: "I²C" },
+      { from: "mcu", to: "imu", label: "I²C" },
+      { from: "mcu", to: "vib", label: "GPIO → MOSFET" },
+    ],
+    wiring:
+      "One ESP32-S3 controls everything. SK6812 RGBW CCT strip with 15 LEDs: red → orange → yellow → white transition over 30 min. BH1750 feeds back ambient — don't turn off lights in a sunny room. Pillow ERMs fire at 60 Hz 3-second bursts starting at the 25-minute mark, sync'd to BNO055 which tracks if you're actually still in bed.",
+    mechSpecs: [
+      { label: "Dawn Duration", value: "30 min (user-adjustable)" },
+      { label: "Peak Brightness", value: "3000 lux @ 50 cm" },
+      { label: "Color Temp Ramp", value: "2200 K → 5000 K linear" },
+      { label: "Vibration Timing", value: "25 min → light + 28 min → vibration" },
+    ],
+    mechSections: [
+      {
+        title: "Dome",
+        body: "A frosted PMMA dome sits on top of the wood-grain case — diffusion is critical. Without it, individual LEDs cast sharp shadows that destroy the dawn effect. Case is 120 mm diameter.",
+      },
+      {
+        title: "Pillow Vibration",
+        body: "Two 42 mm ERMs in a sewn fabric pod inside the pillow cover — one at each temple point. MOSFET gate handles the 1 A spike per ERM. A thin flexible cable runs from the clock to the pillow pod through the wall (or via Bluetooth with a battery in the pillow pod — DIY upgrade).",
+      },
+    ],
+    instructions: [
+      "Use Esphome or Tasmota firmware — 10 lines of YAML gets WiFi + MQTT + dawn ramp.",
+      "Start with a 30-minute duration — your circadian rhythm needs the slow fade, not a fast transition.",
+      "Test the vibration: hold the pillow, it should vibrate at your wrist's resting pulse rate.",
+    ],
+    build: {
+      tools: ["Soldering iron", "3D printer", "Sewing needle (pillow pod)", "Phillips screwdriver"],
+      assumptions: [
+        "5 V 3 A wall adapter available",
+        "MQTT broker on Wi-Fi (optional)",
+        "Pillow with removable cover",
+      ],
+      phases: [
+        {
+          title: "Light",
+          steps: [
+            {
+              title: "SK6812 CCT strip calibration",
+              detail:
+                "Full brightness test at 5 A peak (all channels on). If the PSU browns-out, reduce peak to 3 A or add a 1000 µF cap across the PSU rails.",
+              tools: ["Multimeter"],
+              parts: ["SK6812 RGBW LED Strip"],
+            },
+            {
+              title: "Ramp algorithm",
+              detail:
+                "1800 seconds (30 min) of ramp. Color temp 2200 K → 5000 K: linear interpolation between the two endpoints. Brightness: quadratic ramp (slow at first, fast near end) mimicking real sunrise.",
+            },
+          ],
+        },
+        {
+          title: "Sense",
+          steps: [
+            {
+              title: "Ambient light auto-cancel",
+              detail:
+                "If BH1750 reads > 500 lux (daylight), cancel the wake-up sequence and just play a 2-second 'good morning' beep. Wasting a dawn sequence in broad daylight feels insulting.",
+              parts: ["BH1750 Ambient Light"],
+            },
+            {
+              title: "BNO055 in-bed detection",
+              detail:
+                "IMU goes to sleep after initial calibration (consumes < 0.5 mA). Every 5 seconds wake, read accelerometer. If it detects the pillow is stationary → vibration fires.",
+              parts: ["BNO055 IMU"],
+            },
+          ],
+        },
+        {
+          title: "Sleep",
+          steps: [
+            {
+              title: "First 2-week trial",
+              detail:
+                "Test with yourself. Log wake time, sleep quality 1–5 each morning. If you wake up groggy, try lengthening the ramp to 45 min or reducing peak brightness by 20%.",
+            },
+            {
+              title: "MQTT integration",
+              detail:
+                "Expose current phase (night → pre-dawn → dawn → peak → post-dawn) as an MQTT topic. Your bedroom speakers can play a calm tone at the 25-minute mark to reinforce waking.",
             },
           ],
         },
