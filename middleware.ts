@@ -2,6 +2,16 @@ import { createServerClient } from "@supabase/ssr"
 import { NextResponse, type NextRequest } from "next/server"
 
 export async function middleware(request: NextRequest) {
+  // Canonical host redirect: the legacy *.vercel.app domain should resolve to the
+  // production custom domain so there is a single canonical URL for SEO/social.
+  const host = request.headers.get("host")?.toLowerCase() ?? ""
+  if (host === "repocontext.vercel.app") {
+    const url = request.nextUrl.clone()
+    url.protocol = "https"
+    url.host = "www.repocontext.dev"
+    return NextResponse.redirect(url, 308)
+  }
+
   let response = NextResponse.next({
     request: {
       headers: request.headers,

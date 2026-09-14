@@ -235,6 +235,9 @@ create trigger on_auth_user_created
 ### 🟣 第四阶段：域名 & 部署（上线前 3 天）
 
 **域名购买：**
+- [x] 生产域名 **`https://www.repocontext.dev`** 已上线（Cloudflare 托管 DNS + Vercel 自定义域名）
+- [x] `repocontext.dev` → 308 跳转到 `www.repocontext.dev`（Vercel "Redirect apex to www"）
+- [x] `repocontext.vercel.app` → 308 跳转到 `www.repocontext.dev`（middleware 处理 canonical）
 - [ ] 购买域名 `repocontext.dev`（repocontext.com 已被第三方持有，勿再尝试）
 - [ ] 在 Namecheap / GoDaddy / Cloudflare 购买
 - [ ] 配置 DNS 解析
