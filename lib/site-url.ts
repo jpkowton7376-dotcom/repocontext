@@ -1,5 +1,5 @@
 /**
- * The canonical public origin of this deployment, e.g. "https://repocontext.dev".
+ * The canonical public origin of this deployment, e.g. "https://www.repocontext.dev".
  *
  * Every absolute URL the product emits — OG tags, sitemap, robots, share
  * links, the API examples on /developers, and the credit line written into
@@ -15,7 +15,7 @@
  * links once DNS is live.
  */
 export const SITE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://repocontext.dev"
+  process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://www.repocontext.dev"
 ).replace(/\/+$/, "")
 
 /** SITE_URL without the scheme, for places that show the bare host. */
