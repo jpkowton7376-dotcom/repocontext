@@ -118,7 +118,13 @@ export function ProjectDetail({ slug }: { slug: string }) {
         `- ${part.name} (${part.category}/${part.subcategory}) ×${part.quantity} — $${(part.unitCost * part.quantity).toFixed(2)}`,
       )
     }
-    lines.push("", "## Wiring", project.wiring, "", "## Mechanics", project.mech, "", "## Instructions")
+    const mechText =
+      project.mech ||
+      [
+        ...(project.mechSpecs?.map((s) => `- ${s.label}: ${s.value}`) ?? []),
+        ...(project.mechSections?.map((s) => `### ${s.title}\n${s.body}`) ?? []),
+      ].join("\n")
+    lines.push("", "## Wiring", project.wiring, "", "## Mechanics", mechText, "", "## Instructions")
     if (project.build) {
       lines.push("", "### Tools", ...project.build.tools.map((x) => `- ${x}`))
       lines.push("", "### Assumptions", ...project.build.assumptions.map((x) => `- ${x}`))
@@ -635,7 +641,7 @@ function MechTab({ project }: { project: HardwareProject }) {
   const specs = project.mechSpecs
   const sections = project.mechSections
   if (!specs?.length && !sections?.length) {
-    return <Panel title={t("forge.tabMech")}>{project.mech}</Panel>
+    return <Panel title={t("forge.tabMech")}>{project.mech ?? "No mechanical details available yet."}</Panel>
   }
   return (
     <section style={{ display: "flex", flexDirection: "column", gap: 24 }}>

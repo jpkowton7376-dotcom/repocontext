@@ -64,7 +64,7 @@ export interface HardwareProject {
   wiring: string
   wiringNodes?: WiringNode[]
   wiringEdges?: WiringEdge[]
-  mech: string
+  mech?: string
   mechSpecs?: MechSpec[]
   mechSections?: MechSection[]
   instructions: string[] // flat fallback (user submissions)
