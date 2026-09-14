@@ -4078,4 +4078,1064 @@ export const PROJECTS: HardwareProject[] = [
       ],
     },
   },
+
+  /* ============================================================
+     #29 — Satellite Ground Station
+     ============================================================ */
+  {
+    slug: "satellite-ground-station",
+    title: "Portable Satellite Ground Station",
+    author: "signal_tracker",
+    avatarColor: "#0369a1",
+    cover: "/projects/satellite-ground-station.jpg",
+    createdAt: "2026-09-14T22:00:00Z",
+    tags: ["Robotics", "IoT"],
+    summary:
+      "A portable ground station with an Az-El antenna rotator, RTL-SDR, and satellite tracking software — can decode NOAA weather satellite imagery and ISS SSTV transmissions.",
+    features: [
+      "Azimuth/Elevation rotator",
+      "Motorized 25 mm yagi antenna",
+      "RTL-SDR + HackRF dual-band",
+      "Predictor satellite tracking",
+      "NOAA HRPT + METEOR decoders",
+    ],
+    stars: 13,
+    parts: [
+      { name: "Raspberry Pi 4 (4GB)", category: "Electrical", subcategory: "MCU", quantity: 1, unitCost: 45.0 },
+      { name: "Arduino Uno (rotator PID)", category: "Electrical", subcategory: "MCU", quantity: 1, unitCost: 14.0 },
+      { name: "NEMA 17 ×2 (Az + El)", category: "Electrical", subcategory: "Actuator", quantity: 2, unitCost: 6.5 },
+      { name: "TB6600 Stepper Driver ×2", category: "Electrical", subcategory: "Driver", quantity: 2, unitCost: 4.5 },
+      { name: "25 mm Quad Yagi + UHF", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 55.0 },
+      { name: "RTL-SDR Blog V3", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 22.0 },
+      { name: "HackRF One (50 MHz–6 GHz)", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 300.0 },
+      { name: "GPS Module (antenna pointing)", category: "Electrical", subcategory: "Sensor", quantity: 1, unitCost: 24.0 },
+      { name: "12V 10A Battery Pack", category: "Electrical", subcategory: "Power", quantity: 1, unitCost: 45.0 },
+      { name: "3D-printed Az-El Frame", category: "Mechanical", subcategory: "Motion", quantity: 1, unitCost: 42.0 },
+    ],
+    wiringNodes: [
+      { id: "pi", label: "Raspberry Pi 4", kind: "mcu" },
+      { id: "uno", label: "Arduino Uno", kind: "mcu" },
+      { id: "az", label: "Azimuth Stepper", kind: "actuator" },
+      { id: "el", label: "Elevation Stepper", kind: "actuator" },
+      { id: "sdr", label: "RTL-SDR + HackRF", kind: "module" },
+      { id: "gps", label: "GPS Antenna", kind: "sensor" },
+      { id: "ant", label: "Yagi UHF Ant", kind: "module" },
+    ],
+    wiringEdges: [
+      { from: "pi", to: "uno", label: "USB serial" },
+      { from: "uno", to: "az", label: "STEP / DIR TB6600" },
+      { from: "uno", to: "el", label: "STEP / DIR TB6600" },
+      { from: "ant", to: "sdr", label: "SMA coax" },
+      { from: "gps", to: "pi", label: "UART" },
+      { from: "sdr", to: "pi", label: "USB 3.0" },
+    ],
+    wiring:
+      "Pi runs gqrx + Predictor satellite tracking software, calculating real-time Az/El for visible passes. Uno reads the target over serial and closes the PID loop on both steppers. SDRs are USB-attached to the Pi — RTL-SDR handles NOAA APT, HackRF handles higher-band passes.",
+    mechSpecs: [
+      { label: "Azimuth Range", value: "0° – 360° continuous" },
+      { label: "Elevation Range", value: "5° – 85°" },
+      { label: "Yagi Gain", value: "11 dBi UHF" },
+      { label: "Tracking Accuracy", value: "≤ 0.5° RMS after PID tuning" },
+    ],
+    mechSections: [
+      {
+        title: "Frame",
+        body: "3D-printed PETG Az-El mount. Counter-balance the elevation axis with a 50 g steel nut on the opposite side of the antenna — the El stepper shouldn't fight gravity.",
+      },
+      {
+        title: "Cable management",
+        body: "The azimuth axis needs a slip ring — if you just twist the coax it will snap within a day. Use a 5-wire slip ring for motor power + encoder signals.",
+      },
+    ],
+    instructions: [
+      "Install gqrx + gr-satellites + Predictor on the Pi.",
+      "Point the Az-El at a known reference star (Polaris = 0° azimuth) to calibrate.",
+      "Wait for a NOAA-19 pass and record your first APT image.",
+    ],
+    build: {
+      tools: ["3D printer", "Allen key set", "Terminal block", "GPS antenna mount"],
+      assumptions: [
+        "Clear southern sky (NOAA satellites pass low)",
+        "Portable computer or monitor for Pi",
+        "12V lithium battery + charger",
+      ],
+      phases: [
+        {
+          title: "Mechanism",
+          steps: [
+            {
+              title: "Print and assemble Az-El mount",
+              detail:
+                "PETG at 0.2 mm layer, 30% infill. Print the El arm with support. Sand all bearing surfaces before assembling — PETG has a slight seam.",
+              tools: ["3D printer"],
+              parts: ["3D-printed Az-El Frame"],
+            },
+            {
+              title: "Stepper PID tuning",
+              detail:
+                "Jog each axis manually first. Then tune Kp=1, Ki=0.01, Kd=0.1. The Az axis needs less damping than El because it has more inertia.",
+              parts: ["NEMA 17", "TB6600 Driver"],
+            },
+          ],
+        },
+        {
+          title: "Decode",
+          steps: [
+            {
+              title: "gqrx + RTL-SDR baseline",
+              detail:
+                "Tune to NOAA-19's 137.1 MHz APT downlink. You should see a noisy waterfall on a clear pass. If not, check coax connections and try a known-good transmission.",
+              parts: ["RTL-SDR Blog V3"],
+            },
+            {
+              title: "Predictor + autotracking",
+              detail:
+                "Get latest TLE from Celestrak, load into Predictor. The software sends Az/El over UDP to a small Python proxy which relays to the Arduino over serial.",
+            },
+          ],
+        },
+        {
+          title: "Capture",
+          steps: [
+            {
+              title: "First NOAA pass",
+              detail:
+                "You'll hear a 2500 Hz tone at the start of the pass — that's the synch pulse. Record WAV → process with aptdec → get a full-earth IR + visual composite.",
+            },
+            {
+              title: "ISS SSTV",
+              detail:
+                "When the ISS activates SSTV (check ham radio schedules), tune to 145.8 MHz FM. Decode with QSSTV or MMSSTV — you'll get 8-second color images from the space station.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  /* ============================================================
+     #30 — AI Smart Doorbell
+     ============================================================ */
+  {
+    slug: "ai-smart-doorbell",
+    title: "AI Smart Doorbell Camera",
+    author: "front_door_ai",
+    avatarColor: "#dc2626",
+    cover: "/projects/ai-smart-doorbell.jpg",
+    createdAt: "2026-09-14T22:30:00Z",
+    tags: ["IoT", "Security"],
+    summary:
+      "An ESP32-CAM doorbell that runs face recognition on-device — recognizes you vs. a stranger, sends instant push alerts, and saves 10-second clips of every visitor.",
+    features: [
+      "ESP32-CAM 1080p + IR night vision",
+      "On-device face recognition (4 known faces)",
+      "PIR + mmWave dual detection",
+      "MQTT + Home Assistant integration",
+      "SD card clip storage",
+    ],
+    stars: 17,
+    parts: [
+      { name: "ESP32-CAM v2", category: "Electrical", subcategory: "MCU", quantity: 1, unitCost: 14.0 },
+      { name: "HC-SR501 PIR Motion", category: "Electrical", subcategory: "Sensor", quantity: 1, unitCost: 2.2 },
+      { name: "LD1115H mmWave Radar", category: "Electrical", subcategory: "Sensor", quantity: 1, unitCost: 8.0 },
+      { name: "0.96\" OLED SSD1306 (status)", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 3.5 },
+      { name: "Micro-SD 32 GB", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 6.0 },
+      { name: "8 IR LEDs (night vision)", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 4.0 },
+      { name: "USB-C 5V 1A PSU", category: "Electrical", subcategory: "Power", quantity: 1, unitCost: 5.0 },
+      { name: "Waterproof ABS Enclosure", category: "Mechanical", subcategory: "Enclosure", quantity: 1, unitCost: 12.0 },
+      { name: "Replacement Button (doorbell)", category: "Mechanical", subcategory: "Structural", quantity: 1, unitCost: 3.0 },
+    ],
+    wiringNodes: [
+      { id: "cam", label: "ESP32-CAM", kind: "mcu" },
+      { id: "pir", label: "PIR HC-SR501", kind: "sensor" },
+      { id: "mmw", label: "mmWave LD1115H", kind: "sensor" },
+      { id: "oled", label: "Status OLED", kind: "module" },
+      { id: "sd", label: "32 GB SD", kind: "module" },
+      { id: "btn", label: "Doorbell Button", kind: "switch" },
+    ],
+    wiringEdges: [
+      { from: "cam", to: "pir", label: "GPIO PIR wake" },
+      { from: "cam", to: "mmw", label: "UART mmWave data" },
+      { from: "cam", to: "oled", label: "I²C" },
+      { from: "cam", to: "btn", label: "GPIO button press" },
+    ],
+    wiring:
+      "PIR triggers a wake-up interrupt → ESP32-CAM powers on → mmWave confirms someone is there (not a cat) → snaps a 640×480 still → runs face recognition against on-device template database → MQTT publish result ('known: mom' or 'stranger') → starts 10-second MP4 recording to SD. The ESP32 deep-sleeps between triggers to save power.",
+    mechSpecs: [
+      { label: "Detection Range", value: "2 m PIR / 3 m mmWave" },
+      { label: "Night Vision", value: "850 nm IR, 5 m range" },
+      { label: "Face Recognition Latency", value: "< 3 seconds" },
+      { label: "Deep-Sleep Current", value: "10 µA (wakes < 250 ms)" },
+    ],
+    mechSections: [
+      {
+        title: "Mounting",
+        body: "Mount 1.5 m above ground level facing down at 30°. At this height PIR sees the full person silhouette and mmWave gets clean doppler signatures. Avoid direct sunlight into the camera lens — use the overhang of the porch.",
+      },
+      {
+        title: "Wiring",
+        body: "Run USB-C power from inside the house through the door frame. Seal the cable gap with silicone. The ESP32-CAM module only needs 5 V — no high-voltage 220 V doorbell wires if you don't want them.",
+      },
+    ],
+    instructions: [
+      "Flash ESP-IDF firmware with AI Thinker's ESP-WHO library (face recognition).",
+      "Enroll 2–4 faces: take 10 photos each under different lighting, normalize, and upload to SPIFFS.",
+      "Test with a friend — you should get a 'stranger' alert within 3 seconds of them walking up.",
+    ],
+    build: {
+      tools: ["ESP32 downloader", "Micro USB cable", "Phillips screwdriver", "Silicone sealant"],
+      assumptions: [
+        "2.4 GHz Wi-Fi reaching front door",
+        "Home Assistant or MQTT broker",
+        "Access to inside wall (for cable run)",
+      ],
+      phases: [
+        {
+          title: "Flash",
+          steps: [
+            {
+              title: "ESP-WHO firmware setup",
+              detail:
+                "Download the ESP-WHO repo, flash the face detection + recognition example. The ESP32-CAM's AI capabilities are limited — use 640×480 input, NOT 1080p, or it'll never meet real-time.",
+              parts: ["ESP32-CAM v2"],
+            },
+            {
+              title: "Enroll known faces",
+              detail:
+                "For each person: 10× photos in different light, normalized to 320×320 grayscale. Upload to SPIFFS /face_db/. The onboard model takes ~500 ms per face.",
+            },
+          ],
+        },
+        {
+          title: "Detect",
+          steps: [
+            {
+              title: "PIR + mmWave AND logic",
+              detail:
+                "Both must fire → person is there. PIR-only = false positives from cats / shadows. mmWave-only = false positives from moving cars 20 m away.",
+              parts: ["HC-SR501 PIR", "LD1115H mmWave"],
+            },
+            {
+              title: "MQTT + push notifications",
+              detail:
+                "Publish to home/doorbell/state → HA automation → iOS/Android push. Use a separate topic /clip_url that links to the MP4 on your NAS.",
+            },
+          ],
+        },
+        {
+          title: "Install",
+          steps: [
+            {
+              title: "Wire through door frame",
+              detail:
+                "Drill a 10 mm hole in the door frame near the hinge — most houses have hollow frames that make cable run easy. Seal both sides with silicone after pulling cable through.",
+            },
+            {
+              title: "Walk-test all scenarios",
+              detail:
+                "Known person → 'welcome home' message. Stranger → alert + 10s clip. Cat walk-by → nothing. Night pass → IR LEDs on automatically.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  /* ============================================================
+     #31 — Diode Laser Engraver
+     ============================================================ */
+  {
+    slug: "diode-laser-engraver",
+    title: "10 W Diode Laser Engraver",
+    author: "etched_by_light",
+    avatarColor: "#dc2626",
+    cover: "/projects/diode-laser-engraver.jpg",
+    createdAt: "2026-09-14T23:00:00Z",
+    tags: ["Robotics", "IoT"],
+    summary:
+      "A 10 W blue-purple diode laser engraver with GRBL-based 2-axis motion control. Engraves wood, acrylic, leather, and 304 stainless steel.",
+    features: [
+      "10 W 445 nm blue-purple laser",
+      "300 × 250 mm work area",
+      "GRBL 1.1e motion controller",
+      "Air assist blower",
+      "Candle + LaserGRBL UI",
+    ],
+    stars: 11,
+    parts: [
+      { name: "Arduino Uno + CNC Shield", category: "Electrical", subcategory: "MCU", quantity: 1, unitCost: 22.0 },
+      { name: "A4988 Driver ×2", category: "Electrical", subcategory: "Driver", quantity: 2, unitCost: 2.5 },
+      { name: "NEMA 17 0.9° ×2", category: "Electrical", subcategory: "Actuator", quantity: 2, unitCost: 8.0 },
+      { name: "10 W 445 nm Diode Laser Module", category: "Electrical", subcategory: "Actuator", quantity: 1, unitCost: 165.0 },
+      { name: "MOSFET Gate Driver (laser)", category: "Electrical", subcategory: "Driver", quantity: 1, unitCost: 5.0 },
+      { name: "12 V 10 A PSU", category: "Electrical", subcategory: "Power", quantity: 1, unitCost: 18.0 },
+      { name: "Cable Drag Chain ×2", category: "Mechanical", subcategory: "Motion", quantity: 2, unitCost: 8.0 },
+      { name: "3 mm MDF Base Plate", category: "Mechanical", subcategory: "Structural", quantity: 1, unitCost: 12.0 },
+      { name: "Endstops X + Y", category: "Electrical", subcategory: "switch", quantity: 2, unitCost: 0.5 },
+    ],
+    wiringNodes: [
+      { id: "psu", label: "12V 10A PSU", kind: "power" },
+      { id: "uno", label: "Arduino Uno (GRBL)", kind: "mcu" },
+      { id: "xdrv", label: "A4988 X", kind: "driver" },
+      { id: "ydrv", label: "A4988 Y", kind: "driver" },
+      { id: "xmot", label: "NEMA 17 X", kind: "actuator" },
+      { id: "ymot", label: "NEMA 17 Y", kind: "actuator" },
+      { id: "laser", label: "10W Diode Module", kind: "actuator" },
+      { id: "mos", label: "MOSFET Gate", kind: "driver" },
+      { id: "ex", label: "X Endstop", kind: "switch" },
+      { id: "ey", label: "Y Endstop", kind: "switch" },
+    ],
+    wiringEdges: [
+      { from: "psu", to: "uno", label: "12V power rail" },
+      { from: "uno", to: "xdrv", label: "STEP / DIR" },
+      { from: "uno", to: "ydrv", label: "STEP / DIR" },
+      { from: "xdrv", to: "xmot", label: "1.8A phase A/B" },
+      { from: "ydrv", to: "ymot", label: "1.8A phase A/B" },
+      { from: "uno", to: "mos", label: "PWM laser control" },
+      { from: "mos", to: "laser", label: "12V laser rail" },
+      { from: "ex", to: "uno", label: "GPIO X_MIN" },
+      { from: "ey", to: "uno", label: "GPIO Y_MIN" },
+    ],
+    wiring:
+      "Standard GRBL setup: Uno + CNC Shield running GRBL 1.1e firmware, endstops on X_MIN / Y_MIN, steppers on X/Y axes. The laser's power MOSFET gate takes a PWM signal from Uno pin D12 (GRBL variable Spindle PWM). Enable the laser with M4 (variable power) rather than M3 (full power only).",
+    mechSpecs: [
+      { label: "Work Area", value: "300 × 250 mm" },
+      { label: "Max Speed", value: "4000 mm/min" },
+      { label: "Laser Focus", value: "0.1 × 0.1 mm spot @ 5 cm WD" },
+      { label: "Material Thickness", value: "5 mm wood / 1.5 mm acrylic cut-through" },
+    ],
+    mechSections: [
+      {
+        title: "Frame",
+        body: "Aluminum L-bar 3030 extrusion. Square the rails to within 0.1 mm using a dial indicator before bolting the Y-axis carriage. Belt tension: 120 Hz natural frequency.",
+      },
+      {
+        title: "Laser Mount",
+        body: "Adjustable focus mount — the laser module screws up/down to focus. Set the working distance to 5 cm (most common) by printing a 5 cm test fixture and sliding it under the module.",
+      },
+    ],
+    instructions: [
+      "Flash GRBL 1.1e, use laser mode config ($32 = 1).",
+      "Set X/Y steps-per-mm first: 1.8° motors × 16 microsteps × 200 mm/rev belt → 160 steps/mm.",
+      "ALWAYS wear laser-safe glasses (445 nm). 10 W = instant eye damage at any distance.",
+    ],
+    build: {
+      tools: ["Allen key set", "Dial indicator", "Laser safety glasses", "Tape measure"],
+      assumptions: [
+        "120 V / 230 V wall outlet",
+        "Laser-cutting exhaust fan (shop vac works)",
+        "Laser safety glasses 445 nm OD 6+",
+      ],
+      phases: [
+        {
+          title: "Frame",
+          steps: [
+            {
+              title: "Square X and Y rails",
+              detail:
+                "Mount Y rails first. Use a dial indicator to check they're flat along the entire 300 mm length. Mount X rails on the carriage — they must travel perfectly parallel or you'll hear grinding.",
+              parts: ["3 mm MDF Base Plate"],
+            },
+            {
+              title: "Endstop homing",
+              detail:
+                "Home to X_MIN and Y_MIN (bottom-left corner). Homing feed rate = 1000 mm/min, then slow probe at 100 mm/min. Add 0.5 mm offset to account for switch activation lag.",
+              parts: ["Endstops X + Y"],
+            },
+          ],
+        },
+        {
+          title: "Laser",
+          steps: [
+            {
+              title: "PWM gate setup",
+              detail:
+                "MOSFET gate accepts Uno's 0–5 V PWM on the low-side. Laser module power goes through the MOSFET's high-side channel — never put the laser's 12 V through the Arduino.",
+              tools: ["Laser safety glasses"],
+              parts: ["10 W 445 nm Diode Laser Module"],
+            },
+            {
+              title: "Focus calibration",
+              detail:
+                "Run G0 Z5 (move laser to 5 cm working distance). Place a piece of paper under it. Slowly move the module up/down until you see the smallest sharpest dot. Lock the focus nut.",
+            },
+          ],
+        },
+        {
+          title: "Engrave",
+          steps: [
+            {
+              title: "Wood engraving test",
+              detail:
+                "2000 mm/min, 20% power for light marks, 40% for dark marks. Do NOT over-power — you'll char the wood and it looks awful.",
+            },
+            {
+              title: "Acrylic cutting test",
+              detail:
+                "Multiple passes at 1500 mm/min, 80% power. One single pass won't cut through cleanly. Air assist blower running at full on acrylic — prevents flashback fire.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  /* ============================================================
+     #32 — Smart Air Purifier
+     ============================================================ */
+  {
+    slug: "smart-air-purifier",
+    title: "Smart PM2.5 Air Purifier",
+    author: "clean_air",
+    avatarColor: "#0891b2",
+    cover: "/projects/smart-air-purifier.jpg",
+    createdAt: "2026-09-14T23:30:00Z",
+    tags: ["IoT", "Sensors"],
+    summary:
+      "A DIY air purifier with 4 fan speeds triggered by PM2.5 readings, auto-sleep when air is clean, and MQTT integration so you can monitor air quality from anywhere.",
+    features: [
+      "PMS5003 PM2.5 / PM10 laser sensor",
+      "4-speed DC motor control",
+      "Auto-sleep when AQI < 50",
+      "OLED live AQI + VOC display",
+      "MQTT + Home Assistant",
+    ],
+    stars: 9,
+    parts: [
+      { name: "ESP32-S3 DevKit", category: "Electrical", subcategory: "MCU", quantity: 1, unitCost: 18.0 },
+      { name: "PMS5003 Laser PM Sensor", category: "Electrical", subcategory: "Sensor", quantity: 1, unitCost: 22.0 },
+      { name: "BME280 Temp/Humidity", category: "Electrical", subcategory: "Sensor", quantity: 1, unitCost: 3.9 },
+      { name: "0.96\" OLED SSD1306", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 3.5 },
+      { name: "PC Fan 120 mm ×2", category: "Electrical", subcategory: "Actuator", quantity: 2, unitCost: 8.0 },
+      { name: "Fan Speed Controller (MOSFET)", category: "Electrical", subcategory: "Driver", quantity: 1, unitCost: 5.0 },
+      { name: "HEPA H13 + Carbon Filter", category: "Mechanical", subcategory: "Filter", quantity: 1, unitCost: 28.0 },
+      { name: "12V 5A PSU", category: "Electrical", subcategory: "Power", quantity: 1, unitCost: 12.0 },
+      { name: "3D-printed ABS Enclosure", category: "Mechanical", subcategory: "Enclosure", quantity: 1, unitCost: 18.0 },
+    ],
+    wiringNodes: [
+      { id: "psu", label: "12V 5A PSU", kind: "power" },
+      { id: "mcu", label: "ESP32-S3", kind: "mcu" },
+      { id: "pms", label: "PMS5003 PM", kind: "sensor" },
+      { id: "bme", label: "BME280", kind: "sensor" },
+      { id: "oled", label: "OLED Display", kind: "module" },
+      { id: "fan", label: "120 mm PC Fan ×2", kind: "actuator" },
+      { id: "mos", label: "Fan Speed MOSFET", kind: "driver" },
+    ],
+    wiringEdges: [
+      { from: "psu", to: "mcu", label: "5V stepdown" },
+      { from: "psu", to: "mos", label: "12V fan rail" },
+      { from: "mcu", to: "pms", label: "UART 9600" },
+      { from: "mcu", to: "bme", label: "I²C" },
+      { from: "mcu", to: "oled", label: "I²C (BME shares bus)" },
+      { from: "mcu", to: "mos", label: "GPIO PWM speed" },
+      { from: "mos", to: "fan", label: "12V PWM power" },
+    ],
+    wiring:
+      "ESP32-S3 polls PMS5003 over UART at 5 Hz for PM2.5 and PM10 readings. The fan MOSFET gate takes a 0–100% PWM signal — 0% = off, 25% = low, 50% = medium, 100% = high. Auto mode uses a lookup table: PM2.5 > 150 → 100%, > 75 → 75%, > 35 → 50%, < 25 → auto-sleep after 5 minutes of clean air.",
+    mechSpecs: [
+      { label: "CADR", value: "~450 m³/h" },
+      { label: "PM2.5 Accuracy", value: "± 15 µg/m³" },
+      { label: "Noise Level", value: "38 dB low / 52 dB high" },
+      { label: "Filter Life", value: "6 months / 2000 hours" },
+    ],
+    mechSections: [
+      {
+        title: "Airflow",
+        body: "Fan intake draws air through the HEPA filter → carbon layer → PMS5003 sensor → outlet. The sensor must be AFTER the filter so you're measuring cleaned air. Mount both fans in push-pull configuration for maximum CADR.",
+      },
+      {
+        title: "Enclosure",
+        body: "3D-printed ABS box. Cut a 120 mm hole for the intake fan and a 100 mm hole for the HEPA cartridge. Add a coarse pre-filter screen to catch pet hair and lint — these will permanently clog the HEPA otherwise.",
+      },
+    ],
+    instructions: [
+      "Wipe the PMS5003's laser window with lens paper every 3 months.",
+      "Replace HEPA filter when fan starts whistling (indicates filter is fully loaded).",
+      "Run a calibration: compare your PMS readings to a nearby government air quality station.",
+    ],
+    build: {
+      tools: ["Soldering iron", "3D printer", "Multimeter", "Phillips screwdriver"],
+      assumptions: [
+        "120/230V wall outlet",
+        "MQTT broker or Home Assistant",
+        "Basic soldering for fan wiring",
+      ],
+      phases: [
+        {
+          title: "Enclosure",
+          steps: [
+            {
+              title: "Print box with airflow path",
+              detail:
+                "PETG, 20% infill. Intake on one side, outlet on opposite, filter in middle, sensor after filter. No kinks or bends in the airflow path — they kill CADR.",
+              tools: ["3D printer"],
+              parts: ["3D-printed ABS Enclosure"],
+            },
+            {
+              title: "Mount HEPA cartridge",
+              detail:
+                "Seal the HEPA cartridge into its slot with foam weatherstripping. Any gap means unfiltered air bypasses the sensor and corrupts your readings.",
+              parts: ["HEPA H13 + Carbon Filter"],
+            },
+          ],
+        },
+        {
+          title: "Sense",
+          steps: [
+            {
+              title: "PMS5003 UART readout",
+              detail:
+                "Send query command 0xE2 0x00 0x00 0x01 0x71 every 2 seconds. Parse the 32-byte response frame. PM2.5 is at bytes 10–11.",
+              parts: ["PMS5003 Laser PM Sensor"],
+            },
+            {
+              title: "Auto mode lookup table",
+              detail:
+                "PM2.5 µg/m³ → % PWM: < 12 → 0 (sleep), 12–35 → 25, 35–75 → 50, 75–150 → 75, > 150 → 100. Add a 10-second debounce on each transition so it doesn't oscillate.",
+            },
+          ],
+        },
+        {
+          title: "Monitor",
+          steps: [
+            {
+              title: "MQTT publish every 30 seconds",
+              detail:
+                "Topic: home/purifier/state, JSON payload: {\"pm25\": 22, \"pm10\": 35, \"temp\": 24.5, \"rh\": 45, \"fan\": 50, \"filter_hours\": 1520}. Home Assistant auto-discovers this as a device.",
+            },
+            {
+              title: "Filter life tracker",
+              detail:
+                "Track total fan-on hours in NVS. At 2000 hours → OLED shows a 'replace filter' warning on boot. Don't let the user forget — their lungs deserve better.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  /* ============================================================
+     #33 — Dual-Axis Solar Tracker
+     ============================================================ */
+  {
+    slug: "dual-axis-solar-tracker",
+    title: "Dual-Axis Solar Tracker",
+    author: "sun_chaser",
+    avatarColor: "#facc15",
+    cover: "/projects/dual-axis-solar-tracker.jpg",
+    createdAt: "2026-09-14T23:45:00Z",
+    tags: ["Robotics", "IoT"],
+    summary:
+      "A dual-axis sun tracker that keeps a 100 W solar panel pointed directly at the sun from dawn to dusk — boosts output by 30–40% over fixed mounting.",
+    features: [
+      "Azimuth + elevation motors",
+      "4× photoresistor sun sensor",
+      "GPS-based astronomic fallback",
+      "Wind sensor safety fold-down",
+      "100 W panel + MPPT charge",
+    ],
+    stars: 10,
+    parts: [
+      { name: "Arduino Mega 2560", category: "Electrical", subcategory: "MCU", quantity: 1, unitCost: 18.5 },
+      { name: "NEMA 17 ×2", category: "Electrical", subcategory: "Actuator", quantity: 2, unitCost: 5.5 },
+      { name: "A4988 Driver ×2", category: "Electrical", subcategory: "Driver", quantity: 2, unitCost: 2.5 },
+      { name: "Photoresistor ×4 (sun sensor)", category: "Electrical", subcategory: "Sensor", quantity: 4, unitCost: 0.4 },
+      { name: "BME280 (ambient)", category: "Electrical", subcategory: "Sensor", quantity: 1, unitCost: 3.9 },
+      { name: "Cup Anemometer (wind)", category: "Electrical", subcategory: "Sensor", quantity: 1, unitCost: 18.0 },
+      { name: "ZED-F9P GPS", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 24.0 },
+      { name: "100 W Solar Panel", category: "Mechanical", subcategory: "Power", quantity: 1, unitCost: 55.0 },
+      { name: "MPPT 10 A Charge Controller", category: "Electrical", subcategory: "Power", quantity: 1, unitCost: 22.0 },
+      { name: "Aluminum Frame + Bearing", category: "Mechanical", subcategory: "Motion", quantity: 1, unitCost: 45.0 },
+    ],
+    wiringNodes: [
+      { id: "mcu", label: "Arduino Mega", kind: "mcu" },
+      { id: "az", label: "Azimuth Stepper", kind: "actuator" },
+      { id: "el", label: "Elevation Stepper", kind: "actuator" },
+      { id: "sens", label: "4× Photoresistor Sun Sensor", kind: "sensor" },
+      { id: "wind", label: "Cup Anemometer", kind: "sensor" },
+      { id: "gps", label: "ZED-F9P", kind: "module" },
+      { id: "bme", label: "BME280", kind: "sensor" },
+      { id: "panel", label: "100 W Solar Panel", kind: "power" },
+    ],
+    wiringEdges: [
+      { from: "mcu", to: "az", label: "STEP + DIR A4988" },
+      { from: "mcu", to: "el", label: "STEP + DIR A4988" },
+      { from: "sens", to: "mcu", label: "Analog A0–A3" },
+      { from: "wind", to: "mcu", label: "Pulse input" },
+      { from: "gps", to: "mcu", label: "UART (alt. soft serial)" },
+      { from: "bme", to: "mcu", label: "I²C" },
+    ],
+    wiring:
+      "4 photoresistors sit in a square pattern with opaque dividers — if left is brighter than right, motor west. If front brighter than back, motor up. GPS calculates sunrise/sunset/noon angles and provides a slow drift correction every 10 seconds. Wind sensor folds panel horizontal above 40 km/h for structural safety.",
+    mechSpecs: [
+      { label: "Panel Size", value: "100 × 67 cm" },
+      { label: "Azimuth Range", value: "0° – 360° (north reference)" },
+      { label: "Elevation Range", value: "10° – 85°" },
+      { label: "Tracking Accuracy", value: "≤ 2° RMS" },
+    ],
+    mechSections: [
+      {
+        title: "Frame",
+        body: "Square steel tube for the pole, aluminum extrusion for the mount. Counter-weight the panel on the elevation axis with a 1 kg concrete block — NEMA 17s are small but strong enough with proper balance.",
+      },
+      {
+        title: "Sun Sensor",
+        body: "4 photoresistors in a 20 × 20 mm square block divided by 4 opaque walls — this creates a 5° cone of acceptance. Mounted at the center of the panel surface, it sees what the panel sees.",
+      },
+    ],
+    instructions: [
+      "Flash Arduino with AstroEq or custom sun-position code.",
+      "Calibrate the 4 photoresistor balance at noon under direct sun.",
+      "Leave it unattended for a full day, check how closely it followed the sun.",
+    ],
+    build: {
+      tools: ["Allen key set", "Protractor", "Multimeter", "GPS antenna mast"],
+      assumptions: [
+        "Outdoor mounting surface (roof / pole)",
+        "Clear southern sky for best results",
+        "12 V battery or mains for controller power",
+      ],
+      phases: [
+        {
+          title: "Mount",
+          steps: [
+            {
+              title: "North reference calibration",
+              detail:
+                "Compass points magnetic north. Convert to true north using your local declination (search NOAA magnetic declination calculator). The Az axis 0° = true north.",
+              tools: ["Compass", "Protractor"],
+              parts: ["Aluminum Frame + Bearing"],
+            },
+            {
+              title: "Panel elevation at noon",
+              detail:
+                "At solar noon on the equinox, sun is at 90° minus your latitude. For 40° north latitude → 50° elevation. Use the protractor to set this position and lock the calibration.",
+            },
+          ],
+        },
+        {
+          title: "Track",
+          steps: [
+            {
+              title: "Photoresistor difference PID",
+              detail:
+                "PID loop on the analog difference between left/right sensors → Az motor; front/back → El motor. Kp=0.5, Ki=0.002, Kd=0.1. Integral windup clamp at ±500.",
+              parts: ["Photoresistor ×4"],
+            },
+            {
+              title: "GPS astronomic correction",
+              detail:
+                "Compute sun's apparent position for your lat/lon/date using NOAA's solar position algorithm (SPA). This takes ~20 ms on Mega. Slow correction — don't override the photoresistor PID, just nudge.",
+              parts: ["ZED-F9P GPS"],
+            },
+          ],
+        },
+        {
+          title: "Protect",
+          steps: [
+            {
+              title: "Wind fold-down",
+              detail:
+                "Cup anemometer → GPIO pulse → RPM calculation. Above 40 km/h → fold to 0° elevation (panel horizontal, least drag). Below 30 km/h → resume tracking.",
+              parts: ["Cup Anemometer"],
+            },
+            {
+              title: "Night parking",
+              detail:
+                "After sunset, fold panel to 180° azimuth (facing south in the northern hemisphere) and store elevation at 45° — ready for tomorrow's sunrise at the expected azimuth.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  /* ============================================================
+     #34 — RFID Inventory Tracker
+     ============================================================ */
+  {
+    slug: "rfid-inventory-tracker",
+    title: "Warehouse RFID Inventory Tracker",
+    author: "stock_ticker",
+    avatarColor: "#7c3aed",
+    cover: "/projects/rfid-inventory-tracker.jpg",
+    createdAt: "2026-09-15T00:00:00Z",
+    tags: ["IoT", "Sensors"],
+    summary:
+      "A portable RFID wand that scans items on a warehouse shelf, matches them to a central inventory database, and flags out-of-stock, misplaced, or expired products.",
+    features: [
+      "UHF RFID EPC Global Gen2",
+      "2 m read range",
+      "100 tags/second read speed",
+      "Barcode + RFID dual mode",
+      "Web dashboard + CSV export",
+    ],
+    stars: 9,
+    parts: [
+      { name: "Raspberry Pi Zero 2 W", category: "Electrical", subcategory: "MCU", quantity: 1, unitCost: 35.0 },
+      { name: "ThingMagic Nano 3 UHF RFID", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 110.0 },
+      { name: "Logitech C270 (barcode)", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 18.0 },
+      { name: "7\" IPS Touchscreen HDMI", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 42.0 },
+      { name: "2× UHF Patch Antenna", category: "Electrical", subcategory: "antenna", quantity: 2, unitCost: 28.0 },
+      { name: "5000 mAh USB-C Bank", category: "Electrical", subcategory: "Power", quantity: 1, unitCost: 35.0 },
+      { name: "3D-printed Wand Handle", category: "Mechanical", subcategory: "Enclosure", quantity: 1, unitCost: 8.0 },
+    ],
+    wiringNodes: [
+      { id: "pi", label: "Pi Zero 2 W", kind: "mcu" },
+      { id: "rfid", label: "ThingMagic Nano 3", kind: "module" },
+      { id: "ant", label: "2× UHF Patch Antenna", kind: "antenna" },
+      { id: "cam", label: "C270 Barcode Cam", kind: "module" },
+      { id: "disp", label: "7\" Touchscreen", kind: "module" },
+    ],
+    wiringEdges: [
+      { from: "pi", to: "rfid", label: "USB" },
+      { from: "rfid", to: "ant", label: "SMA ×2" },
+      { from: "pi", to: "cam", label: "USB 2.0" },
+      { from: "pi", to: "disp", label: "HDMI + GPIO backlight" },
+    ],
+    wiring:
+      "Pi Zero runs Python + ThingMagic SDK, reading EPCs at up to 100 tags/s over USB from the Nano 3 reader. Two patch antennas (900 MHz UHF) mounted on the wand's side give 2 m read range. The camera runs pyzbar for barcode fallback. Inventory sync happens over Wi-Fi with the central PostgreSQL database.",
+    mechSpecs: [
+      { label: "Read Range", value: "≤ 2 m (tag-dependent)" },
+      { label: "Tag Density", value: "≤ 500 tags per second scan" },
+      { label: "Battery Life", value: "8 hours continuous scanning" },
+      { label: "Weight", value: "820 g" },
+    ],
+    mechSections: [
+      {
+        title: "Wand",
+        body: "Ergonomic wand with the antenna mounted flat on the wand's side — you slide it along the shelf facing the tags. The Pi + reader + battery live in the handle. 3D print PETG, 20% infill.",
+      },
+      {
+        title: "Antenna",
+        body: "Keep the patch antenna facing the shelf directly — not at an angle. UHF tags have a read null direction perpendicular to the antenna; point it away and you miss half your tags.",
+      },
+    ],
+    instructions: [
+      "Register each SKU with an EPC prefix before putting it on a shelf.",
+      "Do a calibration sweep: know which EPCs should be in which zone so you can flag misplaced items.",
+      "Export a daily CSV to check fill rate, misplaced %, and expired items.",
+    ],
+    build: {
+      tools: ["3D printer", "SMA connectors", "Phillips screwdriver", "SQL database setup"],
+      assumptions: [
+        "UHF RFID tags (96-bit EPC)",
+        "PostgreSQL or SQLite for inventory DB",
+        "Wi-Fi reaching every shelf",
+      ],
+      phases: [
+        {
+          title: "Scan",
+          steps: [
+            {
+              title: "ThingMagic SDK setup",
+              detail:
+                "pip install MercuryAPI, run 'python example_read_tags.py'. The Nano 3 should start streaming EPCs immediately. Set TX power to 18 dBm — enough for 2 m but not enough to read tags from the shelf next door.",
+              parts: ["ThingMagic Nano 3"],
+            },
+            {
+              title: "Barcode fallback",
+              detail:
+                "Some items still only have barcodes. pyzbar + OpenCV on the C270 camera. Point camera at barcode, press trigger — OCRs in ~200 ms.",
+              parts: ["Logitech C270"],
+            },
+          ],
+        },
+        {
+          title: "Match",
+          steps: [
+            {
+              title: "Zone-assignment logic",
+              detail:
+                "Each shelf zone has a known list of EPC ranges. If the scanner sees an EPC from Zone A in Zone B → MISPLACED flag. DB stores shelf → EPC list → expected quantity.",
+            },
+            {
+              title: "Expiry tracking",
+              detail:
+                "Some RFID tags have EAX (expiry) memory bank set at manufacture. Scan this, compare to today, flag expired items on the touchscreen.",
+            },
+          ],
+        },
+        {
+          title: "Report",
+          steps: [
+            {
+              title: "Daily CSV export",
+              detail:
+                "Columns: scan_time, shelf_zone, EPC, SKU, qty_found, expected_qty, status (OK / LOW / MISPLACED / EXPIRED). Email to the warehouse manager at 6 PM.",
+            },
+            {
+              title: "Web dashboard",
+              detail:
+                "Simple Flask + SQLite dashboard. Live map of which shelves have been scanned today, heatmap of low-stock zones, trend charts of inventory levels over the past 30 days.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  /* ============================================================
+     #35 — Smart Aquarium Feeder
+     ============================================================ */
+  {
+    slug: "smart-aquarium-feeder",
+    title: "Smart Aquarium + Auto Feeder",
+    author: "fish_watcher",
+    avatarColor: "#0ea5e9",
+    cover: "/projects/smart-aquarium-feeder.jpg",
+    createdAt: "2026-09-15T00:30:00Z",
+    tags: ["IoT", "Sensors"],
+    summary:
+      "An all-in-one aquarium controller with auto feeder, pH + temp monitor, LED light timer, and water change reminder — logs everything to a web dashboard.",
+    features: [
+      "Rotary auto feeder (3 sizes)",
+      "pH + temp + TDS sensors",
+      "12W RGB LED ramp lighting",
+      "Water change reminder",
+      "Web dashboard + Telegram alerts",
+    ],
+    stars: 8,
+    parts: [
+      { name: "ESP32-S3 Super Mini", category: "Electrical", subcategory: "MCU", quantity: 1, unitCost: 14.0 },
+      { name: "Atlas Scientific pH", category: "Electrical", subcategory: "Sensor", quantity: 1, unitCost: 34.0 },
+      { name: "DFRobot TDS", category: "Electrical", subcategory: "Sensor", quantity: 1, unitCost: 12.0 },
+      { name: "DS18B20 Temp", category: "Electrical", subcategory: "Sensor", quantity: 2, unitCost: 4.5 },
+      { name: "SG90 Servo (feeder)", category: "Electrical", subcategory: "actuator", quantity: 1, unitCost: 10.0 },
+      { name: "12W WS2812B (CCT)", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 16.0 },
+      { name: "Water Pump 500 L/h", category: "Electrical", subcategory: "Actuator", quantity: 1, unitCost: 12.0 },
+      { name: "12V 2A PSU", category: "Electrical", subcategory: "Power", quantity: 1, unitCost: 8.0 },
+      { name: "Rotary Feeder Hopper", category: "Mechanical", subcategory: "Structural", quantity: 1, unitCost: 18.0 },
+    ],
+    wiringNodes: [
+      { id: "mcu", label: "ESP32-S3", kind: "mcu" },
+      { id: "ph", label: "Atlas pH", kind: "sensor" },
+      { id: "tds", label: "DFRobot TDS", kind: "sensor" },
+      { id: "temp", label: "DS18B20 ×2", kind: "sensor" },
+      { id: "servo", label: "SG90 Feeder", kind: "actuator" },
+      { id: "led", label: "WS2812B RGBW", kind: "module" },
+      { id: "pump", label: "500 L/h Pump", kind: "actuator" },
+    ],
+    wiringEdges: [
+      { from: "mcu", to: "ph", label: "I²C" },
+      { from: "mcu", to: "tds", label: "Analog ADC" },
+      { from: "temp", to: "mcu", label: "1-Wire" },
+      { from: "mcu", to: "servo", label: "GPIO PWM" },
+      { from: "mcu", to: "led", label: "GPIO WS2812" },
+      { from: "mcu", to: "pump", label: "GPIO MOSFET" },
+    ],
+    wiring:
+      "SG90 servo rotates a 4-compartment hopper — one rotation dispenses one compartment of food. ESP32-S3 wakes the servo at scheduled times (8 AM, 1 PM, 6 PM, 9 PM). WS2812B LED runs a 12-hour sunrise → sunset ramp. pH and TDS probe the tank directly; DS18B20s measure water temp and heater temperature as a safety check.",
+    mechSpecs: [
+      { label: "Feeder Rotations", value: "1 / feeding schedule" },
+      { label: "pH Alarm Range", value: "< 6.5 or > 7.5" },
+      { label: "TDS Alarm", value: "> 1500 ppm (freshwater tank)" },
+      { label: "Water Change Interval", value: "10 days / 25% volume" },
+    ],
+    mechSections: [
+      {
+        title: "Feeder Mount",
+        body: "Mount the feeder hopper centrally on the tank glass — the food needs to land away from the intake pump to be consumed, not just sucked through the filter. Use waterproof double-sided tape, not suction cups (they fall in 3 weeks).",
+      },
+      {
+        title: "Probe Placement",
+        body: "pH and TDS probes go in the flow stream of the canister filter's output — they read consistently there. DS18B20 water temp goes in the main tank away from heaters. Never mount probes near the heater; heat skews pH readings.",
+      },
+    ],
+    instructions: [
+      "Calibrate pH with 4.0 and 7.0 buffers monthly.",
+      "Servo rotate = 90° from closed to open position. Test and store in NVS.",
+      "Feed 2–3 times per day with the SAME scheduled portions — don't overfeed or ammonia spikes.",
+    ],
+    build: {
+      tools: ["Soldering iron", "3D printer (feeder hopper)", "Aquarium sealant", "Phillips screwdriver"],
+      assumptions: [
+        "Existing aquarium with 25 cm + water depth",
+        "External canister filter or sponge filter",
+        "Dry room — water and ESPs make enemies",
+      ],
+      phases: [
+        {
+          title: "Feed",
+          steps: [
+            {
+              title: "3D-print feeder hopper",
+              detail:
+                "PETG — PLA absorbs water in 6 months and softens. 4-compartment rotating drum. SG90 sits at the top, drives the drum through a bevel gear.",
+              tools: ["3D printer"],
+              parts: ["Rotary Feeder Hopper"],
+            },
+            {
+              title: "Servo angle calibration",
+              detail:
+                "Servo position 1500 µs = closed compartment, 2100 µs = open and drop. One rotation of 60° drops one compartment. Time this against actual food — you may need to add 200 µs.",
+            },
+          ],
+        },
+        {
+          title: "Sense",
+          steps: [
+            {
+              title: "pH + TDS calibration",
+              detail:
+                "pH: 2-point buffer (4.0, 7.0). TDS: 1413 µS/cm standard. Probes drift about 0.1 pH/month and 5% TDS/month — set a reminder every 30 days.",
+              parts: ["Atlas Scientific pH", "DFRobot TDS"],
+            },
+            {
+              title: "Heater safety check",
+              detail:
+                "One DS18B20 on the heater itself, one in the water. If heater temp exceeds 40 °C while water is only 26 °C → heater is stuck on → ESP32 powers off via relay. Fish die at 35 °C.",
+            },
+          ],
+        },
+        {
+          title: "Light",
+          steps: [
+            {
+              title: "12-hour sunrise-sunset ramp",
+              detail:
+                "6:00 AM → 20% dim blue, 10:00 AM → 70% full spectrum white, 6:00 PM → 30% warm red, 8:00 PM → OFF. No LED during 8 PM – 6 AM — fish sleep.",
+              parts: ["12W WS2812B RGBW"],
+            },
+            {
+              title: "Water change reminder",
+              detail:
+                "Count total pump-on hours. Every 240 hours → alert via Telegram: 'Water change due — 25% volume'. Track last water change date in NVS so you don't double-remind.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+
+  /* ============================================================
+     #36 — V2X Smart Traffic Signal
+     ============================================================ */
+  {
+    slug: "v2x-traffic-signal",
+    title: "V2X Smart Traffic Signal System",
+    author: "city_planner",
+    avatarColor: "#f59e0b",
+    cover: "/projects/v2x-traffic-signal.jpg",
+    createdAt: "2026-09-15T01:00:00Z",
+    tags: ["IoT", "Robotics"],
+    summary:
+      "A scaled-down V2X (Vehicle-to-Everything) demo: traffic lights talk to approaching cars via BLE, crosswalk sensors trigger green for pedestrians, and the system self-optimizes green times based on real traffic volume.",
+    features: [
+      "4-way intersection controller",
+      "PIR + pressure plate sensor nodes",
+      "BLE beacon + car demo app",
+      "Adaptive green-time algorithm",
+      "Web dashboard + analytics",
+    ],
+    stars: 12,
+    parts: [
+      { name: "Raspberry Pi 4 (4GB)", category: "Electrical", subcategory: "MCU", quantity: 1, unitCost: 45.0 },
+      { name: "ESP32-C3 ×4 (lamp nodes)", category: "Electrical", subcategory: "MCU", quantity: 4, unitCost: 9.5 },
+      { name: "HC-SR501 PIR ×8", category: "Electrical", subcategory: "Sensor", quantity: 8, unitCost: 2.2 },
+      { name: "Pressure Pad Sensors ×4", category: "Electrical", subcategory: "Sensor", quantity: 4, unitCost: 12.0 },
+      { name: "AC Relay Green ×4", category: "Electrical", subcategory: "Driver", quantity: 4, unitCost: 4.5 },
+      { name: "AC Relay Red ×4", category: "Electrical", subcategory: "Driver", quantity: 4, unitCost: 4.5 },
+      { name: "AC Relay Yellow ×4", category: "Electrical", subcategory: "Driver", quantity: 4, unitCost: 4.5 },
+      { name: "BLE Gateway x1", category: "Electrical", subcategory: "Module", quantity: 1, unitCost: 22.0 },
+      { name: "ABS 4-Way Enclosure", category: "Mechanical", subcategory: "Enclosure", quantity: 1, unitCost: 38.0 },
+    ],
+    wiringNodes: [
+      { id: "pi", label: "Pi 4 (master controller)", kind: "mcu" },
+      { id: "esp1", label: "ESP32-C3 Lamp North", kind: "mcu" },
+      { id: "esp2", label: "ESP32-C3 Lamp South", kind: "mcu" },
+      { id: "esp3", label: "ESP32-C3 Lamp East", kind: "mcu" },
+      { id: "esp4", label: "ESP32-C3 Lamp West", kind: "mcu" },
+      { id: "pir", label: "PIR + Pressure ×12", kind: "sensor" },
+      { id: "relay", label: "Relays R/G/Y ×12", kind: "driver" },
+    ],
+    wiringEdges: [
+      { from: "pi", to: "esp1", label: "MQTT / UART" },
+      { from: "pi", to: "esp2", label: "MQTT / UART" },
+      { from: "pi", to: "esp3", label: "MQTT / UART" },
+      { from: "pi", to: "esp4", label: "MQTT / UART" },
+      { from: "pir", to: "esp1-4", label: "GPIO (2 per node)" },
+      { from: "esp1-4", to: "relay", label: "GPIO → opto-isolated" },
+    ],
+    wiring:
+      "Pi 4 runs the intersection state machine and timing algorithm. Each of the 4 ESP32-C3 nodes controls one physical traffic signal head (R/G/Y × 3 relays), reads 2 PIR + 1 pressure sensor per approach, and broadcasts BLE beacons with 'current phase' so nearby cars know what's green. Pi publishes all node data to MQTT → web dashboard.",
+    mechSpecs: [
+      { label: "Cycle Time", value: "Variable (45–120 seconds)" },
+      { label: "Pedestrian Green", value: "Minimum 20 seconds" },
+      { label: "Vehicle Detection Range", value: "15 m (PIR + pressure)" },
+      { label: "BLE Beacon Range", value: "≤ 100 m" },
+    ],
+    mechSections: [
+      {
+        title: "Signal Heads",
+        body: "3 stacked LEDs per direction — R / Y / G, 10 W each. Each node's relay board is mains-voltage on the load side; the ESP32-C3 side is 3.3 V opto-isolated. NEVER mix mains and 3.3 V traces.",
+      },
+      {
+        title: "Sensors",
+        body: "PIR sensors mount 5 m back from the crosswalk on pole tops, angled to face down the approach. Pressure pads go directly in the crosswalk surface — triggered by tires rolling over them.",
+      },
+    ],
+    instructions: [
+      "Install the full enclosure on a standard 4-way intersection pole first.",
+      "Wire sensors → ESP32-C3 → Pi, then Pi → dashboard over Wi-Fi.",
+      "Test each direction's cycle manually before enabling adaptive timing.",
+    ],
+    build: {
+      tools: ["Phillips screwdriver", "Wire strippers", "Voltage tester pen", "Drill"],
+      assumptions: [
+        "Access to 120/230V mains at intersection",
+        "2.4 / 5 GHz Wi-Fi coverage",
+        "Pedestrian crosswalks with power wiring",
+      ],
+      phases: [
+        {
+          title: "Wire",
+          steps: [
+            {
+              title: "Mains + low-voltage isolation",
+              detail:
+                "Each ESP32-C3 node has its own 5 V DC power supply isolated from mains. Signal relays are opto-isolated PC817 — 3.3 V GPIO on one side, mains-voltage relay coil on the other.",
+              parts: ["AC Relay ×12"],
+            },
+            {
+              title: "Sensor calibration",
+              detail:
+                "PIR sensitivity pot: rotate fully clockwise, then back 1 turn. This catches cars 5–15 m away but not pedestrians on the sidewalk. Pressure pad: calibrate with a known weight (person standing) — triggers > 70 kg.",
+              parts: ["HC-SR501 PIR", "Pressure Pad"],
+            },
+          ],
+        },
+        {
+          title: "Control",
+          steps: [
+            {
+              title: "Intersection state machine",
+              detail:
+                "Fixed 4-phase cycle: NS-G / NS-Y / EW-G / EW-Y. Adaptive timing: weighted average of the last 6 cycle's vehicle counts → adjust green time up/down from a 45 s base.",
+            },
+            {
+              title: "Pedestrian override",
+              detail:
+                "Pressure pad trigger during a red phase → schedule 20 s green + walk signal after the current yellow. Countdown displays on both sidewalks via WS2812B strips.",
+            },
+          ],
+        },
+        {
+          title: "Connect",
+          steps: [
+            {
+              title: "BLE beacon for approaching cars",
+              detail:
+                "ESP32-C3 broadcasts a BLE advertisement with service UUID 0xFEED containing: current green direction, time remaining, predicted next green. Car head unit app subscribes, shows 'Green in 12 seconds'.",
+            },
+            {
+              title: "Web dashboard analytics",
+              detail:
+                "Flask + Plotly dashboard. Live intersection timing chart, 24-hour vehicle volume heatmap, cycle efficiency metrics. Track 'green time per vehicle' — target > 8 seconds/vehicle.",
+            },
+          ],
+        },
+      ],
+    },
+  },
 ]
