@@ -391,28 +391,30 @@ create trigger on_auth_user_created
 
 ### 🟢 Cloudflare Email Routing（品牌邮箱转发）
 
-- [ ] Cloudflare → **Email → Email Routing** → 开启
-- [ ] 添加自定义地址，例如 `support@repocontext.dev` → 转发到 `jpkowton@gmail.com`
-- [ ] 确认自动添加的 DNS（CF 托管 DNS 一般自动加）：
+- [x] Cloudflare → **Email → Email Routing** → 已开启
+- [x] 添加自定义地址 `support@repocontext.dev` → 转发到 `jpkowton@gmail.com`
+- [x] 确认自动添加的 DNS（CF 托管 DNS 一般自动加）：
   - `MX @ → route1/2/3.mx.cloudflare.net`（优先级 71/72/73）
   - `TXT @ → v=spf1 include:amazonses.com include:cloudflare.net ~all`
 
 ### 🟡 Resend 验证域名（品牌 From）
 
-- [ ] Resend → **Domains → Add `repocontext.dev`**，按提示加 DNS：
-  - `TXT repocontext.dev → v=spf1 include:amazonses.com include:cloudflare.net ~all`
+- [x] Resend → **Domains → Add `repocontext.dev`**，已按提示加 DNS：
+  - `TXT repocontext.dev → v=spf1 include:_spf.mx.cloudflare.net include:amazonses.com ~all`
   - `TXT resend._domainkey → <Resend 给的 DKIM 长串>`
   - `TXT _dmarc.repocontext.dev → v=DMARC1; p=none;`
 - [ ] 验证通过后，在 Vercel 设环境变量：
   - `RESEND_API_KEY=re_xxx`
   - `RESEND_FROM=RepoContext <noreply@repocontext.dev>`
 - [ ] 当前 `lib/email.ts` 中这两个变量为空时邮件为 no-op；设好后欢迎/收据/客服邮件才会真正发出，且 From 为品牌域名。
-- [ ] 代码侧已将 `SUPPORT_INBOX` 与页脚支持邮箱改为 `support@repocontext.dev`（经 Email Routing 转发到你的 Gmail）。
+- [x] 代码侧已将 `SUPPORT_INBOX` 与页脚/政策页支持邮箱统一改为 `support@repocontext.dev`（经 Email Routing 转发到你的 Gmail）。
 
-### 🟣 Creem 后台邮箱 + 触发复审
+### 🟣 Creem 合规复审
 
-- [ ] Creem Dashboard → **Settings** → 通知邮箱改为 `support@repocontext.dev` → 保存
-- [ ] 若涉及收款/业务审核，补全信息后点 **Submit for review** 触发复审（纯后台操作，无代码改动）
+- [x] 代码侧：移除占位社交链接（GitHub 占位已删除，Contact 改为品牌邮箱），AUP 页面 `/acceptable-use` 已存在并在页脚链接
+- [ ] Creem Dashboard → **Settings** → `Website` 改为 `https://www.repocontext.dev`
+- [ ] Creem Dashboard → **Settings** → `Contact email` 改为 `support@repocontext.dev`
+- [ ] 回到 **Payout Account** 的 **Changes requested**，点 **Request re-review** 触发复审
 
 > ⚠️ Email Routing 与 Resend 共用 `@` 的 SPF，上面 TXT 已把 `amazonses.com`（Resend）和 `cloudflare.net`（Email Routing）合并为一条，勿重复添加。
 
