@@ -194,7 +194,6 @@
       "features": [
         "Public repositories",
         "3 analyses per day",
-        "qwen3.7-plus AI model",
         "AGENTS.md generation",
         "Basic quality score",
         "Copy & download"
@@ -210,7 +209,6 @@
       "trialNote": "Includes {pro} Pro trial analyses and {free} free per month. No credit card needed.",
       "features": [
         "Everything in Free",
-        "Qwen3.8-Max AI model",
         "Unlimited public repos",
         "Private repositories",
         "CLAUDE.md export",
@@ -231,7 +229,6 @@
       "cta": "Subscribe",
       "features": [
         "Everything in Pro monthly",
-        "Qwen3.8-Max AI model",
         "2 months free vs monthly",
         "Unlimited public repos",
         "Private repositories",
@@ -253,7 +250,6 @@
       "cta": "Buy once",
       "features": [
         "Everything in Pro",
-        "Qwen3.8-Max AI model",
         "Lifetime access",
         "Unlimited public repos",
         "Private repositories",
@@ -430,7 +426,7 @@
       {
         "heading": "4. Free Use and Trials",
         "body": [
-          "Visitors who are not signed in receive 5 free analyses per calendar month plus 2 analyses on the premium model. The counters live in a browser cookie, so clearing cookies, switching browsers or using a private window can reset them — please do not use that to work around the quota.",
+          "Registered accounts receive 4 free analyses per calendar month plus 2 analyses on the premium model. The counters live in a browser cookie, so clearing cookies, switching browsers or using a private window can reset them — please do not use that to work around the quota. A free account is required to use the trial.",
           "Paid plans are billed monthly or annually and renew automatically until you cancel."
         ]
       },
@@ -676,7 +672,7 @@
       {
         "heading": "3. Try Before You Buy",
         "body": [
-          "Every account starts with 5 free analyses per month plus 2 analyses on the premium model, and no card is required. Please use that allowance to judge whether RepoContext fits your workflow before upgrading."
+          "Every account starts with 4 free analyses per month plus 2 analyses on the premium model, and no card is required. Please use that allowance to judge whether RepoContext fits your workflow before upgrading."
         ]
       },
       {

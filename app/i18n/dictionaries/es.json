@@ -176,7 +176,6 @@
       "features": [
         "Repositorios públicos",
         "3 análisis por día",
-        "Modelo de IA qwen3.7-plus",
         "Generación de AGENTS.md",
         "Puntuación de calidad básica",
         "Copiar y descargar"
@@ -192,7 +191,6 @@
       "trialNote": "Incluye {pro} análisis de prueba Pro y {free} gratuitos al mes. No se requiere tarjeta de crédito.",
       "features": [
         "Todo lo de Gratis",
-        "Modelo de IA Qwen3.8-Max",
         "Repositorios públicos ilimitados",
         "Repositorios privados",
         "Exportación CLAUDE.md",
@@ -213,7 +211,6 @@
       "cta": "Suscribirse",
       "features": [
         "Todo lo de Pro mensual",
-        "Modelo de IA Qwen3.8-Max",
         "2 meses gratis frente al mensual",
         "Repositorios públicos ilimitados",
         "Repositorios privados",
@@ -235,7 +232,6 @@
       "cta": "Comprar una vez",
       "features": [
         "Todo lo de Pro",
-        "Modelo de IA Qwen3.8-Max",
         "Acceso de por vida",
         "Repositorios públicos ilimitados",
         "Repositorios privados",

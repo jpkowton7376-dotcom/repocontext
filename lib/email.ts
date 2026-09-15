@@ -132,7 +132,7 @@ export async function sendWelcomeEmail(email: string): Promise<{ ok: boolean; er
         <a href="${siteUrl}" style="display:inline-block;padding:12px 22px;background:#2b3be0;color:#ffffff;font-size:14px;font-weight:600;text-decoration:none;letter-spacing:0.02em;">Analyze your first repository →</a>
       </p>
       <p style="margin:0;font-size:13px;line-height:1.6;color:#64707f;">
-        You start with <strong>5 free analyses per month</strong> and <strong>2 Pro trial analyses</strong> that use the premium model. No credit card required.
+        You start with <strong>4 free analyses per month</strong> and <strong>2 Pro trial analyses</strong> that use the premium model. No credit card required.
       </p>
     `,
     "Welcome to RepoContext — start analyzing GitHub repos for free.",
@@ -141,7 +141,7 @@ export async function sendWelcomeEmail(email: string): Promise<{ ok: boolean; er
     to: email,
     subject: "Welcome to RepoContext",
     html,
-    text: `Welcome to RepoContext. You start with 5 free analyses per month. Get started: ${siteUrl}`,
+    text: `Welcome to RepoContext. You start with 4 free analyses per month. Get started: ${siteUrl}`,
   })
 }
 

@@ -1,11 +1,11 @@
 /**
- * Monthly anonymous trial quota (no account required).
- * - 5 free analyses per calendar month (base model).
+ * Monthly trial quota — requires a registered account (no anonymous usage).
+ * - 4 free analyses per calendar month (base model).
  * - 2 Pro trial analyses per calendar month (premium model).
  * - Unused uses do not roll over; both counters reset on the 1st of each month.
  * - Once the Pro trial (2) is used up, the premium model requires a Pro subscription.
  */
-export const FREE_TRIAL_LIMIT = 5
+export const FREE_TRIAL_LIMIT = 4
 export const PRO_TRIAL_LIMIT = 2
 
 function getCookie(req: Request, name: string): string | undefined {

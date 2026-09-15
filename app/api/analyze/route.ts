@@ -63,7 +63,20 @@ export async function POST(request: Request) {
       }
     }
 
-    // 1) 匿名 / 未付费用户的 cookie 试用计数（每月 5 次免费 + 2 次 Pro 试用）
+    // 1.5) 试用必须先登录注册 —— 匿名用户不再允许使用
+    //      （付费用户一定带着合法 token，userId 不为空；未登录/无效 token 一律拦截）
+    if (!userId) {
+      return NextResponse.json(
+        {
+          error:
+            'Please register or log in to use the free trial.',
+          code: 'AUTH_REQUIRED',
+        },
+        { status: 401 }
+      )
+    }
+
+    // 1) 已登录用户的 cookie 试用计数（每月 4 次免费 + 2 次 Pro 试用）
     const consumeDecision = consumeTrial(request, isPaid)
     if (!consumeDecision.ok) {
       return NextResponse.json(

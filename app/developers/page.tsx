@@ -231,7 +231,7 @@ console.log(analysis.agentsMd); // write to AGENTS.md`
             tiered quotas.
           </p>
           <p style={{ fontSize: "15px", color: "var(--ink-2)", lineHeight: 1.7, margin: 0 }}>
-            API calls count against your normal plan quota (5 free / month
+            API calls count against your normal plan quota (4 free / month
             for free accounts, unlimited on paid plans). They are
             persisted to your analysis history like web analyses, so you
             can review them in the dashboard.

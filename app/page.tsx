@@ -30,6 +30,7 @@ export default function HomePage() {
     "idle" | "sending" | "done" | "error"
   >("idle")
   const [userToken, setUserToken] = useState<string | null>(null)
+  const [authRequired, setAuthRequired] = useState(false)
   const [trial, setTrial] = useState<{
     freeRemaining: number
     freeLimit: number
@@ -99,6 +100,7 @@ export default function HomePage() {
     setUrl(target)
     setLoading(true)
     setError("")
+    setAuthRequired(false)
 
     try {
       const res = await fetch("/api/analyze", {
@@ -107,7 +109,10 @@ export default function HomePage() {
         body: JSON.stringify({ repoUrl: target, plan, userToken }),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error || "Analysis failed")
+      if (!res.ok) {
+        if (data.code === "AUTH_REQUIRED") setAuthRequired(true)
+        throw new Error(data.error || "Analysis failed")
+      }
       // Persist full payload (including formats / audit / evidence) for the result page
       // sessionStorage covers the current tab; localStorage keeps the result
       // available after a refresh or in another tab, and feeds the "recent
@@ -236,7 +241,7 @@ export default function HomePage() {
               name: "Free",
               price: "0",
               priceCurrency: "USD",
-              description: "5 free analyses per month",
+              description: "4 free analyses per month",
             },
             {
               "@type": "Offer",
@@ -483,6 +488,14 @@ export default function HomePage() {
               {error && (
                 <p style={{ color: "#ff6b7a", fontSize: "14px", marginTop: "12px" }}>
                   {error}
+                  {authRequired && (
+                    <>
+                      {" "}
+                      <Link href="/signup" style={{ color: "#5c9aff", textDecoration: "underline" }}>
+                        Register for free →
+                      </Link>
+                    </>
+                  )}
                 </p>
               )}
             </form>
@@ -629,7 +642,7 @@ export default function HomePage() {
               <div style={{ fontSize: "14px", color: "var(--muted)", marginTop: "8px" }}>{t("home.statAccuracy")}</div>
             </div>
             <div>
-              <div style={{ fontFamily: "'IBM Plex Serif', serif", fontSize: "48px", fontWeight: 300, color: "var(--blue-70)", lineHeight: 1 }}>5/mo</div>
+              <div style={{ fontFamily: "'IBM Plex Serif', serif", fontSize: "48px", fontWeight: 300, color: "var(--blue-70)", lineHeight: 1 }}>4/mo</div>
               <div style={{ fontSize: "14px", color: "var(--muted)", marginTop: "8px" }}>{t("home.statOnboarding")}</div>
             </div>
             <div>
