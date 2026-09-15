@@ -89,3 +89,37 @@ Japanese markets too. Keep the link and the free-tier hook; lead with the local 
 
 > Note: post localized snippets a few hours after the EN launch so you can still reply in
 > real time; don't span all languages in the same minute (looks like a bot).
+
+## 8. Show HN (Hacker News) — post ~1 week after Product Hunt
+
+Hacker News rewards substance over marketing. Lead with what it *does* and why it's
+technically interesting. No tagline fluff, no "we're excited to share".
+
+**Title:**
+```
+Show HN: RepoContext – turn any GitHub repo into verified AGENTS.md / CLAUDE.md / Cursor rules
+```
+
+**First comment (post as the same account):**
+```
+I built RepoContext because every AI coding agent I tried kept guessing at my
+repo's structure — wrong test commands, invented dependencies, stale conventions.
+
+RepoContext scans the actual repository (package manager, build tool, CI config,
+test runner, directory layout) and generates a context file the agent can act on.
+The part I care about: every statement is tied to evidence from the repo, so it
+doesn't just sound plausible.
+
+It emits AGENTS.md, CLAUDE.md, and .cursorrules from one scan so they never drift
+apart, and works on private repos (read-only GitHub access, source isn't stored).
+
+Free tier, no credit card: https://www.repocontext.dev
+Happy to answer anything about the pipeline (scan → generate → verify) or how the
+evidence linking works.
+```
+
+**Tips:**
+- Submit from an account with some karma; brand-new accounts get flagged.
+- Reply to every technical question in the first few hours — HN rewards engagement.
+- If it gains traction, the "Email support@repocontext.dev" thread is your real conversion path.
+- Cross-post the same angle to r/selfhosted or r/programming only if it fits naturally.

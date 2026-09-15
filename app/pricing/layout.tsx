@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { SITE_URL } from "@/lib/site-url"
 
 const TITLE = "Pricing — RepoContext"
 const DESCRIPTION =
@@ -7,6 +8,14 @@ const DESCRIPTION =
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
+  alternates: {
+    canonical: `${SITE_URL}/pricing`,
+    languages: {
+      en: `${SITE_URL}/pricing`,
+      "zh-Hant": `${SITE_URL}/pricing`,
+      "x-default": `${SITE_URL}/pricing`,
+    },
+  },
   openGraph: { title: TITLE, description: DESCRIPTION },
   twitter: { card: "summary", title: TITLE, description: DESCRIPTION },
 }
