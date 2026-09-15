@@ -1,3 +1,17 @@
+# RepoContext
+
+**Turn any GitHub repository into AI-ready context — generate verified `AGENTS.md`, `CLAUDE.md`, and Cursor rules in seconds.**
+
+[![Try it free](https://img.shields.io/badge/Try%20it%20free-repocontext.dev-blue)](https://www.repocontext.dev)
+
+RepoContext analyzes your repository's real structure — framework, package manager, test and build commands, source layout — and produces context files your AI coding agents can actually act on. Every line is verified against the codebase, not copied from a generic template.
+
+👉 **[repocontext.dev](https://www.repocontext.dev)** · Free tier, no credit card required.
+
+---
+
+> The sections below are the original Chinese launch & ops guide (开发文档). Most users should just head to **[repocontext.dev](https://www.repocontext.dev)**.
+
 # RepoContext — 上线完全指南
 
 > Turn your codebase into AI-ready context.
