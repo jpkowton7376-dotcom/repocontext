@@ -244,7 +244,7 @@ E.append(P('让对外邮件用品牌域名、客服走品牌邮箱、支付后�
 
 E.append(H3('10.1 Cloudflare Email Routing（品牌邮箱转发）'))
 E.append(B('Cloudflare → <b>Email → Email Routing</b> → 开启。'))
-E.append(B('添加自定义地址，例如 <font name="Courier">support@repocontext.dev</font> → 转发到 <font name="Courier">jpkowton@gmail.com</font>。'))
+E.append(B('添加自定义地址，例如 <font name="Courier">support@repocontext.dev</font> → 转发到 <font name="Courier">support@repocontext.dev</font>。'))
 E.append(B('确认自动添加的 DNS（CF 托管 DNS 一般自动加）：'))
 E.append(tbl([
     ['类型', '名称', '内容'],
