@@ -17,6 +17,7 @@ import {
   calculateQualityScore,
   auditAgentsMd,
   buildEvidence,
+  brandFooter,
 } from '@/lib/generator'
 import { enhanceWithLLM } from '@/lib/llm'
 
@@ -98,9 +99,15 @@ export async function runAnalysis(opts: AnalyzeOptions): Promise<AnalyzeResult> 
   const copilotInstructions = generateCopilotInstructions(facts)
 
   const usedLLM = !!process.env.OPENAI_API_KEY
-  const agentsMd = usedLLM
+  let agentsMd = usedLLM
     ? await enhanceWithLLM(baseAgentsMd, facts, { paid: opts.usePaidModel })
     : baseAgentsMd
+
+  // The LLM rewrites the whole file and often drops the brand footer, so
+  // re-append it here to keep every generated file attributable.
+  if (!agentsMd.includes("repocontext.dev")) {
+    agentsMd = `${agentsMd.trimEnd()}\n\n${brandFooter()}`
+  }
 
   const quality = calculateQualityScore(facts)
   const audit = auditAgentsMd(facts)
