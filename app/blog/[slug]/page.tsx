@@ -18,7 +18,14 @@ export async function generateMetadata({
   return {
     title: `${post.title} — RepoContext`,
     description: post.excerpt,
-    alternates: { canonical: `${SITE_URL}/blog/${post.slug}` },
+    alternates: {
+      canonical: `${SITE_URL}/blog/${post.slug}`,
+      languages: {
+        en: `${SITE_URL}/blog/${post.slug}`,
+        "zh-Hant": `${SITE_URL}/blog/${post.slug}`,
+        "x-default": `${SITE_URL}/blog/${post.slug}`,
+      },
+    },
   }
 }
 

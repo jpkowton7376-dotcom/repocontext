@@ -65,3 +65,27 @@ Would love your feedback — what would make this a daily-use tool for you?
 - [ ] Thank top commenters publicly.
 - [ ] Add "Featured on Product Hunt" badge to homepage footer.
 - [ ] Repurpose the maker comment into a Show HN post.
+
+## 7. Localized social snippets (es / ja)
+
+The site ships en / es / zh-Hant / ja. Localize the launch push for the Spanish and
+Japanese markets too. Keep the link and the free-tier hook; lead with the local phrase.
+
+### 🇪🇸 Spanish (Spain + LatAm)
+- **X (launch day):**
+  ```
+  Acabo de publicar RepoContext en @ProductHunt 🚀 Pega un repositorio de GitHub y obtén un AGENTS.md, CLAUDE.md y Cursor rules verificados contra el código real en segundos. Plan gratuito sin tarjeta. → https://www.repocontext.dev
+  ```
+- **Reddit (r/devops, r/programming):** "Construí una herramienta que convierte cualquier repo en AGENTS.md + CLAUDE.md + Cursor rules, verificado contra el código real. Gratis para empezar. Comentarios bienvenidos."
+- **Tagline (es):** `Convierte cualquier repo de GitHub en contexto listo para IA en segundos`
+
+### 🇯🇵 Japanese (Japan)
+- **X (launch day):**
+  ```
+  RepoContext を @ProductHunt で公開しました 🚀 GitHub リポジトリを貼るだけで、実コードから検証済みの AGENTS.md / CLAUDE.md / Cursor rules を数秒で生成します。無料プランあり（カード不要）。→ https://www.repocontext.dev
+  ```
+- **Reddit (r/programming_jp, r/VSCodeJP):** "GitHub リポジトリを貼るだけで、実際のコードから検証済みの AGENTS.md / CLAUDE.md / Cursor rules を生成するツールを作りました。無料プランあり。フィードバック歓迎です。"
+- **Tagline (ja):** `GitHub リポジトリを数秒で AI が理解できるコンテキストに変換`
+
+> Note: post localized snippets a few hours after the EN launch so you can still reply in
+> real time; don't span all languages in the same minute (looks like a bot).
