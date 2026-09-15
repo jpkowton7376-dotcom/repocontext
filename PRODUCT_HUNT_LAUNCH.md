@@ -60,6 +60,13 @@ Would love your feedback — what would make this a daily-use tool for you?
 - [ ] Do NOT buy upvotes. Organic only.
 - [ ] After launch: screenshot the final rank for the "as seen on" badge.
 
+> **冲榜要点（若目标是冲 Product Hunt 排名）：**
+> - 提前 2–3 天约好 3–5 位朋友，请他们在 Launch 当天**前 1 小时**用**有历史的 PH 账号**留真实评论（新账号评论易被算法过滤）。
+> - 发布后**前 2–3 小时保持在线**，逐条回复每条评论——互动速度直接决定排名。
+> - X / Reddit 引流帖带 PH 链接，在发布后 **1 小时内**发出（文案见 §4 / §7）。
+> - 绝不购买 upvote（会封禁并清零排名）。
+> - 真实产品截图（图 2–4，见 §9）能显著拉高点击→转化，冲榜时建议补齐。
+
 ## 6. Follow-up (week after)
 
 - [ ] Thank top commenters publicly.
