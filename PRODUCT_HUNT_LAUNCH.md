@@ -123,3 +123,23 @@ evidence linking works.
 - Reply to every technical question in the first few hours — HN rewards engagement.
 - If it gains traction, the "Email support@repocontext.dev" thread is your real conversion path.
 - Cross-post the same angle to r/selfhosted or r/programming only if it fits naturally.
+
+## 9. Product screenshot copy (gallery images 2–4)
+
+Image #1 is the hero (already generated). For images 2–4, capture **real screenshots**
+and use these as on-image headlines / captions.
+
+### Image 2 — Result page (the "wow" shot)
+- **Headline:** `Paste a repo. Get verified context.`
+- **Caption:** RepoContext scans the real repository and returns AGENTS.md, CLAUDE.md, and Cursor rules — every line backed by evidence from your code.
+- **Show:** the repo URL input → result panel with the generated file + the quality score badge.
+
+### Image 3 — Multi-format output
+- **Headline:** `One scan. Three formats.`
+- **Caption:** AGENTS.md, CLAUDE.md, and .cursorrules from a single analysis — they never drift apart.
+- **Show:** the three format tabs/panels side by side.
+
+### Image 4 — Quality score + Evidence
+- **Headline:** `Know how reliable it is.`
+- **Caption:** A numerical quality score and clickable evidence for every claim — no more guessing where a recommendation came from.
+- **Show:** the score gauge + an expanded evidence panel.
