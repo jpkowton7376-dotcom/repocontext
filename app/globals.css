@@ -609,17 +609,26 @@ img, svg, video, iframe, table, pre, .code-block {
      fits into the first screen on phones. */
   .rc-hero-illu {
     display: block !important;
-    height: 260px !important;
+    height: 300px !important;
     transform: none;
     transform-origin: top center;
     margin-bottom: 0;
     margin-top: 0;
   }
 
+  /* Let the 3D brace fill the whole container so it reads bigger on phones. */
   .rc-hero-illu > div:first-child {
-    width: 250px !important;
-    height: 250px !important;
-    top: 45% !important;
+    width: 100% !important;
+    height: 100% !important;
+    top: 50% !important;
+  }
+
+  /* The inline 18px description is too loud on a phone under the big
+     headline; step it down a notch. */
+  .rc-hero-desc {
+    font-size: 14px !important;
+    line-height: 1.55 !important;
+    margin-bottom: 24px !important;
   }
 
   /* Pull the two floating cards into a tight diagonal wrap around the

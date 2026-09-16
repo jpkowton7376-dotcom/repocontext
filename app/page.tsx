@@ -501,7 +501,7 @@ export default function HomePage() {
                 </span>
               ))}
             </h1>
-            <p style={{
+            <p className="rc-hero-desc" style={{
               fontSize: "18px",
               lineHeight: "1.6",
               color: "#c8d0dc",
