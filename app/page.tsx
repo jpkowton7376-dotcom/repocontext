@@ -734,9 +734,18 @@ export default function HomePage() {
                           Save token
                         </button>
                       </div>
-                      <p style={{ fontSize: "12px", color: "#8b95a8", marginTop: "8px", maxWidth: "520px" }}>
-                        A Personal Access Token with the <code style={{ color: "#c9d4e6" }}>repo</code> scope reads private repos and can last up to 1 year (or no expiry). Stored only in your browser.
-                      </p>
+                      <div style={{ fontSize: "12px", color: "#8b95a8", marginTop: "8px", maxWidth: "540px", lineHeight: "1.6" }}>
+                        A token with the <code style={{ color: "#c9d4e6" }}>repo</code> scope reads private repos and lasts up to 1 year (or no expiry). Stored only in your browser.
+                        <div style={{ marginTop: "8px", color: "#aeb8c9" }}>
+                          <strong style={{ color: "#c9d4e6" }}>How to create one:</strong>
+                          <ol style={{ margin: "6px 0 0", paddingLeft: "18px" }}>
+                            <li>GitHub → <strong>Settings</strong> → <strong>Developer settings</strong> → <strong>Personal access tokens</strong></li>
+                            <li>Pick <strong>Fine-grained</strong> (recommended) or <strong>Tokens (classic)</strong></li>
+                            <li>Grant the target repo(s) at least <strong>Read</strong> on Contents — classic: just check <code style={{ color: "#c9d4e6" }}>repo</code></li>
+                            <li>Set expiry to <strong>1 year</strong> or <strong>No expiration</strong>, then <strong>Generate</strong> and paste it here</li>
+                          </ol>
+                        </div>
+                      </div>
                     </>
                   )}
                 </div>
