@@ -602,14 +602,14 @@ img, svg, video, iframe, table, pre, .code-block {
   .rc-hero-section {
     /* The inline 80px/48px padding is far too generous on a phone; tighten
        every side so the visual and the form both sit higher. */
-    padding: 16px 24px 28px !important;
+    padding: 8px 20px 20px !important;
   }
 
   /* Compact hero: shorter container + smaller logo so the Analyze form
      fits into the first screen on phones. */
   .rc-hero-illu {
     display: block !important;
-    height: 300px !important;
+    height: 270px !important;
     transform: none;
     transform-origin: top center;
     margin-bottom: 0;
@@ -680,7 +680,7 @@ img, svg, video, iframe, table, pre, .code-block {
      comes first and the copy follows underneath. The desktop 80px
      column gap is also far too much for a single-column phone layout. */
   .rc-hero-grid {
-    gap: 12px !important;
+    gap: 8px !important;
   }
   .rc-hero-grid > *:last-child {
     order: -1;
