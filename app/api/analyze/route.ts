@@ -46,6 +46,10 @@ export async function POST(request: Request) {
     const body = await request.json().catch(() => ({}))
     const repoUrl: string | undefined = body?.repoUrl
     const userToken: string | null | undefined = body?.userToken
+    // The GitHub OAuth token (from Supabase provider_token) is what actually
+    // unlocks private repositories. It is intentionally separate from
+    // userToken, which is the Supabase JWT used only to verify the plan.
+    const githubToken: string | null | undefined = body?.githubToken
 
     if (!repoUrl) {
       return NextResponse.json(
@@ -103,7 +107,7 @@ export async function POST(request: Request) {
     // 2) 执行分析管线
     const result = await runAnalysis({
       repoUrl,
-      githubToken: userToken ?? null,
+      githubToken: githubToken ?? null,
       isPaid,
       usePaidModel,
     })

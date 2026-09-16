@@ -56,6 +56,11 @@ export async function getRepoInfo(
         : "Repository not found. For private repos, sign in with GitHub first.",
     )
   }
+  if (res.status === 401) {
+    throw new Error(
+      "GitHub authentication failed. Your GitHub connection may have expired — reconnect your account to analyze private repositories.",
+    )
+  }
   if (res.status === 403) {
     throw new Error(
       "GitHub API rate limit exceeded or token lacks permission. Add GITHUB_TOKEN to .env.local or sign in with GitHub.",

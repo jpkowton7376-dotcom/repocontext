@@ -84,6 +84,7 @@ export async function POST(request: Request) {
     // empty body — we treat as missing repoUrl below
   }
   const repoUrl: string | undefined = body?.repoUrl
+  const githubToken: string | null | undefined = body?.githubToken
   if (!repoUrl || typeof repoUrl !== "string") {
     return NextResponse.json(
       { error: "Body must include { repoUrl: string }." },
@@ -122,7 +123,7 @@ export async function POST(request: Request) {
   try {
     const result = await runAnalysis({
       repoUrl,
-      githubToken: null,
+      githubToken: githubToken ?? null,
       isPaid,
       usePaidModel: isPaid, // API consumers don't get the public Pro trial
     })

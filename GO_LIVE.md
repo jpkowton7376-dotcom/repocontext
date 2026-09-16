@@ -9,6 +9,24 @@
 
 ---
 
+## 0️⃣ GitHub OAuth（私有仓库，上线前必做）
+
+定价页承诺了「Pro/Team 支持私有仓库」，代码已就绪，但需要你**在自己的账号里**配好 GitHub 身份提供商：
+
+1. **GitHub OAuth App**：Settings → Developer settings → OAuth Apps → New OAuth App
+   - Homepage URL：`https://www.repocontext.dev`
+   - Authorization callback URL：`https://www.repocontext.dev/auth/callback`
+   - 记下 Client ID 与 Client Secret
+2. **Supabase 接 GitHub**：Authentication → Providers → GitHub
+   - 粘贴 Client ID / Secret
+   - **Scopes 填：`repo read:org user:email`**（少了 `repo` 就读不到私有仓库）
+   - （可选）Account Linking 保持开启，方便邮箱用户「连接 GitHub」时合并到同一账号
+3. **验证**：用邮箱登录 → 首页点「Connect GitHub」→ 授权后状态变绿 → 粘贴一个私有仓库 URL 跑一次，能出结果即通。
+   - 回调页：`app/auth/callback/page.tsx`；Token 走 Supabase `provider_token`，不落库（符合隐私文案）。
+   - 注意 `provider_token` 会过期（GitHub OAuth App 默认约 8 小时），过期后重新连接即可；UI 已给出 401 重连提示。
+
+---
+
 ## 1️⃣ GitHub 设为 Public（1 分钟）
 1. 打开 https://github.com/jpkowton7376-dotcom/repocontext/settings
 2. 滚到底部 **Danger Zone**
