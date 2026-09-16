@@ -16,9 +16,12 @@ export async function enhanceWithLLM(
   const baseURL = clean(process.env.OPENAI_BASE_URL) || undefined
 
   // Paid users get a stronger model; free / anonymous users use the cheaper one.
-  const fallbackModel = clean(process.env.OPENAI_MODEL) || "qwen3.7-plus"
-  const freeModel = clean(process.env.OPENAI_MODEL_FREE) || "qwen3.7-plus"
-  const paidModel = clean(process.env.OPENAI_MODEL_PAID) || "Qwen3.8-Max"
+  // Defaults are OpenAI's models and work out of the box. If you point
+  // OPENAI_BASE_URL at another provider (DeepSeek, DashScope/Qwen, …), set the
+  // matching model name via OPENAI_MODEL / OPENAI_MODEL_FREE / OPENAI_MODEL_PAID.
+  const fallbackModel = clean(process.env.OPENAI_MODEL) || "gpt-4o-mini"
+  const freeModel = clean(process.env.OPENAI_MODEL_FREE) || "gpt-4o-mini"
+  const paidModel = clean(process.env.OPENAI_MODEL_PAID) || "gpt-4o"
   const model = opts?.paid ? paidModel : freeModel
 
   if (!apiKey) {

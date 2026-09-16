@@ -2,6 +2,7 @@ import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import { BLOG_POSTS, getPost } from "@/lib/blog-data"
 import { SITE_URL } from "@/lib/site-url"
+import BlogPostClient from "@/components/BlogPostClient"
 
 export function generateStaticParams() {
   return BLOG_POSTS.map((p) => ({ slug: p.slug }))

@@ -75,7 +75,7 @@ export default function DevelopersPage() {
   "meta": { "apiKey": { "id": "...", "prefix": "rc_live_aB3x" }, "plan": "pro" }
 }`
 
-  const exampleJs = `import { RepoContext } from "@repocontext/sdk"; // coming soon
+  const exampleJs = `// Official Node SDK is coming soon — use the raw HTTP client below (works from any language).
 // or use the raw HTTP client
 const res = await fetch("${SITE_URL}/api/v1/analyze", {
   method: "POST",

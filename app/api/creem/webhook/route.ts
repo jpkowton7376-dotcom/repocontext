@@ -26,10 +26,21 @@ function extractEmail(obj: CreemObj): string | undefined {
   return undefined
 }
 
-// All three products on the pricing page are Pro tier (Pro monthly, Pro Year
-// annual, Pro One-time buyout), so every successful payment records the user
-// as a Pro subscriber.
-function extractPlan(obj: CreemObj): "pro" {
+// Map a Creem product to our internal plan. We set `metadata.plan` at checkout
+// (see app/api/creem/checkout/route.ts), which is the most reliable signal.
+// Fall back to matching the product id against the configured product env vars,
+// then default to "pro".
+function extractPlan(obj: CreemObj): "pro" | "team" | "lifetime" {
+  const metaPlan = obj?.metadata?.plan as string | undefined
+  if (metaPlan === "pro" || metaPlan === "team" || metaPlan === "lifetime") {
+    return metaPlan
+  }
+  const productId =
+    obj?.product?.id || obj?.metadata?.product_id || obj?.product_id
+  if (productId) {
+    if (productId === process.env.CREEM_PRODUCT_TEAM) return "team"
+    if (productId === process.env.CREEM_PRODUCT_LIFETIME) return "lifetime"
+  }
   return "pro"
 }
 
@@ -105,7 +116,7 @@ export async function POST(request: Request) {
       return data?.id as string | undefined
     }
 
-    const upgrade = async (plan: "pro") => {
+    const upgrade = async (plan: "pro" | "team" | "lifetime") => {
       const email = extractEmail(obj)
       const customerId = extractCustomerId(obj)
       const subscriptionId = extractSubscriptionId(obj)

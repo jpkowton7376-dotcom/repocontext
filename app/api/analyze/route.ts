@@ -9,6 +9,7 @@ import {
   PRO_TRIAL_LIMIT,
 } from '@/lib/trial'
 import { runAnalysis } from '@/lib/analyze-pipeline'
+import { rateLimitIp } from '@/lib/rate-limit'
 
 export const runtime = 'nodejs'
 export const maxDuration = 60
@@ -24,6 +25,23 @@ export const maxDuration = 60
  * public API endpoint (POST /api/v1/analyze) can share the same code.
  */
 export async function POST(request: Request) {
+  // Best-effort IP rate limit to blunt anonymous abuse. The cookie trial is the
+  // real gate; pair with supabase/api_key_rate_buckets.sql for the API limit.
+  const clientIp =
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    request.headers.get("cf-connecting-ip") ||
+    null
+  const ipLimit = rateLimitIp(clientIp)
+  if (!ipLimit.allowed) {
+    return NextResponse.json(
+      { error: "Too many requests, please try again shortly." },
+      {
+        status: 429,
+        headers: { "Retry-After": String(ipLimit.retryAfterSeconds) },
+      }
+    )
+  }
+
   try {
     const body = await request.json().catch(() => ({}))
     const repoUrl: string | undefined = body?.repoUrl
@@ -63,19 +81,7 @@ export async function POST(request: Request) {
       }
     }
 
-    // 1.5) 试用必须先登录注册 —— 匿名用户不再允许使用
-    //      （付费用户一定带着合法 token，userId 不为空；未登录/无效 token 一律拦截）
-    if (!userId) {
-      return NextResponse.json(
-        {
-          error:
-            'Please register or log in to use the free trial.',
-          code: 'AUTH_REQUIRED',
-        },
-        { status: 401 }
-      )
-    }
-
+    // 匿名用户走 cookie 试用（每月 4 次免费 + 2 次 Pro 试用），无需登录。
     // 1) 已登录用户的 cookie 试用计数（每月 4 次免费 + 2 次 Pro 试用）
     const consumeDecision = consumeTrial(request, isPaid)
     if (!consumeDecision.ok) {

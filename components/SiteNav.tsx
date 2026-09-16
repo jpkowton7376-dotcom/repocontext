@@ -117,7 +117,8 @@ export function SiteNav({ variant = "light" }: { variant?: Variant }) {
     { href: "/docs", key: "nav.docs" },
     { href: "/ai-tools", key: "nav.aiTools" },
     { href: "/templates", key: "nav.templates" },
-    { href: "/forge", key: "nav.forge" },
+    // Forge hidden pre-launch to keep PH visitors focused on the core tool.
+    // { href: "/forge", key: "nav.forge" },
   ]
 
   // A link is active when its route matches exactly or the current page is a
