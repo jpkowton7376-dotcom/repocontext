@@ -73,7 +73,10 @@ export async function POST(request: Request) {
               .select('plan')
               .eq('id', userId)
               .maybeSingle()
-            isPaid = profile?.plan === 'pro' || profile?.plan === 'team'
+            isPaid =
+              profile?.plan === 'pro' ||
+              profile?.plan === 'team' ||
+              profile?.plan === 'lifetime'
           }
         }
       } catch {
