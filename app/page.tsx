@@ -35,6 +35,7 @@ export default function HomePage() {
   const { t, dict, locale } = useTranslation()
   const [url, setUrl] = useState("")
   const [loading, setLoading] = useState(false)
+  const [progress, setProgress] = useState(0)
   const [error, setError] = useState("")
   const [user, setUser] = useState<any>(null)
   const [plan, setPlan] = useState<string>("free")
@@ -145,8 +146,18 @@ export default function HomePage() {
     if (!target) return
     setUrl(target)
     setLoading(true)
+    setProgress(0)
     setError("")
     setAuthRequired(false)
+
+    // Drive a single-direction 0% -> 100% progress while the request runs.
+    // It eases toward a 92% cap and snaps to 100% when the response lands,
+    // so it never bounces and always resolves to a real completion.
+    const startTime = Date.now()
+    const progTimer = window.setInterval(() => {
+      const elapsed = Date.now() - startTime
+      setProgress(Math.min(92, Math.round((elapsed / 6000) * 92)))
+    }, 120)
 
     try {
       const res = await fetch("/api/analyze", {
@@ -174,8 +185,12 @@ export default function HomePage() {
         // sessionStorage may be full or unavailable; the result page will redirect home
       }
       saveRecent(target, data)
+      window.clearInterval(progTimer)
+      setProgress(100)
       router.push(`/result?repo=${encodeURIComponent(target)}`)
     } catch (err: any) {
+      window.clearInterval(progTimer)
+      setProgress(0)
       setError(err.message || "Something went wrong")
     } finally {
       setLoading(false)
@@ -453,6 +468,10 @@ export default function HomePage() {
                 <div style={{
                   flex: 1,
                   position: "relative",
+                  background: "#0e1420",
+                  border: "2px solid rgba(92, 154, 255, 0.35)",
+                  overflow: "hidden",
+                  transition: "border-color 0.15s ease",
                 }}>
                   <input
                     type="text"
@@ -463,24 +482,31 @@ export default function HomePage() {
                     style={{
                       width: "100%",
                       padding: "18px 20px",
+                      paddingRight: loading ? "76px" : "20px",
                       fontSize: "15px",
-                      border: "2px solid rgba(92, 154, 255, 0.35)",
-                      background: "#0e1420",
-                      color: "#ffffff",
+                      border: "none",
+                      background: "transparent",
+                      color: loading ? "#c9d4e6" : "#ffffff",
                       fontFamily: "'IBM Plex Mono', monospace",
                       outline: "none",
-                      transition: "border-color 0.15s ease",
+                      position: "relative",
+                      zIndex: 2,
                     }}
-                    onFocus={(e) => { e.currentTarget.style.borderColor = "#5c9aff"; e.target.placeholder = "" }}
+                    onFocus={(e) => {
+                      const p = e.currentTarget.parentElement
+                      if (p) p.style.borderColor = "#5c9aff"
+                      e.target.placeholder = ""
+                    }}
                     onBlur={(e) => {
-                      e.currentTarget.style.borderColor = "rgba(92, 154, 255, 0.35)"
+                      const p = e.currentTarget.parentElement
+                      if (p) p.style.borderColor = "rgba(92, 154, 255, 0.35)"
                       if (!url) e.target.placeholder = t("home.inputPlaceholder")
                     }}
                   />
                   {loading && (
                     <>
-                      <div className="charge-fill" />
-                      <div className="charge-percent" />
+                      <div className="charge-fill" style={{ width: `${progress}%` }} />
+                      <div className="charge-badge">{progress}%</div>
                     </>
                   )}
                 </div>
