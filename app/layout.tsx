@@ -4,6 +4,7 @@ import { LanguageProvider } from "@/components/LanguageProvider"
 import { CustomerServiceWidget } from "@/components/CustomerServiceWidget"
 import { CookieConsent } from "@/components/CookieConsent"
 import { JsonLd } from "@/components/JsonLd"
+import { Analytics } from "@vercel/analytics/next"
 import { SITE_URL } from "@/lib/site-url"
 
 const SITE_NAME = "RepoContext"
@@ -100,6 +101,7 @@ export default function RootLayout({
           {children}
           <CustomerServiceWidget />
           <CookieConsent />
+          <Analytics />
         </LanguageProvider>
       </body>
     </html>
