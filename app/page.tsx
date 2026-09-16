@@ -50,6 +50,11 @@ export default function HomePage() {
   const [authRequired, setAuthRequired] = useState(false)
   const [githubToken, setGithubToken] = useState<string | null>(null)
   const [githubUser, setGithubUser] = useState<string | null>(null)
+  // Long-lived GitHub PAT fallback (persisted in the browser) so private-repo
+  // analysis isn't limited by the 8h OAuth token expiry from Supabase.
+  const [patToken, setPatToken] = useState<string | null>(null)
+  const [showPatInput, setShowPatInput] = useState(false)
+  const [patInput, setPatInput] = useState("")
   const [connectingGithub, setConnectingGithub] = useState(false)
   const [trial, setTrial] = useState<{
     freeRemaining: number
@@ -120,6 +125,26 @@ export default function HomePage() {
     }
   }, [])
 
+  // Restore a previously saved GitHub PAT (long-lived private-repo access).
+  useEffect(() => {
+    const saved = typeof window !== "undefined" ? localStorage.getItem("repocontext_pat") : null
+    if (saved) setPatToken(saved)
+  }, [])
+
+  const savePat = () => {
+    const v = patInput.trim()
+    if (!v) return
+    setPatToken(v)
+    try { localStorage.setItem("repocontext_pat", v) } catch {}
+    setPatInput("")
+    setShowPatInput(false)
+  }
+  const clearPat = () => {
+    setPatToken(null)
+    try { localStorage.removeItem("repocontext_pat") } catch {}
+    setShowPatInput(false)
+  }
+
   /**
    * Connect (or sign in with) GitHub so private repositories can be read.
    * If a user is already signed in we link the GitHub identity to their
@@ -163,7 +188,8 @@ export default function HomePage() {
           repoUrl: target,
           plan,
           userToken,
-          githubToken,
+          // A saved PAT (long-lived) takes priority over the 8h OAuth token.
+          githubToken: patToken || githubToken,
         }),
       })
 
@@ -605,10 +631,25 @@ export default function HomePage() {
               )}
             </form>
 
-            {/* GitHub connection — unlocks private-repository analysis */}
+            {/* GitHub connection — unlocks private-repository analysis.
+                The PAT fallback gives long-lived access without the 8h OAuth limit. */}
             <div style={{ marginTop: "16px" }}>
-              {githubToken ? (
-                <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "13px", color: "#9fe6b0" }}>
+              {patToken ? (
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap", fontSize: "13px", color: "#9fe6b0" }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                  </svg>
+                  Using a pasted GitHub token (long-lived) — private repositories enabled
+                  <button
+                    type="button"
+                    onClick={clearPat}
+                    style={{ background: "none", border: "none", color: "#5c9aff", cursor: "pointer", fontSize: "13px", padding: 0, textDecoration: "underline" }}
+                  >
+                    Remove
+                  </button>
+                </div>
+              ) : githubToken ? (
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap", fontSize: "13px", color: "#9fe6b0" }}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                     <path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
                   </svg>
@@ -643,6 +684,62 @@ export default function HomePage() {
                   </Link>{" "}
                   to analyze private repositories
                 </span>
+              )}
+
+              {!patToken && (
+                <div style={{ marginTop: "10px" }}>
+                  <button
+                    type="button"
+                    onClick={() => setShowPatInput((v) => !v)}
+                    style={{ background: "none", border: "none", color: "#5c9aff", cursor: "pointer", fontSize: "13px", padding: 0, textDecoration: "underline" }}
+                  >
+                    {showPatInput ? "Hide token input" : "Or paste a GitHub token (PAT) for longer access →"}
+                  </button>
+                  {showPatInput && (
+                    <>
+                      <div style={{ marginTop: "10px", display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "center", maxWidth: "560px" }}>
+                        <input
+                          type="password"
+                          value={patInput}
+                          onChange={(e) => setPatInput(e.target.value)}
+                          placeholder="ghp_… or github_pat_… (needs repo scope)"
+                          style={{
+                            flex: 1,
+                            minWidth: "240px",
+                            padding: "10px 12px",
+                            fontSize: "13px",
+                            fontFamily: "'IBM Plex Mono', monospace",
+                            background: "#0e1420",
+                            border: "1px solid rgba(92,154,255,0.4)",
+                            borderRadius: "8px",
+                            color: "#fff",
+                            outline: "none",
+                          }}
+                        />
+                        <button
+                          type="button"
+                          onClick={savePat}
+                          disabled={!patInput.trim()}
+                          style={{
+                            padding: "10px 16px",
+                            fontSize: "13px",
+                            fontWeight: 600,
+                            color: "#fff",
+                            background: patInput.trim() ? "#2f6bff" : "rgba(255,255,255,0.1)",
+                            border: "1px solid rgba(92,154,255,0.4)",
+                            borderRadius: "8px",
+                            cursor: patInput.trim() ? "pointer" : "default",
+                          }}
+                        >
+                          Save token
+                        </button>
+                      </div>
+                      <p style={{ fontSize: "12px", color: "#8b95a8", marginTop: "8px", maxWidth: "520px" }}>
+                        A Personal Access Token with the <code style={{ color: "#c9d4e6" }}>repo</code> scope reads private repos and can last up to 1 year (or no expiry). Stored only in your browser.
+                      </p>
+                    </>
+                  )}
+                </div>
               )}
             </div>
 
