@@ -600,12 +600,14 @@ img, svg, video, iframe, table, pre, .code-block {
   /* The hero illustration is the main visual on phones, so keep it
      visible and sized to fill the column instead of shrinking it. */
   .rc-hero-section {
-    padding-top: 40px !important;
+    padding-top: 24px !important;
   }
 
+  /* Compact hero: shorter container + smaller logo so the Analyze form
+     fits into the first screen on phones. */
   .rc-hero-illu {
     display: block !important;
-    height: 420px !important;
+    height: 300px !important;
     transform: none;
     transform-origin: top center;
     margin-bottom: 0;
@@ -613,21 +615,26 @@ img, svg, video, iframe, table, pre, .code-block {
   }
 
   .rc-hero-illu > div:first-child {
-    width: 360px !important;
-    height: 360px !important;
+    width: 270px !important;
+    height: 270px !important;
+    top: 46% !important;
   }
 
+  /* Pull the two floating cards into a tight diagonal wrap around the
+     logo, both anchored near the top instead of spread across the full
+     container height. */
   .rc-hero-illu > div:nth-child(2) {
     width: 130px !important;
-    top: 8px !important;
-    right: 8px !important;
+    top: 2px !important;
+    right: 2px !important;
     padding: 10px !important;
   }
 
   .rc-hero-illu > div:nth-child(3) {
     width: 148px !important;
-    bottom: 8px !important;
-    left: 8px !important;
+    bottom: auto !important;
+    top: 160px !important;
+    left: 2px !important;
     padding: 10px !important;
   }
 
