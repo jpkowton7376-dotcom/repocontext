@@ -627,8 +627,22 @@ img, svg, video, iframe, table, pre, .code-block {
      headline; step it down a notch. */
   .rc-hero-desc {
     font-size: 14px !important;
-    line-height: 1.55 !important;
-    margin-bottom: 24px !important;
+    line-height: 1.5 !important;
+    margin-bottom: 14px !important;
+  }
+
+  /* Tighten the copy stack on phones: eyebrow badge → headline →
+     description → search form all sit closer together. The eyebrow is
+     the copy column's first child; the headline/description margins are
+     inline 24px/36px, far too airy for a small screen. */
+  .rc-hero-grid > div:first-child > div:first-child {
+    margin-bottom: 12px !important;
+  }
+  .rc-hero-section h1 {
+    margin-bottom: 14px !important;
+  }
+  .rc-hero-section form {
+    margin-bottom: 12px !important;
   }
 
   /* Pull the two floating cards into a tight diagonal wrap around the
@@ -666,7 +680,7 @@ img, svg, video, iframe, table, pre, .code-block {
      comes first and the copy follows underneath. The desktop 80px
      column gap is also far too much for a single-column phone layout. */
   .rc-hero-grid {
-    gap: 16px !important;
+    gap: 12px !important;
   }
   .rc-hero-grid > *:last-child {
     order: -1;
