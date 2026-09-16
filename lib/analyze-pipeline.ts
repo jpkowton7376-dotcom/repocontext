@@ -30,6 +30,12 @@ export interface AnalyzeOptions {
   isPaid: boolean
   /** True if we should use the premium LLM model. */
   usePaidModel: boolean
+  /**
+   * Optional progress callback. Emits the human-readable stage label and a
+   * cumulative percentage (0–100) as the pipeline advances, so a UI can show
+   * real, non-decorative progress. Sync or async — the caller awaits it.
+   */
+  onProgress?: (stage: string, progress: number) => void | Promise<void>
 }
 
 export interface AnalyzeResult {
@@ -88,20 +94,29 @@ export interface AnalyzeResult {
  */
 export async function runAnalysis(opts: AnalyzeOptions): Promise<AnalyzeResult> {
   const { owner, repo } = parseGithubUrl(opts.repoUrl)
+  const progress = (stage: string, pct: number) => opts.onProgress?.(stage, pct)
 
+  await progress("Fetching repository metadata…", 10)
   const repoInfo = await getRepoInfo(owner, repo, opts.githubToken ?? null)
+
+  await progress("Loading issues & pull requests…", 25)
   const repoStats = await getRepoStats(owner, repo, opts.githubToken ?? null)
+
+  await progress("Scanning repository structure…", 45)
   const facts = await scanRepository(owner, repo, repoInfo, opts.githubToken ?? null)
 
+  await progress("Generating context files…", 65)
   const baseAgentsMd = generateAgentsMdTemplate(facts)
   const claudeMd = generateClaudeMd(facts)
   const cursorRules = generateCursorRules(facts)
   const copilotInstructions = generateCopilotInstructions(facts)
 
   const usedLLM = !!process.env.OPENAI_API_KEY
-  let agentsMd = usedLLM
-    ? await enhanceWithLLM(baseAgentsMd, facts, { paid: opts.usePaidModel })
-    : baseAgentsMd
+  let agentsMd = baseAgentsMd
+  if (usedLLM) {
+    await progress("Enhancing with AI…", 82)
+    agentsMd = await enhanceWithLLM(baseAgentsMd, facts, { paid: opts.usePaidModel })
+  }
 
   // The LLM rewrites the whole file and often drops the brand footer, so
   // re-append it here to keep every generated file attributable.
@@ -109,6 +124,7 @@ export async function runAnalysis(opts: AnalyzeOptions): Promise<AnalyzeResult> 
     agentsMd = `${agentsMd.trimEnd()}\n\n${brandFooter()}`
   }
 
+  await progress("Scoring quality & finalizing…", 95)
   const quality = calculateQualityScore(facts)
   const audit = auditAgentsMd(facts)
   const evidence = buildEvidence(facts, repoInfo.html_url)

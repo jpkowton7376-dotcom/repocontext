@@ -36,6 +36,7 @@ export default function HomePage() {
   const [url, setUrl] = useState("")
   const [loading, setLoading] = useState(false)
   const [progress, setProgress] = useState(0)
+  const [stage, setStage] = useState("")
   const [error, setError] = useState("")
   const [user, setUser] = useState<any>(null)
   const [plan, setPlan] = useState<string>("free")
@@ -147,18 +148,13 @@ export default function HomePage() {
     setUrl(target)
     setLoading(true)
     setProgress(0)
+    setStage("Starting analysis…")
     setError("")
     setAuthRequired(false)
 
-    // Drive a single-direction 0% -> 100% progress while the request runs.
-    // It eases toward a 92% cap and snaps to 100% when the response lands,
-    // so it never bounces and always resolves to a real completion.
-    const startTime = Date.now()
-    const progTimer = window.setInterval(() => {
-      const elapsed = Date.now() - startTime
-      setProgress(Math.min(92, Math.round((elapsed / 6000) * 92)))
-    }, 120)
-
+    // The endpoint streams real stage progress as Server-Sent Events
+    // (fetch → scan → generate → enhance → score). We read the stream and
+    // reflect each event's stage label + cumulative percentage directly.
     try {
       const res = await fetch("/api/analyze", {
         method: "POST",
@@ -170,26 +166,58 @@ export default function HomePage() {
           githubToken,
         }),
       })
-      const data = await res.json()
-      if (!res.ok) {
+
+      // Non-streaming error (rate limit / missing url / trial exhausted / bad auth)
+      if (!res.ok || !res.body) {
+        const data = await res.json().catch(() => ({}))
         if (data.code === "AUTH_REQUIRED") setAuthRequired(true)
         throw new Error(data.error || "Analysis failed")
       }
+
+      const reader = res.body.getReader()
+      const decoder = new TextDecoder()
+      let buffer = ""
+      let finalResult: any = null
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        buffer += decoder.decode(value, { stream: true })
+        const parts = buffer.split("\n\n")
+        buffer = parts.pop() || ""
+        for (const part of parts) {
+          const line = part.trim()
+          if (!line.startsWith("data:")) continue
+          const json = line.slice(5).trim()
+          if (!json) continue
+          const msg = JSON.parse(json)
+          if (msg.type === "progress") {
+            setProgress(msg.progress)
+            if (msg.stage) setStage(msg.stage)
+          } else if (msg.type === "error") {
+            if (msg.code === "AUTH_REQUIRED") setAuthRequired(true)
+            throw new Error(msg.error || "Analysis failed")
+          } else if (msg.type === "done") {
+            finalResult = msg.result
+            setProgress(msg.progress ?? 100)
+          }
+        }
+      }
+
+      if (!finalResult) throw new Error("No result received")
+
       // Persist full payload (including formats / audit / evidence) for the result page
       // sessionStorage covers the current tab; localStorage keeps the result
       // available after a refresh or in another tab, and feeds the "recent
       // analyses" list for visitors who aren't signed in.
       try {
-        sessionStorage.setItem("repoResult", JSON.stringify(data))
+        sessionStorage.setItem("repoResult", JSON.stringify(finalResult))
       } catch {
         // sessionStorage may be full or unavailable; the result page will redirect home
       }
-      saveRecent(target, data)
-      window.clearInterval(progTimer)
+      saveRecent(target, finalResult)
       setProgress(100)
       router.push(`/result?repo=${encodeURIComponent(target)}`)
     } catch (err: any) {
-      window.clearInterval(progTimer)
       setProgress(0)
       setError(err.message || "Something went wrong")
     } finally {
@@ -558,7 +586,7 @@ export default function HomePage() {
                   }}
                 >
                   <span className="rc-dot" />
-                  {t("home.loadingHint")}
+                  {stage || t("home.loadingHint")}
                 </p>
               )}
 
