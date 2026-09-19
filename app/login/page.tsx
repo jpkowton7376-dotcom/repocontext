@@ -84,13 +84,22 @@ SUPABASE_SERVICE_ROLE_KEY=...`}
 
   const handleGitHubLogin = async () => {
     if (!supabase) return
-    await supabase.auth.signInWithOAuth({
-      provider: "github",
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=/dashboard`,
-        scopes: "repo read:org user:email",
-      },
-    })
+    try {
+      await supabase.auth.signInWithOAuth({
+        provider: "github",
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback?next=/dashboard`,
+          scopes: "repo read:org user:email",
+        },
+      })
+    } catch (err: any) {
+      const msg = String(err?.message || err || "")
+      if (/provider|oauth|not enabled|unsupported/i.test(msg)) {
+        setError("GitHub sign-in isn't enabled on this site yet. Please sign in with your email above for now.")
+      } else {
+        setError(err?.message || "GitHub sign-in failed. Please use email instead.")
+      }
+    }
   }
 
   return (
