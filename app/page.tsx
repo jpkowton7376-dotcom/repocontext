@@ -277,23 +277,22 @@ export default function HomePage() {
     }
   }
 
-  function RoadmapCard({ item }: { item: { title: string; desc: string; eta: string; available?: boolean } }) {
+  function RoadmapCard({ item }: { item: { title: string; desc: string; eta: string; available?: boolean; href?: string } }) {
     const [hovered, setHovered] = useState(false)
-    return (
-      <div
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        style={{
-          background: item.available ? "rgba(31,157,85,0.06)" : "rgba(255,255,255,0.5)",
-          padding: "32px 24px",
-          border: item.available ? "1px solid rgba(31,157,85,0.35)" : "1px dashed var(--rule)",
-          display: "flex",
-          flexDirection: "column",
-          position: "relative",
-          transition: "transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)",
-          transform: hovered ? "scale(1.05)" : "scale(1)",
-        }}
-      >
+    const cardStyle: React.CSSProperties = {
+      background: item.available ? "rgba(31,157,85,0.06)" : "rgba(255,255,255,0.5)",
+      padding: "32px 24px",
+      border: item.available ? "1px solid rgba(31,157,85,0.35)" : "1px dashed var(--rule)",
+      display: "flex",
+      flexDirection: "column",
+      position: "relative",
+      transition: "transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)",
+      transform: hovered ? "scale(1.05)" : "scale(1)",
+      textDecoration: "none",
+      color: "inherit",
+    }
+    const card = (
+      <>
         <span style={{
           display: "inline-block",
           fontSize: "10px",
@@ -343,6 +342,19 @@ export default function HomePage() {
           </svg>
           {item.available ? "Available now" : t("home.roadmapComingSoon")}
         </div>
+      </>
+    )
+    if (item.href) {
+      return (
+        <Link href={item.href} style={cardStyle}
+          onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
+          {card}
+        </Link>
+      )
+    }
+    return (
+      <div style={cardStyle} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
+        {card}
       </div>
     )
   }
@@ -1063,24 +1075,28 @@ export default function HomePage() {
                 desc: dict.home.roadmap[0]?.desc ?? "",
                 eta: dict.home.roadmap[0]?.eta ?? "",
                 available: dict.home.roadmap[0]?.available ?? false,
+                href: "/",
               },
               {
                 title: dict.home.roadmap[1]?.title ?? "",
                 desc: dict.home.roadmap[1]?.desc ?? "",
                 eta: dict.home.roadmap[1]?.eta ?? "",
                 available: dict.home.roadmap[1]?.available ?? false,
+                href: "/developers",
               },
               {
                 title: dict.home.roadmap[2]?.title ?? "",
                 desc: dict.home.roadmap[2]?.desc ?? "",
                 eta: dict.home.roadmap[2]?.eta ?? "",
                 available: dict.home.roadmap[2]?.available ?? false,
+                href: "/templates",
               },
               {
                 title: dict.home.roadmap[3]?.title ?? "",
                 desc: dict.home.roadmap[3]?.desc ?? "",
                 eta: dict.home.roadmap[3]?.eta ?? "",
                 available: dict.home.roadmap[3]?.available ?? false,
+                href: "/developers",
               },
             ].map((item) => (
               <RoadmapCard key={item.title} item={item} />
@@ -1521,6 +1537,7 @@ export default function HomePage() {
               <div style={{ display: "flex", flexDirection: "column", gap: "10px", fontSize: "14px" }}>
                 <GlowLink href="/changelog" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.changelog")}</GlowLink>
                 <GlowLink href="/docs" style={{ color: "#949494", textDecoration: "none" }}>{t("footer.spec")}</GlowLink>
+                <GlowLink href="/startup-check" style={{ color: "#949494", textDecoration: "none" }}>Status check</GlowLink>
               </div>
             </div>
 
