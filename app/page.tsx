@@ -56,6 +56,7 @@ export default function HomePage() {
   const [showPatInput, setShowPatInput] = useState(false)
   const [patInput, setPatInput] = useState("")
   const [connectingGithub, setConnectingGithub] = useState(false)
+  const [githubError, setGithubError] = useState<string | null>(null)
   const [trial, setTrial] = useState<{
     freeRemaining: number
     freeLimit: number
@@ -138,6 +139,7 @@ export default function HomePage() {
     try { localStorage.setItem("repocontext_pat", v) } catch {}
     setPatInput("")
     setShowPatInput(false)
+    setGithubError(null)
   }
   const clearPat = () => {
     setPatToken(null)
@@ -154,15 +156,32 @@ export default function HomePage() {
    */
   const connectGitHub = async () => {
     if (!supabase || connectingGithub) return
+    setGithubError(null)
     setConnectingGithub(true)
     const opts = {
       redirectTo: `${window.location.origin}/auth/callback?next=/`,
       scopes: "repo read:org user:email",
     }
-    if (user) {
-      await supabase.auth.linkIdentity({ provider: "github", options: opts })
-    } else {
-      await supabase.auth.signInWithOAuth({ provider: "github", options: opts })
+    try {
+      if (user) {
+        await supabase.auth.linkIdentity({ provider: "github", options: opts })
+      } else {
+        await supabase.auth.signInWithOAuth({ provider: "github", options: opts })
+      }
+    } catch (err: any) {
+      setConnectingGithub(false)
+      // The GitHub provider is likely disabled in Supabase (common pre-launch
+      // state). Rather than dead-end, reveal the PAT input so private-repo
+      // access still works — PAT is the reliable path regardless of OAuth.
+      const msg = String(err?.message || err || "")
+      if (/provider|oauth|not enabled|unsupported/i.test(msg)) {
+        setGithubError(
+          "GitHub sign-in isn't enabled on this site yet. Paste a personal access token (PAT) below instead — it works for private repos right now."
+        )
+      } else {
+        setGithubError("Couldn't connect to GitHub. You can paste a token (PAT) below instead.")
+      }
+      setShowPatInput(true)
     }
   }
 
@@ -674,27 +693,44 @@ export default function HomePage() {
                   {githubUser ? `Connected to GitHub as @${githubUser}` : "Connected to GitHub"} — private repositories enabled
                 </div>
               ) : user ? (
-                <button
-                  type="button"
-                  onClick={connectGitHub}
-                  disabled={connectingGithub}
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "8px",
-                    padding: "8px 14px",
-                    fontSize: "13px",
-                    fontWeight: 600,
-                    color: "#ffffff",
-                    background: "rgba(255,255,255,0.06)",
-                    border: "1px solid rgba(92,154,255,0.4)",
-                    borderRadius: "8px",
-                    cursor: connectingGithub ? "default" : "pointer",
-                  }}
-                >
-                  <GitHubMark />
-                  {connectingGithub ? "Connecting…" : "Connect GitHub to analyze private repos"}
-                </button>
+                <>
+                  <button
+                    type="button"
+                    onClick={connectGitHub}
+                    disabled={connectingGithub}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      padding: "8px 14px",
+                      fontSize: "13px",
+                      fontWeight: 600,
+                      color: "#ffffff",
+                      background: "rgba(255,255,255,0.06)",
+                      border: "1px solid rgba(92,154,255,0.4)",
+                      borderRadius: "8px",
+                      cursor: connectingGithub ? "default" : "pointer",
+                    }}
+                  >
+                    <GitHubMark />
+                    {connectingGithub ? "Connecting…" : "Connect GitHub to analyze private repos"}
+                  </button>
+                  {githubError && (
+                    <div style={{
+                      marginTop: "10px",
+                      fontSize: "12px",
+                      lineHeight: 1.6,
+                      color: "#ffb4b4",
+                      background: "rgba(255,90,90,0.08)",
+                      border: "1px solid rgba(255,90,90,0.3)",
+                      borderRadius: "8px",
+                      padding: "8px 10px",
+                      maxWidth: "560px",
+                    }}>
+                      {githubError}
+                    </div>
+                  )}
+                </>
               ) : (
                 <span style={{ fontSize: "13px", color: "#8b95a8" }}>
                   <Link href="/login" style={{ color: "#5c9aff", textDecoration: "underline" }}>
