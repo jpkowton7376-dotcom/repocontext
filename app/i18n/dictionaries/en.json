@@ -60,29 +60,33 @@
         "desc": "Securely connect your private repos. Your code never leaves your control."
       }
     ],
-    "roadmapEyebrow": "On the roadmap",
-    "roadmapTitle": "More power, coming soon.",
-    "roadmapSubtitle": "We're building the next generation of repository intelligence. Here's what's on the way.",
+    "roadmapEyebrow": "Available today",
+    "roadmapTitle": "Everything you need, shipped.",
+    "roadmapSubtitle": "No waiting on a roadmap — these capabilities are live in your account right now.",
     "roadmap": [
       {
-        "title": "Monorepo Support",
-        "desc": "TurboRepo, Nx, Lerna — deep analysis of complex multi-package repositories.",
-        "eta": "Q4 2026"
+        "title": "Private Repository Access",
+        "desc": "Connect GitHub or paste a token to analyze invite-only and internal repositories securely.",
+        "eta": "Live",
+        "available": true
       },
       {
-        "title": "Custom AI Agents",
-        "desc": "Build and train custom AI agents tuned to your specific codebase patterns.",
-        "eta": "Q4 2026"
+        "title": "Shareable Analysis Links",
+        "desc": "Publish a read-only snapshot of any analysis to share with your team or customers.",
+        "eta": "Live",
+        "available": true
       },
       {
-        "title": "GitLab & Bitbucket",
-        "desc": "Connect repositories from GitLab, Bitbucket, and self-hosted platforms.",
-        "eta": "Q1 2027"
+        "title": "Starter Kits & Templates",
+        "desc": "Drop-in AGENTS.md templates for popular frameworks, ready to commit.",
+        "eta": "Live",
+        "available": true
       },
       {
-        "title": "Team Collaboration",
-        "desc": "Shared workspaces, comments, reviews, and approval workflows for teams.",
-        "eta": "Q1 2027"
+        "title": "CI-Ready Public API",
+        "desc": "POST a repo URL from any pipeline or IDE plugin and get structured context back.",
+        "eta": "Live",
+        "available": true
       }
     ],
     "waitlistTitle": "Want early access to new features?",

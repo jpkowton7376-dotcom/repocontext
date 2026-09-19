@@ -1,0 +1,30 @@
+{
+  "name": "repocontext",
+  "version": "0.1.0",
+  "description": "Official RepoContext client — turn any GitHub repository into AI-ready context (AGENTS.md, CLAUDE.md, Cursor rules, …).",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js"
+  },
+  "files": [
+    "index.js",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "repocontext",
+    "agents.md",
+    "claude.md",
+    "cursor-rules",
+    "codebase-analysis",
+    "llm-context"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jpkowton7376-dotcom/repocontext"
+  }
+}

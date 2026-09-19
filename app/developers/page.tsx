@@ -75,8 +75,19 @@ export default function DevelopersPage() {
   "meta": { "apiKey": { "id": "...", "prefix": "rc_live_aB3x" }, "plan": "pro" }
 }`
 
-  const exampleJs = `// Official Node SDK is coming soon — use the raw HTTP client below (works from any language).
-// or use the raw HTTP client
+  const exampleInstall = `npm install repocontext`
+
+  const exampleJs = `import { RepoContextClient } from "repocontext";
+
+const rc = new RepoContextClient(process.env.REPOCONTEXT_API_KEY);
+
+// githubToken unlocks private repositories
+const analysis = await rc.analyze("https://github.com/octocat/Hello-World", {
+  githubToken: process.env.GITHUB_TOKEN,
+});
+console.log(analysis.agentsMd); // write to AGENTS.md`
+
+  const exampleRaw = `// No SDK? Any language that speaks HTTPS works — here's the raw request:
 const res = await fetch("${SITE_URL}/api/v1/analyze", {
   method: "POST",
   headers: {
@@ -165,8 +176,12 @@ console.log(analysis.agentsMd); // write to AGENTS.md`
           <h3 style={{ fontSize: "15px", fontWeight: 600, margin: "24px 0 8px 0", color: "var(--ink)" }}>Example: curl</h3>
           <CodeBlock copyKey="curl">{exampleCurl}</CodeBlock>
 
-          <h3 style={{ fontSize: "15px", fontWeight: 600, margin: "24px 0 8px 0", color: "var(--ink)" }}>Example: JavaScript / fetch</h3>
+          <h3 style={{ fontSize: "15px", fontWeight: 600, margin: "24px 0 8px 0", color: "var(--ink)" }}>Official Node SDK</h3>
+          <CodeBlock copyKey="install">{exampleInstall}</CodeBlock>
           <CodeBlock copyKey="js">{exampleJs}</CodeBlock>
+
+          <h3 style={{ fontSize: "15px", fontWeight: 600, margin: "24px 0 8px 0", color: "var(--ink)" }}>Raw HTTP (any language)</h3>
+          <CodeBlock copyKey="raw">{exampleRaw}</CodeBlock>
 
           <h3 style={{ fontSize: "15px", fontWeight: 600, margin: "24px 0 8px 0", color: "var(--ink)" }}>Response (truncated)</h3>
           <CodeBlock copyKey="resp">{exampleResponse}</CodeBlock>

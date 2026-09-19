@@ -104,22 +104,26 @@
       {
         "title": "Monorepo 対応",
         "desc": "TurboRepo、Nx、Lerna — 複雑なマルチパッケージリポジトリの深い分析。",
-        "eta": "2026年Q4"
+        "eta": "2026年Q4",
+        "available": false
       },
       {
         "title": "カスタム AI エージェント",
         "desc": "特定のコードベースのパターンに調整されたカスタム AI エージェントを構築・トレーニング。",
-        "eta": "2026年Q4"
+        "eta": "2026年Q4",
+        "available": false
       },
       {
         "title": "GitLab & Bitbucket",
         "desc": "GitLab、Bitbucket、セルフホストプラットフォームのリポジトリを接続。",
-        "eta": "2027年Q1"
+        "eta": "2027年Q1",
+        "available": false
       },
       {
         "title": "チームコラボレーション",
         "desc": "共有ワークスペース、コメント、レビュー、チーム向け承認ワークフロー。",
-        "eta": "2027年Q1"
+        "eta": "2027年Q1",
+        "available": false
       }
     ],
     "waitlistTitle": "新機能への早期アクセスを希望ですか？",

@@ -104,22 +104,26 @@
       {
         "title": "Monorepo 支援",
         "desc": "TurboRepo、Nx、Lerna — 深入分析複雜的多套件儲存庫。",
-        "eta": "2026 Q4"
+        "eta": "2026 Q4",
+        "available": false
       },
       {
         "title": "自訂 AI 代理",
         "desc": "建置並訓練針對你特定程式碼模式調整的 AI 代理。",
-        "eta": "2026 Q4"
+        "eta": "2026 Q4",
+        "available": false
       },
       {
         "title": "GitLab 與 Bitbucket",
         "desc": "連結 GitLab、Bitbucket 與自託管平台的儲存庫。",
-        "eta": "2027 Q1"
+        "eta": "2027 Q1",
+        "available": false
       },
       {
         "title": "團隊協作",
         "desc": "共享工作區、留言、審查與團隊審批流程。",
-        "eta": "2027 Q1"
+        "eta": "2027 Q1",
+        "available": false
       }
     ],
     "waitlistTitle": "想搶先體驗新功能？",

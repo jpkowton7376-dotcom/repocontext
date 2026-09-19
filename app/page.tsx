@@ -277,16 +277,16 @@ export default function HomePage() {
     }
   }
 
-  function RoadmapCard({ item }: { item: { title: string; desc: string; eta: string } }) {
+  function RoadmapCard({ item }: { item: { title: string; desc: string; eta: string; available?: boolean } }) {
     const [hovered, setHovered] = useState(false)
     return (
       <div
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         style={{
-          background: "rgba(255,255,255,0.5)",
+          background: item.available ? "rgba(31,157,85,0.06)" : "rgba(255,255,255,0.5)",
           padding: "32px 24px",
-          border: "1px dashed var(--rule)",
+          border: item.available ? "1px solid rgba(31,157,85,0.35)" : "1px dashed var(--rule)",
           display: "flex",
           flexDirection: "column",
           position: "relative",
@@ -300,13 +300,13 @@ export default function HomePage() {
           fontWeight: 600,
           letterSpacing: "0.12em",
           textTransform: "uppercase",
-          color: "var(--blue-60)",
-          background: "var(--blue-10)",
+          color: item.available ? "#1f9d55" : "var(--blue-60)",
+          background: item.available ? "rgba(31,157,85,0.12)" : "var(--blue-10)",
           padding: "4px 10px",
           marginBottom: "20px",
           alignSelf: "flex-start",
         }}>
-          {item.eta}
+          {item.available ? "LIVE" : item.eta}
         </span>
         <h3 style={{
           fontSize: "16px",
@@ -332,10 +332,16 @@ export default function HomePage() {
         }}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
             strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <circle cx="12" cy="12" r="10" />
-            <polyline points="12 6 12 12 16 14" />
+            {item.available ? (
+              <polyline points="20 6 9 17 4 12" />
+            ) : (
+              <>
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </>
+            )}
           </svg>
-          {t("home.roadmapComingSoon")}
+          {item.available ? "Available now" : t("home.roadmapComingSoon")}
         </div>
       </div>
     )
@@ -1016,7 +1022,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Coming Soon */}
+      {/* Available now */}
       <section style={{ padding: "0 48px 96px 48px", background: "var(--bg-warm)" }}>
         <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
           <div style={{ marginBottom: "48px" }}>
@@ -1056,21 +1062,25 @@ export default function HomePage() {
                 title: dict.home.roadmap[0]?.title ?? "",
                 desc: dict.home.roadmap[0]?.desc ?? "",
                 eta: dict.home.roadmap[0]?.eta ?? "",
+                available: dict.home.roadmap[0]?.available ?? false,
               },
               {
                 title: dict.home.roadmap[1]?.title ?? "",
                 desc: dict.home.roadmap[1]?.desc ?? "",
                 eta: dict.home.roadmap[1]?.eta ?? "",
+                available: dict.home.roadmap[1]?.available ?? false,
               },
               {
                 title: dict.home.roadmap[2]?.title ?? "",
                 desc: dict.home.roadmap[2]?.desc ?? "",
                 eta: dict.home.roadmap[2]?.eta ?? "",
+                available: dict.home.roadmap[2]?.available ?? false,
               },
               {
                 title: dict.home.roadmap[3]?.title ?? "",
                 desc: dict.home.roadmap[3]?.desc ?? "",
                 eta: dict.home.roadmap[3]?.eta ?? "",
+                available: dict.home.roadmap[3]?.available ?? false,
               },
             ].map((item) => (
               <RoadmapCard key={item.title} item={item} />

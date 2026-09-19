@@ -104,22 +104,26 @@
       {
         "title": "Soporte para monorepos",
         "desc": "TurboRepo, Nx, Lerna — análisis profundo de repositorios multi-paquete complejos.",
-        "eta": "Q4 2026"
+        "eta": "Q4 2026",
+        "available": false
       },
       {
         "title": "Agentes de IA personalizados",
         "desc": "Construye y entrena agentes de IA adaptados a los patrones específicos de tu código.",
-        "eta": "Q4 2026"
+        "eta": "Q4 2026",
+        "available": false
       },
       {
         "title": "GitLab y Bitbucket",
         "desc": "Conecta repositorios de GitLab, Bitbucket y plataformas auto-alojadas.",
-        "eta": "Q1 2027"
+        "eta": "Q1 2027",
+        "available": false
       },
       {
         "title": "Colaboración en equipo",
         "desc": "Espacios de trabajo compartidos, comentarios, revisiones y flujos de aprobación para equipos.",
-        "eta": "Q1 2027"
+        "eta": "Q1 2027",
+        "available": false
       }
     ],
     "waitlistTitle": "¿Quieres acceso anticipado a nuevas funciones?",
