@@ -53,6 +53,7 @@ interface SubscriberRow {
   created_at: string
   creem_customer_id: string | null
   creem_subscription_id: string | null
+  is_admin: boolean
 }
 
 interface SupportMessage {
@@ -164,6 +165,8 @@ export default function AdminPage() {
   const [replying, setReplying] = useState<string | null>(null)
   const [replyError, setReplyError] = useState<string | null>(null)
   const [replyDone, setReplyDone] = useState<string | null>(null)
+  const [togglingAdmin, setTogglingAdmin] = useState<string | null>(null)
+  const [adminError, setAdminError] = useState<string | null>(null)
 
   // ── Initial load: verify session + admin, then load the overview ──────
   useEffect(() => {
@@ -295,6 +298,30 @@ export default function AdminPage() {
     }
   }
 
+  const toggleAdmin = async (userId: string, current: boolean) => {
+    setTogglingAdmin(userId)
+    setAdminError(null)
+    try {
+      const res = await fetch("/api/admin/admins", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, isAdmin: !current }),
+      })
+      const json = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        setAdminError(json.error || "Failed to update admin")
+      } else {
+        setSubscribers((prev) =>
+          prev ? prev.map((s) => (s.id === userId ? { ...s, is_admin: !current } : s)) : prev,
+        )
+      }
+    } catch {
+      setAdminError("Failed to update admin")
+    } finally {
+      setTogglingAdmin(null)
+    }
+  }
+
   // ── Chrome (shared across states) ─────────────────────────────────────
   const chrome = (children: React.ReactNode) => (
     <main style={{ minHeight: "100vh", background: "var(--bg-warm)" }}>
@@ -357,37 +384,53 @@ export default function AdminPage() {
       <Center>
         <h1 style={h1}>Not authorized</h1>
         <p style={p}>This panel is restricted to admins.</p>
-        {adminEmail ? (
-          <div
+        <div
+          style={{
+            marginTop: "16px",
+            textAlign: "left",
+            background: "var(--surface)",
+            border: "1px solid var(--rule)",
+            padding: "14px 16px",
+            fontSize: "13px",
+            color: "var(--muted)",
+            lineHeight: 1.65,
+          }}
+        >
+          <div style={{ fontWeight: 600, color: "var(--ink-2)", marginBottom: "8px" }}>
+            First-time setup — grant yourself admin access
+          </div>
+          {adminEmail && (
+            <div style={{ marginBottom: "10px" }}>
+              You're signed in as{" "}
+              <strong style={{ color: "var(--ink)", wordBreak: "break-all" }}>{adminEmail}</strong>
+            </div>
+          )}
+          <div>
+            Run <code style={{ background: "var(--bg-cool)", padding: "1px 5px" }}>supabase/admin.sql</code>{" "}
+            once, then promote your account in the Supabase SQL editor:
+          </div>
+          <pre
             style={{
-              marginTop: "16px",
-              textAlign: "left",
-              background: "var(--surface)",
-              border: "1px solid var(--rule)",
-              padding: "14px 16px",
+              margin: "8px 0",
+              padding: "10px 12px",
+              background: "var(--bg-cool)",
+              fontFamily: "'IBM Plex Mono', monospace",
+              fontSize: "12px",
+              color: "var(--ink-2)",
+              overflowX: "auto",
             }}
           >
-            <div style={{ fontSize: "12px", color: "var(--muted)", marginBottom: "6px" }}>
-              You're signed in as
-            </div>
-            <div style={{ fontSize: "14px", fontWeight: 600, color: "var(--ink)", wordBreak: "break-all" }}>
-              {adminEmail}
-            </div>
-            <div style={{ fontSize: "12px", color: "var(--muted)", marginTop: "12px", lineHeight: 1.6 }}>
-              Add this exact address to the{" "}
-              <code style={{ background: "var(--bg-cool)", padding: "1px 5px" }}>ADMIN_EMAILS</code>{" "}
-              environment variable in your host (Vercel → Project → Settings → Environment Variables),
-              then <strong style={{ color: "var(--ink-2)" }}>redeploy</strong>. Multiple admins: separate
-              addresses with commas.
-            </div>
+            update public.profiles set is_admin = true{"\n"}
+            where email = '{adminEmail || "you@example.com"}';
+          </pre>
+          <div>
+            After that, sign in and open this panel — then add or remove other admins anytime from the{" "}
+            <strong style={{ color: "var(--ink-2)" }}>Users &amp; Subscriptions</strong> tab (no redeploy).
+            Alternatively, set the{" "}
+            <code style={{ background: "var(--bg-cool)", padding: "1px 5px" }}>ADMIN_EMAILS</code> env var to
+            your email and redeploy.
           </div>
-        ) : (
-          <p style={{ ...p, marginTop: "8px" }}>
-            Add your email to the{" "}
-            <code style={{ background: "var(--bg-cool)", padding: "1px 5px" }}>ADMIN_EMAILS</code>{" "}
-            environment variable and redeploy.
-          </p>
-        )}
+        </div>
       </Center>,
     )
   }
@@ -664,6 +707,9 @@ export default function AdminPage() {
                 ))}
               </div>
             </div>
+            {adminError && (
+              <div style={{ marginTop: "12px", fontSize: "12px", color: "var(--red-50)" }}>{adminError}</div>
+            )}
             {subscribers === null ? (
               <p style={{ ...p, marginTop: "12px" }}>Loading…</p>
             ) : (
@@ -676,6 +722,7 @@ export default function AdminPage() {
                       <th style={{ ...th, textAlign: "right" }}>Analyses</th>
                       <th style={th}>Creem customer</th>
                       <th style={{ ...th, textAlign: "right" }}>Joined</th>
+                      <th style={{ ...th, textAlign: "right" }}>Admin</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -690,11 +737,32 @@ export default function AdminPage() {
                           {s.creem_customer_id || "—"}
                         </td>
                         <td style={{ ...td, textAlign: "right", color: "var(--muted)", whiteSpace: "nowrap" }}>{formatDate(s.created_at)}</td>
+                        <td style={{ ...td, textAlign: "right" }}>
+                          <button
+                            onClick={() => toggleAdmin(s.id, !!s.is_admin)}
+                            disabled={togglingAdmin === s.id}
+                            title={s.is_admin ? "Remove admin access" : "Grant admin access"}
+                            style={{
+                              appearance: "none",
+                              border: "1px solid var(--rule)",
+                              background: s.is_admin ? "var(--accent-light)" : "var(--surface)",
+                              color: s.is_admin ? "var(--blue-60)" : "var(--muted)",
+                              fontSize: "12px",
+                              fontWeight: 600,
+                              padding: "5px 10px",
+                              borderRadius: "4px",
+                              cursor: togglingAdmin === s.id ? "default" : "pointer",
+                              whiteSpace: "nowrap",
+                            }}
+                          >
+                            {togglingAdmin === s.id ? "…" : s.is_admin ? "Admin" : "+ Admin"}
+                          </button>
+                        </td>
                       </tr>
                     ))}
                     {filteredSubs.length === 0 && (
                       <tr>
-                        <td style={{ ...td, color: "var(--muted)" }} colSpan={5}>
+                        <td style={{ ...td, color: "var(--muted)" }} colSpan={6}>
                           No users match this filter.
                         </td>
                       </tr>

@@ -24,7 +24,7 @@ export async function GET() {
     admin
       .from("profiles")
       .select(
-        "id, email, plan, total_analyses, created_at, creem_customer_id, creem_subscription_id",
+        "id, email, plan, total_analyses, created_at, creem_customer_id, creem_subscription_id, is_admin",
       )
       .order("created_at", { ascending: false })
       .limit(500),
@@ -43,6 +43,7 @@ export async function GET() {
     created_at: string
     creem_customer_id: string | null
     creem_subscription_id: string | null
+    is_admin: boolean
   }>
 
   const planCounts = { free: 0, pro: 0, team: 0 }
