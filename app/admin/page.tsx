@@ -356,11 +356,38 @@ export default function AdminPage() {
     return chrome(
       <Center>
         <h1 style={h1}>Not authorized</h1>
-        <p style={p}>
-          This panel is restricted to admins. If you should have access, add your email to the{" "}
-          <code style={{ background: "var(--bg-cool)", padding: "1px 5px" }}>ADMIN_EMAILS</code> environment
-          variable and redeploy.
-        </p>
+        <p style={p}>This panel is restricted to admins.</p>
+        {adminEmail ? (
+          <div
+            style={{
+              marginTop: "16px",
+              textAlign: "left",
+              background: "var(--surface)",
+              border: "1px solid var(--rule)",
+              padding: "14px 16px",
+            }}
+          >
+            <div style={{ fontSize: "12px", color: "var(--muted)", marginBottom: "6px" }}>
+              You're signed in as
+            </div>
+            <div style={{ fontSize: "14px", fontWeight: 600, color: "var(--ink)", wordBreak: "break-all" }}>
+              {adminEmail}
+            </div>
+            <div style={{ fontSize: "12px", color: "var(--muted)", marginTop: "12px", lineHeight: 1.6 }}>
+              Add this exact address to the{" "}
+              <code style={{ background: "var(--bg-cool)", padding: "1px 5px" }}>ADMIN_EMAILS</code>{" "}
+              environment variable in your host (Vercel → Project → Settings → Environment Variables),
+              then <strong style={{ color: "var(--ink-2)" }}>redeploy</strong>. Multiple admins: separate
+              addresses with commas.
+            </div>
+          </div>
+        ) : (
+          <p style={{ ...p, marginTop: "8px" }}>
+            Add your email to the{" "}
+            <code style={{ background: "var(--bg-cool)", padding: "1px 5px" }}>ADMIN_EMAILS</code>{" "}
+            environment variable and redeploy.
+          </p>
+        )}
       </Center>,
     )
   }
