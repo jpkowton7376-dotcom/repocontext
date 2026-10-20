@@ -5,6 +5,7 @@ import { CustomerServiceWidget } from "@/components/CustomerServiceWidget"
 import { CookieConsent } from "@/components/CookieConsent"
 import { JsonLd } from "@/components/JsonLd"
 import { Analytics } from "@vercel/analytics/next"
+import PageViewTracker from "@/components/PageViewTracker"
 import { SITE_URL } from "@/lib/site-url"
 
 const SITE_NAME = "RepoContext"
@@ -101,6 +102,7 @@ export default function RootLayout({
           {children}
           <CustomerServiceWidget />
           <CookieConsent />
+          <PageViewTracker />
           <Analytics />
         </LanguageProvider>
       </body>

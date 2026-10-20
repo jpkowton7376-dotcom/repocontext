@@ -37,6 +37,12 @@ interface Overview {
   waitlist: { total: number; recent: Array<{ email: string; source: string; created_at: string }> }
   shares: { total: number }
   support: { new: number }
+  pageViews: {
+    total: number
+    today: number
+    daily: Array<{ date: string; count: number }>
+    top: Array<{ path: string; count: number }>
+  }
 }
 
 interface SubscriberRow {
@@ -154,6 +160,10 @@ export default function AdminPage() {
   const [planFilter, setPlanFilter] = useState<"all" | "free" | "pro" | "team">("all")
   const [expandedMsg, setExpandedMsg] = useState<string | null>(null)
   const [savingStatus, setSavingStatus] = useState<string | null>(null)
+  const [replyDrafts, setReplyDrafts] = useState<Record<string, string>>({})
+  const [replying, setReplying] = useState<string | null>(null)
+  const [replyError, setReplyError] = useState<string | null>(null)
+  const [replyDone, setReplyDone] = useState<string | null>(null)
 
   // ── Initial load: verify session + admin, then load the overview ──────
   useEffect(() => {
@@ -252,6 +262,36 @@ export default function AdminPage() {
       }
     } finally {
       setSavingStatus(null)
+    }
+  }
+
+  const sendReply = async (id: string) => {
+    const reply = (replyDrafts[id] || "").trim()
+    if (!reply) return
+    setReplying(id)
+    setReplyError(null)
+    setReplyDone(null)
+    try {
+      const res = await fetch("/api/admin/support/reply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, reply }),
+      })
+      const json = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        setReplyError(json.error || "Failed to send reply")
+      } else {
+        setReplyDone(id)
+        setReplyDrafts((prev) => ({ ...prev, [id]: "" }))
+        // A sent reply marks the thread resolved (server also does this).
+        setSupport((prev) =>
+          prev ? prev.map((m) => (m.id === id ? { ...m, status: "resolved" } : m)) : prev,
+        )
+      }
+    } catch {
+      setReplyError("Failed to send reply")
+    } finally {
+      setReplying(null)
     }
   }
 
@@ -414,6 +454,53 @@ export default function AdminPage() {
             <StatCard label="New support" value={overview.support.new} sub="unresolved messages" />
             <StatCard label="Active API keys" value={overview.apiKeys.active} sub={`${overview.apiKeys.total} total`} />
             <StatCard label="Waitlist" value={overview.waitlist.total} sub="feature signups" />
+            <StatCard label="Page views" value={overview.pageViews.total} sub={`+${overview.pageViews.today} today`} />
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: "16px" }}>
+            {/* Page-view trend */}
+            <div style={card}>
+              <div style={cardTitle}>Page views · last 14 days</div>
+              <div style={{ display: "flex", alignItems: "flex-end", gap: "6px", height: "160px", marginTop: "16px" }}>
+                {overview.pageViews.daily.map((d) => {
+                  const maxPv = Math.max(1, ...overview.pageViews.daily.map((x) => x.count))
+                  return (
+                    <div key={d.date} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: "6px", height: "100%" }}>
+                      <div style={{ flex: 1, width: "100%", display: "flex", alignItems: "flex-end" }}>
+                        <div
+                          title={`${d.date}: ${d.count} views`}
+                          style={{
+                            width: "100%",
+                            height: `${Math.round((d.count / maxPv) * 100)}%`,
+                            minHeight: d.count > 0 ? "3px" : "0",
+                            background: d.count > 0 ? "var(--teal-50)" : "var(--rule-2)",
+                          }}
+                        />
+                      </div>
+                      <div style={{ fontSize: "9px", color: "var(--muted-2)", whiteSpace: "nowrap" }}>
+                        {d.date.slice(5).replace("-", "/")}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* Top pages */}
+            <div style={card}>
+              <div style={cardTitle}>Top pages</div>
+              <div style={{ marginTop: "12px", display: "flex", flexDirection: "column", gap: "8px" }}>
+                {overview.pageViews.top.length === 0 && (
+                  <span style={{ fontSize: "13px", color: "var(--muted)" }}>No page views yet.</span>
+                )}
+                {overview.pageViews.top.map((p) => (
+                  <div key={p.path} style={{ display: "flex", justifyContent: "space-between", gap: "12px", fontSize: "13px" }}>
+                    <span style={{ color: "var(--ink-2)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{p.path}</span>
+                    <span style={{ color: "var(--muted)", fontVariantNumeric: "tabular-nums", flexShrink: 0 }}>{p.count}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: "16px" }}>
@@ -656,7 +743,11 @@ export default function AdminPage() {
                             textOverflow: "ellipsis",
                             cursor: "pointer",
                           }}
-                          onClick={() => setExpandedMsg(expanded ? null : m.id)}
+                          onClick={() => {
+                            setExpandedMsg(expanded ? null : m.id)
+                            setReplyError(null)
+                            setReplyDone(null)
+                          }}
                           title={expanded ? "Click to collapse" : "Click to expand"}
                         >
                           {m.message}
@@ -665,6 +756,54 @@ export default function AdminPage() {
                           <div style={{ marginTop: "10px", fontSize: "11px", color: "var(--muted-2)", wordBreak: "break-all" }}>
                             {m.locale ? `${m.locale} · ` : ""}
                             {m.user_agent}
+                          </div>
+                        )}
+                        {expanded && m.email && (
+                          <div style={{ marginTop: "14px" }}>
+                            <textarea
+                              value={replyDrafts[m.id] || ""}
+                              onChange={(e) =>
+                                setReplyDrafts((prev) => ({ ...prev, [m.id]: e.target.value }))
+                              }
+                              placeholder={`Reply to ${m.email}…`}
+                              rows={3}
+                              style={{
+                                width: "100%",
+                                border: "1px solid var(--rule)",
+                                borderRadius: "4px",
+                                padding: "10px 12px",
+                                fontSize: "13px",
+                                fontFamily: "inherit",
+                                color: "var(--ink)",
+                                background: "var(--surface)",
+                                resize: "vertical",
+                              }}
+                            />
+                            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginTop: "8px" }}>
+                              <button
+                                onClick={() => sendReply(m.id)}
+                                disabled={replying === m.id || !(replyDrafts[m.id] || "").trim()}
+                                style={{
+                                  appearance: "none",
+                                  border: "none",
+                                  background: (replyDrafts[m.id] || "").trim() ? "var(--blue-60)" : "var(--rule)",
+                                  color: "#fff",
+                                  fontSize: "13px",
+                                  fontWeight: 600,
+                                  padding: "8px 16px",
+                                  borderRadius: "4px",
+                                  cursor: (replyDrafts[m.id] || "").trim() ? "pointer" : "default",
+                                }}
+                              >
+                                {replying === m.id ? "Sending…" : "Send reply"}
+                              </button>
+                              {replyDone === m.id && (
+                                <span style={{ fontSize: "12px", color: "var(--green-50)" }}>Sent — marked resolved</span>
+                              )}
+                              {replyError && replying === null && (
+                                <span style={{ fontSize: "12px", color: "var(--red-50)" }}>{replyError}</span>
+                              )}
+                            </div>
                           </div>
                         )}
                       </div>

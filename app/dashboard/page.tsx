@@ -34,6 +34,7 @@ function formatRelativeTime(iso: string): string {
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null)
   const [plan, setPlan] = useState<string>("free")
+  const [isAdmin, setIsAdmin] = useState(false)
   const [activating, setActivating] = useState(false)
   const [loading, setLoading] = useState(true)
   const [analysesToday, setAnalysesToday] = useState<number>(0)
@@ -219,6 +220,13 @@ SUPABASE_SERVICE_ROLE_KEY=...`}
         return
       }
       setUser(session.user)
+
+      // Show the internal Admin entry only to allowlisted admins. Best-effort:
+      // a failure just leaves the link hidden.
+      fetch("/api/admin/me")
+        .then((r) => r.json())
+        .then((j) => setIsAdmin(!!j?.admin))
+        .catch(() => {})
 
       let currentPlan = await fetchPlan(session.user.id)
       setPlan(currentPlan)
@@ -517,6 +525,19 @@ SUPABASE_SERVICE_ROLE_KEY=...`}
           >
             Home
           </Link>
+          {isAdmin && (
+            <Link
+              href="/admin"
+              style={{
+                fontSize: "13px",
+                color: "var(--blue-60)",
+                textDecoration: "none",
+                fontWeight: 600,
+              }}
+            >
+              Admin
+            </Link>
+          )}
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <div style={{
               width: "36px",

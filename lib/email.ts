@@ -295,6 +295,44 @@ export async function sendSupportAckEmail(email: string): Promise<{ ok: boolean;
   })
 }
 
+/**
+ * Sends a support reply (typed in the admin panel) to the visitor, quoting
+ * their original message for context. No-op without RESEND_API_KEY.
+ */
+export async function sendSupportReplyEmail(args: {
+  to: string
+  reply: string
+  original?: string
+}): Promise<{ ok: boolean; error?: string }> {
+  const { to, reply, original } = args
+  const siteUrl = SITE_URL
+  const html = layout(
+    `
+      <h1 style="margin:0 0 12px;font-size:22px;font-weight:600;line-height:1.3;">Re: your RepoContext message</h1>
+      <div style="font-size:15px;line-height:1.6;color:#1a2230;white-space:pre-wrap;word-break:break-word;">${esc(reply)}</div>
+      ${
+        original
+          ? `<div style="margin:24px 0 0;padding-left:16px;border-left:3px solid #e6eaf0;">
+               <div style="font-size:12px;color:#64707f;margin-bottom:6px;">Your original message</div>
+               <div style="font-size:13px;line-height:1.6;color:#64707f;white-space:pre-wrap;word-break:break-word;">${esc(original)}</div>
+             </div>`
+          : ""
+      }
+      <p style="margin:24px 0 0;font-size:13px;line-height:1.6;color:#64707f;">
+        Need anything else? Just reply to this email, or visit the
+        <a href="${siteUrl}/docs" style="color:#2b3be0;text-decoration:underline;">docs</a>.
+      </p>
+    `,
+    "A reply from RepoContext support.",
+  )
+  return send({
+    to,
+    subject: "Re: your RepoContext support message",
+    html,
+    text: `${reply}${original ? `\n\n--- Your original message ---\n${original}` : ""}`,
+  })
+}
+
 /** Confirms a waitlist signup and tells the user what happens next. */
 export async function sendWaitlistConfirmEmail(email: string): Promise<{ ok: boolean; error?: string }> {
   const siteUrl =

@@ -27,6 +27,19 @@ function daysAgoUTC(days: number): string {
   return d.toISOString()
 }
 
+/** Buckets created_at rows into the last 14 days (ending today, UTC). */
+function toDailyBuckets(rows: Array<{ created_at: string }>): Array<{ date: string; count: number }> {
+  const buckets = new Map<string, number>()
+  for (let i = 0; i < 14; i++) {
+    buckets.set(daysAgoUTC(13 - i).slice(0, 10), 0)
+  }
+  for (const row of rows) {
+    const key = row.created_at?.slice(0, 10)
+    if (key && buckets.has(key)) buckets.set(key, (buckets.get(key) || 0) + 1)
+  }
+  return Array.from(buckets.entries()).map(([date, count]) => ({ date, count }))
+}
+
 /** Exact count, or 0 when the query errors (e.g. table missing). */
 async function safeCount(
   admin: any,
@@ -66,6 +79,8 @@ export async function GET() {
     waitlistTotal,
     sharesTotal,
     supportNew,
+    pageViewsTotal,
+    pageViewsToday,
   ] = await Promise.all([
     safeCount(admin, "analyses"),
     safeCount(admin, "analyses", (q) => q.gte("created_at", today)),
@@ -74,36 +89,55 @@ export async function GET() {
     safeCount(admin, "waitlist"),
     safeCount(admin, "shared_analyses"),
     safeCount(admin, "support_messages", (q) => q.eq("status", "new")),
+    safeCount(admin, "page_views"),
+    safeCount(admin, "page_views", (q) => q.gte("created_at", today)),
   ])
 
   // ── Data pulls (independent — run together, each guarded) ───────────
-  const [profilesRes, dailyRes, recentRes, topRes, waitlistRecentRes] =
-    await Promise.all([
-      admin
-        .from("profiles")
-        .select("plan, created_at, creem_customer_id")
-        .limit(100000),
-      admin
-        .from("analyses")
-        .select("created_at")
-        .gte("created_at", since14)
-        .limit(20000),
-      admin
-        .from("analyses")
-        .select("id, repo_name, repo_url, quality_score, created_at, user_id")
-        .order("created_at", { ascending: false })
-        .limit(15),
-      admin
-        .from("analyses")
-        .select("repo_name")
-        .order("created_at", { ascending: false })
-        .limit(1000),
-      admin
-        .from("waitlist")
-        .select("email, source, created_at")
-        .order("created_at", { ascending: false })
-        .limit(8),
-    ])
+  const [
+    profilesRes,
+    dailyRes,
+    recentRes,
+    topRes,
+    waitlistRecentRes,
+    pvDailyRes,
+    pvTopRes,
+  ] = await Promise.all([
+    admin
+      .from("profiles")
+      .select("plan, created_at, creem_customer_id")
+      .limit(100000),
+    admin
+      .from("analyses")
+      .select("created_at")
+      .gte("created_at", since14)
+      .limit(20000),
+    admin
+      .from("analyses")
+      .select("id, repo_name, repo_url, quality_score, created_at, user_id")
+      .order("created_at", { ascending: false })
+      .limit(15),
+    admin
+      .from("analyses")
+      .select("repo_name")
+      .order("created_at", { ascending: false })
+      .limit(1000),
+    admin
+      .from("waitlist")
+      .select("email, source, created_at")
+      .order("created_at", { ascending: false })
+      .limit(8),
+    admin
+      .from("page_views")
+      .select("created_at")
+      .gte("created_at", since14)
+      .limit(50000),
+    admin
+      .from("page_views")
+      .select("path")
+      .order("created_at", { ascending: false })
+      .limit(2000),
+  ])
 
   const profiles = (profilesRes.data ?? []) as Array<{
     plan: string | null
@@ -122,15 +156,19 @@ export async function GET() {
   }
 
   // ── Daily analysis trend (last 14 days, ending today) ───────────────
-  const buckets = new Map<string, number>()
-  for (let i = 0; i < 14; i++) {
-    buckets.set(daysAgoUTC(13 - i).slice(0, 10), 0)
+  const daily = toDailyBuckets((dailyRes.data ?? []) as Array<{ created_at: string }>)
+
+  // ── Page-view trend + top pages ─────────────────────────────────────
+  const pvDaily = toDailyBuckets((pvDailyRes.data ?? []) as Array<{ created_at: string }>)
+  const pvCounts = new Map<string, number>()
+  for (const row of (pvTopRes.data ?? []) as Array<{ path: string }>) {
+    const path = row.path || "(unknown)"
+    pvCounts.set(path, (pvCounts.get(path) || 0) + 1)
   }
-  for (const row of (dailyRes.data ?? []) as Array<{ created_at: string }>) {
-    const key = row.created_at?.slice(0, 10)
-    if (key && buckets.has(key)) buckets.set(key, (buckets.get(key) || 0) + 1)
-  }
-  const daily = Array.from(buckets.entries()).map(([date, count]) => ({ date, count }))
+  const pvTop = Array.from(pvCounts.entries())
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 10)
+    .map(([path, count]) => ({ path, count }))
 
   // ── Top analyzed repos ──────────────────────────────────────────────
   const repoCounts = new Map<string, number>()
@@ -201,5 +239,11 @@ export async function GET() {
     },
     shares: { total: sharesTotal },
     support: { new: supportNew },
+    pageViews: {
+      total: pageViewsTotal,
+      today: pageViewsToday,
+      daily: pvDaily,
+      top: pvTop,
+    },
   })
 }
