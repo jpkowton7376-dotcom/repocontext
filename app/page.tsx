@@ -48,6 +48,9 @@ export default function HomePage() {
   >("idle")
   const [userToken, setUserToken] = useState<string | null>(null)
   const [authRequired, setAuthRequired] = useState(false)
+  // Set when the server answers 402 TRIAL_EXHAUSTED — the error copy alone
+  // ("used up… subscribe to Pro") converts poorly without an inline CTA.
+  const [trialExhausted, setTrialExhausted] = useState(false)
   const [githubToken, setGithubToken] = useState<string | null>(null)
   const [githubUser, setGithubUser] = useState<string | null>(null)
   // Long-lived GitHub PAT fallback (persisted in the browser) so private-repo
@@ -195,6 +198,8 @@ export default function HomePage() {
     setStage("Starting analysis…")
     setError("")
     setAuthRequired(false)
+    setTrialExhausted(false)
+    setTrialExhausted(false)
 
     // The endpoint streams real stage progress as Server-Sent Events
     // (fetch → scan → generate → enhance → score). We read the stream and
@@ -216,6 +221,7 @@ export default function HomePage() {
       if (!res.ok || !res.body) {
         const data = await res.json().catch(() => ({}))
         if (data.code === "AUTH_REQUIRED") setAuthRequired(true)
+        if (data.code === "TRIAL_EXHAUSTED") setTrialExhausted(true)
         throw new Error(data.error || "Analysis failed")
       }
 
@@ -240,6 +246,7 @@ export default function HomePage() {
             if (msg.stage) setStage(msg.stage)
           } else if (msg.type === "error") {
             if (msg.code === "AUTH_REQUIRED") setAuthRequired(true)
+            if (msg.code === "TRIAL_EXHAUSTED") setTrialExhausted(true)
             throw new Error(msg.error || "Analysis failed")
           } else if (msg.type === "done") {
             finalResult = msg.result
@@ -661,6 +668,14 @@ export default function HomePage() {
                       {" "}
                       <Link href="/signup" style={{ color: "#5c9aff", textDecoration: "underline" }}>
                         Register for free →
+                      </Link>
+                    </>
+                  )}
+                  {trialExhausted && (
+                    <>
+                      {" "}
+                      <Link href="/pricing" style={{ color: "#5c9aff", textDecoration: "underline" }}>
+                        See Pro plans →
                       </Link>
                     </>
                   )}

@@ -1136,16 +1136,29 @@ SUPABASE_SERVICE_ROLE_KEY=...`}
                     }}
                   >
                     <div style={{ minWidth: 0, flex: 1 }}>
-                      <div style={{
-                        fontSize: "14px",
-                        fontWeight: 500,
-                        color: "var(--ink)",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                      }}>
+                      <Link
+                        href={`/history/${a.id}`}
+                        style={{
+                          display: "block",
+                          fontSize: "14px",
+                          fontWeight: 500,
+                          color: "var(--ink)",
+                          textDecoration: "none",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.color = "var(--blue-70)"
+                          e.currentTarget.style.textDecoration = "underline"
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.color = "var(--ink)"
+                          e.currentTarget.style.textDecoration = "none"
+                        }}
+                      >
                         {a.repo_name || "Unknown repository"}
-                      </div>
+                      </Link>
                       <div style={{
                         fontSize: "12px",
                         color: "var(--muted)",
@@ -1167,22 +1180,36 @@ SUPABASE_SERVICE_ROLE_KEY=...`}
                         {a.quality_score}
                       </div>
                     )}
-                    {a.repo_url && (
-                      <a
-                        href={a.repo_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                    <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+                      <Link
+                        href={`/history/${a.id}`}
                         style={{
                           fontSize: "12px",
                           color: "var(--blue-70)",
                           textDecoration: "none",
-                          fontWeight: 500,
+                          fontWeight: 600,
                           whiteSpace: "nowrap",
                         }}
                       >
-                        GitHub ↗
-                      </a>
-                    )}
+                        View ↗
+                      </Link>
+                      {a.repo_url && (
+                        <a
+                          href={a.repo_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            fontSize: "12px",
+                            color: "var(--blue-70)",
+                            textDecoration: "none",
+                            fontWeight: 500,
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          GitHub ↗
+                        </a>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
