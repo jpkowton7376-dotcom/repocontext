@@ -117,6 +117,7 @@ export function SiteNav({ variant = "light" }: { variant?: Variant }) {
     { href: "/docs", key: "nav.docs" },
     { href: "/ai-tools", key: "nav.aiTools" },
     { href: "/templates", key: "nav.templates" },
+    { href: "/support", key: "nav.support" },
     // Forge hidden pre-launch to keep PH visitors focused on the core tool.
     // { href: "/forge", key: "nav.forge" },
   ]
