@@ -52,7 +52,7 @@ export function NewProjectForm() {
     setParts((p) => p.map((r, idx) => (idx === i ? { ...r, ...patch } : r)))
   const removeRow = (i: number) => setParts((p) => p.filter((_, idx) => idx !== i))
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     const slug = slugify(title) || `project-${Date.now()}`
     const lines = instructions
@@ -84,8 +84,8 @@ export function NewProjectForm() {
         : undefined,
       stars: 0,
     }
-    addProject(project)
-    router.push(`/forge/${slug}`)
+    const finalSlug = await addProject(project)
+    router.push(`/forge/${finalSlug}`)
   }
 
   const field = (label: string): React.CSSProperties => ({

@@ -51,6 +51,8 @@ export interface MechSection {
 }
 
 export interface HardwareProject {
+  /** Set for projects persisted in Supabase (community submissions). */
+  id?: string
   slug: string
   title: string
   author: string
@@ -71,6 +73,8 @@ export interface HardwareProject {
   build?: Build
   stars: number
   featured?: boolean
+  /** Whether the signed-in user has starred this (Supabase projects only). */
+  starredByMe?: boolean
 }
 
 export const CATEGORIES = [

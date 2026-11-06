@@ -99,10 +99,10 @@ export function ForgeChat() {
     runGeneration(prompt)
   }
 
-  const publishAndOpen = () => {
+  const publishAndOpen = async () => {
     if (!result) return
-    addProject(result)
-    router.push(`/forge/${result.slug}`)
+    const finalSlug = await addProject(result)
+    router.push(`/forge/${finalSlug}`)
   }
 
   const reset = () => {
